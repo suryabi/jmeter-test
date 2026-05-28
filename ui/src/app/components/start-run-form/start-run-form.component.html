@@ -1,0 +1,115 @@
+<section class="glass-card form-shell">
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <!-- Header -->
+    <header class="form-header">
+      <div class="flex items-center gap-3">
+        <div class="header-icon">
+          <i class="pi pi-sliders-h"></i>
+        </div>
+        <div>
+          <h2 class="form-title">Scenario configuration</h2>
+          <p class="form-sub">Parameters are written to a run-specific copy of <code>BIQ.jmx</code> before each population run</p>
+        </div>
+      </div>
+      @if (!loading && parameterGroups.length) {
+        <p-button
+          type="button"
+          severity="secondary"
+          icon="pi pi-undo"
+          label="Reset"
+          (onClick)="resetToDefaults()"
+        />
+      }
+    </header>
+
+    @if (loading) {
+      <div class="loading-box">
+        <p-progress-spinner styleClass="!h-6 !w-6" strokeWidth="6" />
+        <span>Loading parameters from BIQ.jmx…</span>
+      </div>
+    } @else if (loadError) {
+      <p-message severity="error" [text]="loadError" />
+    } @else {
+      <!-- Run label - hero field -->
+      <div class="hero-field">
+        <label for="runLabel" class="field-label">
+          <i class="pi pi-tag"></i>
+          Run Label
+        </label>
+        <input id="runLabel" class="surface-input hero-input" type="text" formControlName="label" placeholder="e.g. nightly-smoke-2026-11-15" />
+      </div>
+
+      <!-- Parameter group selector -->
+      <div class="group-nav">
+        @for (group of parameterGroups; track group.id) {
+          <button
+            type="button"
+            class="group-chip"
+            [class.group-chip-active]="activeGroupId === group.id"
+            (click)="setActiveGroup(group.id)"
+          >
+            <span class="group-chip-icon">
+              <i class="pi" [ngClass]="groupIconClass(group)"></i>
+            </span>
+            <span class="group-chip-label">{{ group.title }}</span>
+            <span class="group-chip-badge">{{ group.parameters.length }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Active group's fields -->
+      @if (activeGroup(); as currentGroup) {
+        <div class="field-grid">
+          @for (param of currentGroup.parameters; track param.name) {
+            <div class="field-cell" [class.field-cell-wide]="isLongText(param)">
+              @if (param.type === 'boolean') {
+                <label class="bool-row" [for]="param.name">
+                  <input type="checkbox" class="bool-check" [id]="param.name" [formControlName]="param.name" />
+                  <span class="flex flex-col">
+                    <span class="field-label-row">
+                      {{ fieldLabel(param.name) }}
+                      @if (param.required) { <span class="required">*</span> }
+                    </span>
+                    @if (param.description) {
+                      <small class="field-help">{{ param.description }}</small>
+                    }
+                  </span>
+                </label>
+              } @else {
+                <label [for]="param.name" class="field-label-row">
+                  {{ fieldLabel(param.name) }}
+                  @if (param.required) { <span class="required">*</span> }
+                </label>
+                @if (param.type === 'date') {
+                  <input class="surface-input" type="date" [id]="param.name" [formControlName]="param.name" />
+                } @else if (isLongText(param)) {
+                  <textarea class="surface-input surface-textarea" rows="2" [id]="param.name" [formControlName]="param.name"></textarea>
+                } @else {
+                  <input class="surface-input" type="text" [id]="param.name" [formControlName]="param.name" />
+                }
+                @if (param.description) {
+                  <small class="field-help">{{ param.description }}</small>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Sticky action bar -->
+      <div class="action-bar">
+        <div class="action-bar-info">
+          <i class="pi pi-info-circle"></i>
+          <span>JMeter will run <strong>non-GUI</strong>; logs stream in real-time.</span>
+        </div>
+        <p-button
+          type="submit"
+          icon="pi pi-play-circle"
+          [loading]="submitting"
+          [disabled]="form.invalid || submitting"
+          label="Start population run"
+        />
+      </div>
+    }
+  </form>
+</section>

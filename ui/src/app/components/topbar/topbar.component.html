@@ -1,0 +1,29 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <a routerLink="/" class="brand">
+      <div class="brand-mark">
+        <span>B</span>
+        <span class="brand-mark-dot"></span>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">BriefingIQ</span>
+        <span class="brand-sub">JMeter Console</span>
+      </div>
+    </a>
+
+    <nav class="nav">
+      <a routerLink="/" routerLinkActive="nav-active" [routerLinkActiveOptions]="{ exact: true }">
+        <i class="pi pi-bolt"></i>
+        <span>Workbench</span>
+      </a>
+    </nav>
+
+    <div class="status">
+      <span class="status-pill" [class.online]="apiOnline" [class.offline]="!apiOnline">
+        <span class="dot"></span>
+        {{ apiOnline ? 'Runner online' : 'Runner offline' }}
+      </span>
+      <span class="version">v1.0.0</span>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,280 @@
+<app-topbar [apiOnline]="true" />
+
+<div class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+  <a routerLink="/" class="back-link">
+    <i class="pi pi-arrow-left"></i>
+    Back to workbench
+  </a>
+
+  @if (error && !run) {
+    <div class="mt-4">
+      <p-message severity="error" [text]="error" />
+    </div>
+  }
+
+  @if (run) {
+    <!-- Run header -->
+    <div class="run-hero glass-card">
+      <div class="run-hero-left">
+        <div class="run-hero-icon" [class.is-running]="run.status === 'running'">
+          <i class="pi" [class.pi-bolt]="run.status !== 'running'" [class.pi-spin]="run.status === 'running'" [class.pi-cog]="run.status === 'running'"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            @if (run.status === 'running') {
+              <span class="live-dot"></span>
+            }
+            <p-tag [value]="run.status" [severity]="statusSeverity(run.status)" />
+          </div>
+          <h1 class="run-hero-title">{{ run.label || 'Untitled run' }}</h1>
+          <p class="run-hero-id">{{ run.id }}</p>
+        </div>
+      </div>
+      <div class="run-hero-actions">
+        @if (run.status === 'running') {
+          <p-button icon="pi pi-stop-circle" label="Stop run" severity="danger" (onClick)="stopRun()" />
+        }
+        <a [href]="runner.logDownloadUrl(run.id)" target="_blank" rel="noopener">
+          <p-button icon="pi pi-download" label="Download log" severity="secondary" />
+        </a>
+        @if (hasHtmlReport()) {
+          <p-button
+            icon="pi pi-chart-line"
+            label="Open report"
+            severity="secondary"
+            (onClick)="openReportInNewTab()"
+          />
+          <p-button
+            icon="pi pi-window-maximize"
+            [label]="showReportEmbed ? 'Hide report' : 'Embed report'"
+            severity="secondary"
+            (onClick)="toggleReportEmbed()"
+          />
+        }
+        @if (run.status !== 'running') {
+          <p-button
+            icon="pi pi-trash"
+            label="Delete run"
+            severity="danger"
+            [loading]="deleting"
+            [disabled]="deleting"
+            (onClick)="deleteRun()"
+          />
+        }
+      </div>
+    </div>
+
+    <!-- Metric tiles -->
+    @if (run.summary) {
+      <section class="metrics">
+        <div class="metric metric-neutral">
+          <span class="metric-label">Samples</span>
+          <span class="metric-value">{{ run.summary.samples }}</span>
+        </div>
+        <button
+          type="button"
+          class="metric metric-success metric-clickable"
+          [class.metric-clickable-active]="isSampleStatusActive('passed')"
+          (click)="selectSampleStatus('passed')"
+          aria-label="Toggle passed samples"
+        >
+          <span class="metric-label">Passed</span>
+          <span class="metric-value">{{ run.summary.success }}</span>
+        </button>
+        <button
+          type="button"
+          class="metric metric-danger metric-clickable"
+          [class.metric-clickable-active]="isSampleStatusActive('failed')"
+          (click)="selectSampleStatus('failed')"
+          aria-label="Toggle failed samples"
+        >
+          <span class="metric-label">Failed</span>
+          <span class="metric-value">{{ run.summary.failed }}</span>
+        </button>
+        <div class="metric metric-info">
+          <span class="metric-label">Exit code</span>
+          <span class="metric-value">{{ run.exitCode ?? '—' }}</span>
+        </div>
+      </section>
+    }
+
+    @if (activeSampleStatus) {
+      <section class="glass-card panel mt-4">
+        <header class="panel-header">
+          <span class="panel-title">
+            <i class="pi pi-list-check"></i>
+            {{ activeSampleStatus === 'passed' ? 'Passed' : 'Failed' }} samples
+          </span>
+          <div class="inline-flex items-center gap-2">
+            <span class="text-xs text-slate-500">{{ sampleRowsTotal }} total</span>
+            <p-button
+              size="small"
+              severity="secondary"
+              icon="pi pi-times"
+              label="Close"
+              (onClick)="selectSampleStatus(activeSampleStatus)"
+            />
+          </div>
+        </header>
+        @if (sampleRowsLoading) {
+          <p class="samples-empty">Loading sample rows...</p>
+        } @else if (sampleRows.length === 0) {
+          <p class="samples-empty">No matching samples found.</p>
+        } @else {
+          <div class="samples-table-wrap">
+            <p-table
+              [value]="sampleRows"
+              [tableStyle]="{ 'min-width': '74rem', 'table-layout': 'fixed' }"
+              [scrollable]="true"
+              scrollHeight="min(60vh, 460px)"
+              responsiveLayout="scroll"
+              size="small"
+              styleClass="samples-p-table"
+            >
+              <ng-template pTemplate="colgroup">
+                <colgroup>
+                  <col style="width: 7.5rem" />
+                  <col style="width: 22rem" />
+                  <col style="width: 18rem" />
+                  <col style="width: 7rem" />
+                  <col style="width: 6rem" />
+                  <col style="width: 18rem" />
+                </colgroup>
+              </ng-template>
+              <ng-template pTemplate="header">
+                <tr>
+                  <th class="samples-col-time">Time</th>
+                  <th class="samples-col-label">Label</th>
+                  <th class="samples-col-api">API</th>
+                  <th class="samples-col-elapsed">Elapsed</th>
+                  <th class="samples-col-code">Code</th>
+                  <th class="samples-col-message">Error / Message</th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-row>
+                <tr>
+                  <td class="samples-col-time">{{ row.timeStamp ? (row.timeStamp | date: 'shortTime') : '—' }}</td>
+                  <td class="mono samples-col-label">{{ row.label || '—' }}</td>
+                  <td class="mono samples-col-api">{{ row.apiUrl || '—' }}</td>
+                  <td class="samples-col-elapsed">{{ row.elapsed ?? '—' }} ms</td>
+                  <td class="mono samples-col-code">{{ row.responseCode || '—' }}</td>
+                  <td class="samples-col-message">{{ row.failureMessage || row.responseMessage || '—' }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        }
+      </section>
+    }
+
+    @if (showReportEmbed && reportEmbedUrl) {
+      <section class="glass-card panel report-panel mt-4">
+        <header class="panel-header">
+          <span class="panel-title"><i class="pi pi-chart-line"></i> JMeter HTML report</span>
+          <button type="button" class="report-open-tab" (click)="openReportInNewTab()">
+            Open in new tab <i class="pi pi-external-link"></i>
+          </button>
+        </header>
+        <iframe
+          class="report-frame"
+          [src]="reportEmbedUrl"
+          title="JMeter HTML report"
+          loading="lazy"
+        ></iframe>
+      </section>
+    }
+
+    <!-- Insight grid -->
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-4">
+      <section class="glass-card panel">
+        <header class="panel-header">
+          <span class="panel-title"><i class="pi pi-chart-bar"></i> Insights</span>
+        </header>
+        <dl class="info-grid">
+          <dt>Customer</dt>
+          <dd>{{ run.insights.customerName || '—' }}</dd>
+          <dt>Request ID</dt>
+          <dd class="mono">{{ run.insights.requestId || '—' }}</dd>
+          <dt>Event date</dt>
+          <dd>{{ run.insights.eventDate || '—' }}</dd>
+          <dt>Time</dt>
+          <dd>
+            {{ run.insights.startTime ? run.insights.startTime + ' – ' + (run.insights.endTime || '?') : '—' }}
+          </dd>
+          <dt>Date range</dt>
+          <dd>{{ run.insights.dateRange || '—' }}</dd>
+          <dt>State actions</dt>
+          <dd>{{ run.insights.stateActions.length ? run.insights.stateActions.join(', ') : '—' }}</dd>
+        </dl>
+      </section>
+
+      <section class="glass-card panel">
+        <header class="panel-header">
+          <span class="panel-title"><i class="pi pi-clock"></i> Timing</span>
+        </header>
+        <dl class="info-grid">
+          <dt>Started</dt>
+          <dd>{{ run.startedAt | date: 'medium' }}</dd>
+          <dt>Ended</dt>
+          <dd>{{ run.endedAt ? (run.endedAt | date: 'medium') : '—' }}</dd>
+          <dt>Status</dt>
+          <dd>
+            <p-tag [value]="run.status" [severity]="statusSeverity(run.status)" />
+          </dd>
+          <dt>Exit code</dt>
+          <dd class="mono">{{ run.exitCode ?? '—' }}</dd>
+        </dl>
+      </section>
+    </div>
+
+    <!-- Log + steps (side by side on large screens) -->
+    <div class="log-steps-row mt-4">
+      <section class="glass-card panel log-panel">
+        <header class="panel-header log-header">
+          <span class="panel-title"><i class="pi pi-code"></i> Live log</span>
+          <div class="log-meta">
+            <span class="log-status" [class.is-streaming]="streaming">
+              <span class="live-dot"></span>
+              {{ streaming ? 'Streaming' : 'Stream ended' }}
+            </span>
+            <span class="text-xs text-slate-500">{{ logLines.length }} lines</span>
+          </div>
+          <div class="log-actions">
+            <p-button size="small" severity="secondary" icon="pi pi-trash" label="Clear" (onClick)="clearLogs()" />
+            <p-button size="small" severity="secondary" icon="pi pi-refresh" label="Reconnect" (onClick)="connectLogStream()" />
+          </div>
+        </header>
+        <app-log-console [lines]="logLines" />
+      </section>
+
+      <section class="glass-card panel steps-panel">
+        <header class="panel-header steps-header">
+          <span class="panel-title"><i class="pi pi-list"></i> Steps</span>
+          <span class="steps-count">{{ run.insights.steps.length }}</span>
+        </header>
+        <div class="steps-scroll">
+          @if (run.insights.steps.length === 0) {
+            <p class="steps-empty">
+              @if (run.status === 'running') {
+                Workflow steps will appear here as the run progresses.
+              } @else {
+                No workflow steps were captured for this run.
+              }
+            </p>
+          } @else {
+            <ul class="steps-list">
+              @for (step of run.insights.steps; track $index) {
+                <li class="step-item">
+                  <p-tag
+                    [value]="step.label"
+                    [severity]="step.status === 'success' ? 'success' : step.status === 'failed' ? 'danger' : 'secondary'"
+                  />
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </section>
+    </div>
+  }
+</div>

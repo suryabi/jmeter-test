@@ -1,0 +1,15 @@
+<div class="console" #viewport>
+  @if (lines.length === 0) {
+    <div class="empty">
+      <i class="pi pi-circle-off"></i>
+      <span>Waiting for log output…</span>
+    </div>
+  } @else {
+    @for (line of lines; track $index) {
+      <div class="line">
+        <span class="line-no">{{ $index + 1 }}</span>
+        <span class="line-text">{{ line }}</span>
+      </div>
+    }
+  }
+</div>

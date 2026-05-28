@@ -1,0 +1,15 @@
+# Runtime artifacts
+runs/
+*.log
+
+# Dependencies
+node_modules/
+ui/node_modules/
+
+# Angular build/cache output
+ui/dist/
+ui/.angular/
+
+# Optional local env/secrets
+.env
+.env.*
