@@ -5,6 +5,13 @@
   "description": "Local JMeter runner for BIQ.jmx testing",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "init": "node scripts/init.js",
+    "start": "node server.js",
+    "start:api": "node server.js",
+    "start:ui": "npm start --prefix ui",
+    "dev": "concurrently -n api,ui -c blue,green \"npm run start:api\" \"npm run start:ui\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

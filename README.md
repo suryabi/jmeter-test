@@ -50,7 +50,15 @@ jmeter --version
 
 ## 3) Initial Setup
 
-From repository root:
+From repository root, run the setup script once after cloning:
+
+```bash
+npm run init
+```
+
+This installs dependencies for both the API and UI, then checks that Node.js, npm, and JMeter are available on PATH.
+
+To install manually instead:
 
 ```bash
 npm install
@@ -72,6 +80,21 @@ export const environment = {
 
 ## 4) Run Locally (Development)
 
+Start both servers from the repository root (recommended):
+
+```bash
+npm run dev
+```
+
+This runs the API and UI in one terminal with labeled output. Stop both with `Ctrl+C`.
+
+Open:
+
+- UI: `http://localhost:4200`
+- API health: `http://localhost:5050/health`
+
+### Run API and UI separately
+
 Start API (terminal 1):
 
 ```bash
@@ -86,10 +109,12 @@ cd /path/to/Jmeter/ui
 npm start
 ```
 
-Open:
+Individual scripts from the repo root:
 
-- UI: `http://localhost:4200`
-- API health: `http://localhost:5050/health`
+```bash
+npm run start:api   # API only
+npm run start:ui    # UI only
+```
 
 ---
 
@@ -409,13 +434,25 @@ In this mode, the API must allow CORS from the UI origin (currently `*` for dev 
 
 ## 13) Common Commands
 
-Start API:
+First-time setup:
+
+```bash
+npm run init
+```
+
+Start both servers (development):
+
+```bash
+npm run dev
+```
+
+Start API only:
 
 ```bash
 npm start
 ```
 
-Start UI:
+Start UI only:
 
 ```bash
 cd ui && npm start
@@ -454,6 +491,15 @@ curl -X DELETE http://localhost:5050/runs/<run-id>
 Owns: `ui/` (Angular app).
 
 **Local development**
+
+From repo root (recommended):
+
+```bash
+npm run init   # first time only
+npm run dev    # API + UI together
+```
+
+Or UI only:
 
 ```bash
 cd ui
@@ -510,7 +556,7 @@ If these are turned off, the Passed/Failed sample table will lose columns.
 **Local smoke test before pushing**
 
 1. Place updated `BIQ.jmx` at repo root (replacing the old one).
-2. Start API: `npm start`
+2. Start both servers: `npm run dev` (or `npm start` for API only).
 3. Open UI: `http://localhost:4200`
 4. Verify:
    - All parameter groups + fields appear

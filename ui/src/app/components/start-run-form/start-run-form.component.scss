@@ -3,7 +3,7 @@
 }
 
 .form-shell {
-  padding: 1.4rem;
+  padding: 1.5rem;
 }
 
 .form-grid {
@@ -19,7 +19,7 @@
   justify-content: space-between;
   gap: 0.85rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.24);
 }
 
 .header-icon {
@@ -29,9 +29,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(192, 132, 252, 0.15));
-  color: #c7d2fe;
-  border: 1px solid rgba(129, 140, 248, 0.32);
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.24), rgba(107, 114, 255, 0.2));
+  color: #d9e7ff;
+  border: 1px solid rgba(79, 140, 255, 0.34);
   font-size: 1.05rem;
 }
 
@@ -101,7 +101,7 @@
   gap: 0.6rem;
   padding: 0.65rem 0.85rem;
   border-radius: 14px;
-  background: rgba(15, 19, 38, 0.55);
+  background: rgba(8, 15, 29, 0.65);
   border: 1px solid var(--border);
   color: var(--text-muted);
   cursor: pointer;
@@ -123,9 +123,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(99, 102, 241, 0.12);
-  color: #c7d2fe;
-  border: 1px solid rgba(129, 140, 248, 0.25);
+  background: rgba(79, 140, 255, 0.16);
+  color: #d0e3ff;
+  border: 1px solid rgba(79, 140, 255, 0.3);
   font-size: 0.9rem;
 }
 
@@ -147,13 +147,13 @@
 
 .group-chip-active {
   color: #f8fafc;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(192, 132, 252, 0.15));
-  border-color: rgba(129, 140, 248, 0.55);
-  box-shadow: 0 10px 28px -14px rgba(99, 102, 241, 0.6);
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.26), rgba(107, 114, 255, 0.2));
+  border-color: rgba(79, 140, 255, 0.58);
+  box-shadow: 0 10px 28px -14px rgba(79, 140, 255, 0.68);
 }
 
 .group-chip-active .group-chip-icon {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: linear-gradient(135deg, #3d8cff, #6b72ff);
   color: #fff;
   border-color: transparent;
 }
@@ -169,7 +169,7 @@
   grid-template-columns: 1fr;
   gap: 0.9rem 1rem;
   padding: 1rem;
-  background: rgba(11, 14, 28, 0.55);
+  background: rgba(7, 14, 27, 0.68);
   border: 1px solid var(--border);
   border-radius: 14px;
   animation: fade-up 0.25s ease;
@@ -262,7 +262,7 @@
   position: sticky;
   bottom: 0;
   margin-top: 0.5rem;
-  background: linear-gradient(180deg, rgba(20, 24, 46, 0.4), rgba(11, 14, 28, 0.92) 50%);
+  background: linear-gradient(180deg, rgba(20, 24, 46, 0.22), rgba(6, 14, 28, 0.92) 50%);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
   padding: 0.85rem 0 0.1rem;

@@ -3,20 +3,20 @@
 @import 'primeicons/primeicons.css';
 
 :root {
-  --bg-0: #05060d;
-  --bg-1: #0a0d1a;
-  --bg-2: #11152a;
-  --surface: rgba(20, 24, 46, 0.72);
-  --surface-2: rgba(28, 33, 60, 0.7);
-  --surface-hover: rgba(36, 42, 76, 0.78);
-  --border: rgba(148, 163, 184, 0.16);
-  --border-strong: rgba(148, 163, 184, 0.32);
-  --text: #e7ecf5;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-  --accent: #818cf8;
-  --accent-2: #c084fc;
-  --accent-3: #22d3ee;
+  --bg-0: #060c18;
+  --bg-1: #0c1425;
+  --bg-2: #131d33;
+  --surface: rgba(15, 25, 43, 0.78);
+  --surface-2: rgba(18, 30, 52, 0.76);
+  --surface-hover: rgba(26, 38, 63, 0.82);
+  --border: rgba(148, 163, 184, 0.2);
+  --border-strong: rgba(148, 163, 184, 0.36);
+  --text: #e8efff;
+  --text-muted: #98a8c6;
+  --text-dim: #6e7f9f;
+  --accent: #4f8cff;
+  --accent-2: #7c78ff;
+  --accent-3: #00b8e6;
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
@@ -33,7 +33,9 @@ body {
     sans-serif;
   font-feature-settings: 'cv11', 'ss01';
   color: var(--text);
-  background: var(--bg-0);
+  background:
+    radial-gradient(120% 80% at 50% -20%, #11203d 0%, #070d1b 48%, #060c18 100%),
+    var(--bg-0);
   position: relative;
   overflow-x: hidden;
 }
@@ -51,16 +53,16 @@ body::after {
 
 body::before {
   background:
-    radial-gradient(40% 60% at 15% 0%, rgba(99, 102, 241, 0.45) 0%, transparent 60%),
-    radial-gradient(40% 60% at 85% 10%, rgba(217, 70, 239, 0.32) 0%, transparent 60%);
-  opacity: 0.65;
+    radial-gradient(42% 62% at 15% 0%, rgba(79, 140, 255, 0.35) 0%, transparent 60%),
+    radial-gradient(40% 60% at 85% 10%, rgba(124, 120, 255, 0.2) 0%, transparent 62%);
+  opacity: 0.78;
 }
 
 body::after {
   top: auto;
   bottom: -20%;
   height: 50vh;
-  background: radial-gradient(50% 50% at 50% 100%, rgba(34, 211, 238, 0.18) 0%, transparent 60%);
+  background: radial-gradient(50% 50% at 50% 100%, rgba(0, 184, 230, 0.16) 0%, transparent 60%);
 }
 
 #app-root,
@@ -116,13 +118,13 @@ code {
 .glass-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 20px;
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.05) inset,
-    0 30px 60px -30px rgba(0, 0, 0, 0.6),
-    0 10px 30px -20px rgba(99, 102, 241, 0.25);
+    0 35px 70px -34px rgba(3, 8, 20, 0.78),
+    0 12px 28px -20px rgba(79, 140, 255, 0.28);
   position: relative;
   overflow: hidden;
 }
@@ -135,9 +137,9 @@ code {
   padding: 1px;
   background: linear-gradient(
     140deg,
-    rgba(129, 140, 248, 0.35) 0%,
+    rgba(79, 140, 255, 0.45) 0%,
     rgba(255, 255, 255, 0.04) 40%,
-    rgba(192, 132, 252, 0.18) 100%
+    rgba(124, 120, 255, 0.22) 100%
   );
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
@@ -157,7 +159,7 @@ code {
 
 .surface-input {
   width: 100%;
-  background: rgba(11, 14, 28, 0.7);
+  background: rgba(7, 14, 27, 0.76);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 10px;
@@ -177,9 +179,9 @@ code {
 
 .surface-input:focus {
   outline: none;
-  border-color: rgba(129, 140, 248, 0.6);
-  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.18);
-  background: rgba(15, 19, 38, 0.85);
+  border-color: rgba(79, 140, 255, 0.72);
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.22);
+  background: rgba(10, 18, 35, 0.9);
 }
 
 /* Pulse for running status */
@@ -273,8 +275,8 @@ code {
 
 .p-tab[data-p-active='true'] {
   color: #fff !important;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(192, 132, 252, 0.25)) !important;
-  box-shadow: 0 6px 18px -8px rgba(99, 102, 241, 0.7);
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.44), rgba(124, 120, 255, 0.26)) !important;
+  box-shadow: 0 8px 20px -10px rgba(79, 140, 255, 0.72);
 }
 
 .p-tablist-active-bar {
@@ -342,17 +344,17 @@ code {
 .p-button:not(.p-button-text):not(.p-button-link):not([data-p-severity='secondary']):not(
     [data-p-severity='danger']
   ) {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  background: linear-gradient(135deg, #3d8cff, #6b72ff) !important;
   border: none !important;
   color: #fff !important;
-  box-shadow: 0 10px 24px -10px rgba(99, 102, 241, 0.7) !important;
+  box-shadow: 0 12px 28px -12px rgba(61, 140, 255, 0.72) !important;
 }
 
 .p-button:not(.p-button-text):not(.p-button-link):not([data-p-severity='secondary']):not(
     [data-p-severity='danger']
   ):hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 30px -10px rgba(99, 102, 241, 0.8) !important;
+  box-shadow: 0 16px 32px -12px rgba(61, 140, 255, 0.8) !important;
 }
 
 .p-button[data-p-severity='secondary'] {

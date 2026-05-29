@@ -4,13 +4,13 @@
 
 .hero {
   position: relative;
-  border-radius: 22px;
+  border-radius: 24px;
   padding: 1.5rem 1.75rem;
   background:
-    radial-gradient(120% 100% at 0% 0%, rgba(99, 102, 241, 0.18) 0%, transparent 60%),
-    radial-gradient(120% 100% at 100% 100%, rgba(192, 132, 252, 0.18) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(20, 24, 46, 0.85) 0%, rgba(12, 16, 32, 0.85) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.16);
+    radial-gradient(120% 100% at 0% 0%, rgba(79, 140, 255, 0.16) 0%, transparent 60%),
+    radial-gradient(120% 100% at 100% 100%, rgba(107, 114, 255, 0.18) 0%, transparent 56%),
+    linear-gradient(180deg, rgba(16, 27, 48, 0.9) 0%, rgba(9, 17, 33, 0.9) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   overflow: hidden;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .hero-title-accent {
-  background: linear-gradient(135deg, #818cf8 0%, #c084fc 60%, #22d3ee 110%);
+  background: linear-gradient(135deg, #70a6ff 0%, #7c78ff 64%, #00b8e6 112%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -126,6 +126,7 @@
   transform: translateY(-2px);
   border-color: var(--border-strong);
   background: var(--surface-hover);
+  box-shadow: 0 14px 30px -22px rgba(3, 8, 20, 0.82);
 }
 
 .stat-icon {
@@ -139,9 +140,9 @@
 }
 
 .stat-icon-indigo {
-  background: rgba(99, 102, 241, 0.15);
-  color: #c7d2fe;
-  border: 1px solid rgba(129, 140, 248, 0.32);
+  background: rgba(79, 140, 255, 0.15);
+  color: #c7ddff;
+  border: 1px solid rgba(79, 140, 255, 0.34);
 }
 .stat-icon-emerald {
   background: rgba(52, 211, 153, 0.12);
@@ -154,9 +155,9 @@
   border: 1px solid rgba(248, 113, 113, 0.3);
 }
 .stat-icon-cyan {
-  background: rgba(34, 211, 238, 0.12);
-  color: #67e8f9;
-  border: 1px solid rgba(34, 211, 238, 0.3);
+  background: rgba(0, 184, 230, 0.14);
+  color: #9ce8ff;
+  border: 1px solid rgba(0, 184, 230, 0.32);
 }
 
 .stat-body {
