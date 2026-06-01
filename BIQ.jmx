@@ -25,19 +25,19 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Global Variables" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
               <stringProp name="Argument.value">2026-12-10</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Start date for request creation (format: yyyy-MM-dd, e.g. 2026-12-02)</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED. Start date for request creation (format: yyyy-MM-dd, e.g. 2026-12-02)</stringProp>
             </elementProp>
             <elementProp name="requestEndDate" elementType="Argument">
               <stringProp name="Argument.name">requestEndDate</stringProp>
               <stringProp name="Argument.value">2026-12-10</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. End date for request creation (format: yyyy-MM-dd, e.g. 2026-12-31). Must be same as or after start date</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED. End date for request creation (format: yyyy-MM-dd, e.g. 2026-12-31). Must be same as or after start date</stringProp>
             </elementProp>
             <elementProp name="requestsPerDay" elementType="Argument">
               <stringProp name="Argument.name">requestsPerDay</stringProp>
@@ -47,7 +47,7 @@
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Days a request should span (positive integers, comma-separated, e.g. 1,2,3). Empty = defaults to 1</stringProp>
             </elementProp>
@@ -55,7 +55,7 @@
               <stringProp name="Argument.name">allowWeekends</stringProp>
               <stringProp name="Argument.value">false</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Flag to allow/disallow request creation on weekends. (Default = false)</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN. Flag to allow/disallow request creation on weekends. (Default = false)</stringProp>
             </elementProp>
             <elementProp name="requestStartTimes" elementType="Argument">
               <stringProp name="Argument.name">requestStartTimes</stringProp>
@@ -73,7 +73,7 @@
               <stringProp name="Argument.name">categoryType</stringProp>
               <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Category Type unique name (e.g. CATEGORY_TYPE_BRIEFINGS)</stringProp>
+              <stringProp name="Argument.desc">REQUIRED. Category Type UUID (e.g. CATEGORY_TYPE_BRIEFINGS)</stringProp>
             </elementProp>
             <elementProp name="parentCategory" elementType="Argument">
               <stringProp name="Argument.name">parentCategory</stringProp>
@@ -87,101 +87,105 @@
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">REQUIRED. Category UUID (e.g. D06189A1-69AF-4D17-AC5B-480F7589D427)</stringProp>
             </elementProp>
+            <elementProp name="stateActionIterations" elementType="Argument">
+              <stringProp name="Argument.name">stateActionIterations</stringProp>
+              <stringProp name="Argument.value">2,3,4</stringProp>
+              <stringProp name="Argument.desc">Times to iterate state actions for request (comma-separated, e.g. 2,3). First iteration always executes SUBMIT. Remaining iterations pick randomly from includedStateActions. 0 or empty = skip state actions entirely</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="includedStateActions" elementType="Argument">
+              <stringProp name="Argument.name">includedStateActions</stringProp>
+              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
+              <stringProp name="Argument.desc">State actions to pick from after SUBMIT (comma-separated, e.g. CONFIRM,HOLD). Empty = all available actions allowed</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Customer Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
             <elementProp name="defaultUser" elementType="Argument">
               <stringProp name="Argument.name">defaultUser</stringProp>
               <stringProp name="Argument.value">supportuser@allianceit.com</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Support user for setup APIs — categories, lookups, forms etc (e.g. supportuser@allianceit.com)</stringProp>
+              <stringProp name="Argument.desc">REQUIRED. Support user for fetching APIs — categories, lookups, forms etc (e.g. supportuser@allianceit.com)</stringProp>
             </elementProp>
             <elementProp name="users" elementType="Argument">
               <stringProp name="Argument.name">users</stringProp>
-              <stringProp name="Argument.value">sales@allianceit.com, admin@allianceit.com</stringProp>
+              <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Comma-separated list of users to iterate. Leave empty to use defaultUser</stringProp>
+              <stringProp name="Argument.desc">Comma-separated list of users to iterate for a given request in given order. Leave empty to use defaultUser</stringProp>
             </elementProp>
             <elementProp name="customerName" elementType="Argument">
               <stringProp name="Argument.name">customerName</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Optional. Set a specific customer name (e.g. AllianceIT). If the customer already exists, request creation is skipped. Empty = picks a unique random customer per request from built-in list of companies</stringProp>
-            </elementProp>
-            <elementProp name="customerSector" elementType="Argument">
-              <stringProp name="Argument.name">customerSector</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Optional. Filter customers by industry sector. Supports single or comma-separated values. Options: Aviation, Automotive, Banking, Energy, Healthcare, Logistics, Entertainment, Retail, Technology, Telecom. Empty = picks from all companies</stringProp>
+              <stringProp name="Argument.desc">Optional. Set a specific customer name (e.g. AllianceIT). If the customer already exists, request creation is skipped. Empty = picks a unique random customer per request from list of companies</stringProp>
             </elementProp>
             <elementProp name="checkDuplicateCustomer" elementType="Argument">
               <stringProp name="Argument.name">checkDuplicateCustomer</stringProp>
               <stringProp name="Argument.value">true</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Check for duplicate customer names (true = check &amp; pick unique, false = allow any)</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN. Check for duplicate customer names (true = check &amp; pick unique, false = allow any)</stringProp>
             </elementProp>
             <elementProp name="duplicateCustomerFromDate" elementType="Argument">
               <stringProp name="Argument.name">duplicateCustomerFromDate</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Start date for duplicate check (yyyy-MM-dd). Empty = check all events</stringProp>
+              <stringProp name="Argument.desc">DATE. Start date for duplicate check (yyyy-MM-dd). Empty = checks across all events in the given category.</stringProp>
             </elementProp>
             <elementProp name="duplicateCustomerToDate" elementType="Argument">
               <stringProp name="Argument.name">duplicateCustomerToDate</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">End date for duplicate check (yyyy-MM-dd). Empty = check all events</stringProp>
+              <stringProp name="Argument.desc">DATE. End date for duplicate check (yyyy-MM-dd). Empty = checks across all events in the given category.</stringProp>
             </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Agenda Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
             <elementProp name="rooms" elementType="Argument">
               <stringProp name="Argument.name">rooms</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Rooms to create per activity day (positive integers, comma-separated, e.g. 1,2,3). 0 or empty = no rooms. Ignored if allowedRooms is set.</stringProp>
+              <stringProp name="Argument.desc">Rooms to create per activity day (positive integers, comma-separated, e.g. 1,2,3). 0 or empty = no rooms. Ignored if allowedRooms variable value is set.</stringProp>
             </elementProp>
             <elementProp name="allowedRooms" elementType="Argument">
               <stringProp name="Argument.name">allowedRooms</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Optional. Restrict room creation to specific rooms only (comma-separated room names or UUIDs, or mix of both, e.g. Boardroom A, EAC8F953-99D0-43DF-8E15-CA03F21EA92D). Empty = use all vacant rooms (rooms UDV controls count). When set, only matching rooms are used and rooms UDV count is ignored.</stringProp>
+              <stringProp name="Argument.desc">Optional. Restrict room creation to specific rooms only (comma-separated room names, UUIDs, or a mix of both, e.g. Boardroom A, EAC8F953-99D0-43DF-8E15-CA03F21EA92D). Empty = picks from all vacant rooms based on the rooms variable count. When set, only matching rooms are used and the rooms variable is ignored.</stringProp>
             </elementProp>
             <elementProp name="vacantSlotDurations" elementType="Argument">
               <stringProp name="Argument.name">vacantSlotDurations</stringProp>
               <stringProp name="Argument.value">30,60</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Vacant slot duration in minutes for topics and caterings (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
-            </elementProp>
-            <elementProp name="topics" elementType="Argument">
-              <stringProp name="Argument.name">topics</stringProp>
-              <stringProp name="Argument.value">10%</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Topics to create per room. Accepts: positive integers (e.g. 7,8,9,10), a percentage of available slots (e.g. 80% or 80), or comma-separated mix. 0 or empty = no topics. Negative value = skip. Percentage is calculated against available slots per room.</stringProp>
-            </elementProp>
-            <elementProp name="topicTimings" elementType="Argument">
-              <stringProp name="Argument.name">topicTimings</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Allowed start times for topics (HH:mm, comma-separated, e.g. 10:00,10:30,11:00). Empty = any available slot within activity window</stringProp>
+              <stringProp name="Argument.desc">Vacant slot duration in minutes for activity types like topics, caterings (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
             </elementProp>
             <elementProp name="caterings" elementType="Argument">
               <stringProp name="Argument.name">caterings</stringProp>
-              <stringProp name="Argument.value">10%</stringProp>
+              <stringProp name="Argument.value">20%</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Caterings to create per room. Accepts: positive integers (e.g. 7,8), a percentage of available slots (e.g. 80% or 80), or comma-separated mix. 0 or empty = no caterings. Negative value = skip. Percentage is calculated against available slots per room.</stringProp>
+              <stringProp name="Argument.desc">Number of catering activities to create per room. Accepts positive integers, a percentage of available slots (e.g. 80 or 80%), or a comma-separated mix of both (e.g. 5, 80%). 0 or empty = no caterings. Negative value = skip catering creation entirely.</stringProp>
             </elementProp>
             <elementProp name="cateringTimings" elementType="Argument">
               <stringProp name="Argument.name">cateringTimings</stringProp>
               <stringProp name="Argument.value">11:30, 12:00, 12:30, 13:00, 19:00, 19:30, 20:00, 20:30</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Allowed start times for caterings (HH:mm, comma-separated, e.g. 11:00,11:30,12:00). Empty = any available slot within activity window</stringProp>
+              <stringProp name="Argument.desc">Allowed start times for caterings (HH:mm, comma-separated, e.g. 11:00,11:30,12:00). Empty = any available slot of that room</stringProp>
             </elementProp>
-            <elementProp name="blockedSlots" elementType="Argument">
-              <stringProp name="Argument.name">blockedSlots</stringProp>
-              <stringProp name="Argument.value">0</stringProp>
+            <elementProp name="topics" elementType="Argument">
+              <stringProp name="Argument.name">topics</stringProp>
+              <stringProp name="Argument.value">60%</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Slots to keep empty per room (integers &gt;= 0, comma-separated, e.g. 0,1,2). 0 or empty = no blocked slots</stringProp>
+              <stringProp name="Argument.desc">Number of topics to create per room. Accepts positive integers, a percentage of available slots (e.g. 80 or 80%), or a comma-separated mix of both (e.g. 5, 80%). 0 or empty = no topics. Negative value = skip topic creation entirely.</stringProp>
             </elementProp>
-            <elementProp name="blockedDurations" elementType="Argument">
-              <stringProp name="Argument.name">blockedDurations</stringProp>
-              <stringProp name="Argument.value">30,60</stringProp>
+            <elementProp name="topicTimings" elementType="Argument">
+              <stringProp name="Argument.name">topicTimings</stringProp>
+              <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Blocked slot durations in minutes (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
+              <stringProp name="Argument.desc">Allowed start times for topics (HH:mm, comma-separated, e.g. 10:00,10:30,11:00). Empty = any available slot of that room</stringProp>
             </elementProp>
             <elementProp name="presenters" elementType="Argument">
               <stringProp name="Argument.name">presenters</stringProp>
@@ -193,31 +197,68 @@
               <stringProp name="Argument.name">presentersPerTopic</stringProp>
               <stringProp name="Argument.value">1,2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Presenters to randomly assign per topic (positive integers, comma-separated, e.g. 1,2,3). 0 or empty = skip</stringProp>
+              <stringProp name="Argument.desc">Number of presenters to randomly assign per topic (positive integers, comma-separated, e.g. 1, 2, 3). 0 or empty = skip presenter assignment.</stringProp>
             </elementProp>
             <elementProp name="multiEntryRange" elementType="Argument">
               <stringProp name="Argument.name">multiEntryRange</stringProp>
               <stringProp name="Argument.value">2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Multi-entry min,max range (positive integers, e.g. 1,5 means 1 to 5 entries). 0 or empty = skip</stringProp>
-            </elementProp>
-            <elementProp name="stateActionIterations" elementType="Argument">
-              <stringProp name="Argument.name">stateActionIterations</stringProp>
-              <stringProp name="Argument.value">3,4</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Times to iterate state actions for request (comma-separated, e.g. 2,3). First iteration always executes SUBMIT. Remaining iterations pick randomly from includedStateActions. 0 or empty = skip state actions entirely</stringProp>
-            </elementProp>
-            <elementProp name="includedStateActions" elementType="Argument">
-              <stringProp name="Argument.name">includedStateActions</stringProp>
-              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">State actions to pick from after SUBMIT (comma-separated, e.g. CONFIRM,HOLD). Empty = all available actions allowed</stringProp>
+              <stringProp name="Argument.desc">Min and max range for dropdown field selections (positive integers, comma-separated, e.g. 1, 5 means 1 to 5 options selected). 0 or empty = skip dropdown multi-selection.</stringProp>
             </elementProp>
           </collectionProp>
+          <stringProp name="TestPlan.comments">sales@allianceit.com, admin@allianceit.com</stringProp>
         </Arguments>
         <hashTree/>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Configuration Variables" enabled="true">
           <collectionProp name="Arguments.arguments">
+            <elementProp name="clientTimeZone" elementType="Argument">
+              <stringProp name="Argument.name">clientTimeZone</stringProp>
+              <stringProp name="Argument.value">Asia/Calcutta</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Client local timezone</stringProp>
+            </elementProp>
+            <elementProp name="journeyModuleType" elementType="Argument">
+              <stringProp name="Argument.name">journeyModuleType</stringProp>
+              <stringProp name="Argument.value">JOURNEY</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Module Type of Journey</stringProp>
+            </elementProp>
+            <elementProp name="logisticsModuleType" elementType="Argument">
+              <stringProp name="Argument.name">logisticsModuleType</stringProp>
+              <stringProp name="Argument.value">LOGISTICS</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Module Type of Logistics</stringProp>
+            </elementProp>
+            <elementProp name="agendaModuleType" elementType="Argument">
+              <stringProp name="Argument.name">agendaModuleType</stringProp>
+              <stringProp name="Argument.value">CALENDAR_LISTING</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Module Type of Agenda</stringProp>
+            </elementProp>
+            <elementProp name="virtualConnectionModuleType" elementType="Argument">
+              <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
+              <stringProp name="Argument.value">VIRTUAL_CONNECTION</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Module Type of Virtual Connection</stringProp>
+            </elementProp>
+            <elementProp name="roomTimeOffset" elementType="Argument">
+              <stringProp name="Argument.name">roomTimeOffset</stringProp>
+              <stringProp name="Argument.value">30,60</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Random minutes to add to start time and subtract from end time in logistics (comma-separated, e.g., 0,30,60)</stringProp>
+            </elementProp>
+            <elementProp name="blockedSlots" elementType="Argument">
+              <stringProp name="Argument.name">blockedSlots</stringProp>
+              <stringProp name="Argument.value">0</stringProp>
+              <stringProp name="Argument.desc">Slots to keep empty per room (integers &gt;= 0, comma-separated, e.g. 0,1,2). 0 or empty = no blocked slots</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="blockedDurations" elementType="Argument">
+              <stringProp name="Argument.name">blockedDurations</stringProp>
+              <stringProp name="Argument.value">30,60</stringProp>
+              <stringProp name="Argument.desc">Blocked slot durations in minutes (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
             <elementProp name="activityTypesPriority" elementType="Argument">
               <stringProp name="Argument.name">activityTypesPriority</stringProp>
               <stringProp name="Argument.value">catering</stringProp>
@@ -253,42 +294,6 @@
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.desc">Module IDs to exclude (comma-separated)</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="clientTimeZone" elementType="Argument">
-              <stringProp name="Argument.name">clientTimeZone</stringProp>
-              <stringProp name="Argument.value">Asia/Calcutta</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Client local timezone</stringProp>
-            </elementProp>
-            <elementProp name="roomTimeOffset" elementType="Argument">
-              <stringProp name="Argument.name">roomTimeOffset</stringProp>
-              <stringProp name="Argument.value">0</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Random minutes to add to start time and subtract from end time in logistics (comma-separated, e.g., 0,30,60)</stringProp>
-            </elementProp>
-            <elementProp name="journeyModuleType" elementType="Argument">
-              <stringProp name="Argument.name">journeyModuleType</stringProp>
-              <stringProp name="Argument.value">JOURNEY</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Journey</stringProp>
-            </elementProp>
-            <elementProp name="logisticsModuleType" elementType="Argument">
-              <stringProp name="Argument.name">logisticsModuleType</stringProp>
-              <stringProp name="Argument.value">LOGISTICS</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Logistics</stringProp>
-            </elementProp>
-            <elementProp name="agendaModuleType" elementType="Argument">
-              <stringProp name="Argument.name">agendaModuleType</stringProp>
-              <stringProp name="Argument.value">CALENDAR_LISTING</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Agenda</stringProp>
-            </elementProp>
-            <elementProp name="virtualConnectionModuleType" elementType="Argument">
-              <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
-              <stringProp name="Argument.value">VIRTUAL_CONNECTION</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Virtual Connection</stringProp>
             </elementProp>
           </collectionProp>
         </Arguments>
@@ -369,6 +374,7 @@
         <hashTree/>
         <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Common Function" enabled="true">
           <stringProp name="script">SampleResult.setIgnore()
+
 
 // ============ Shared Helper Functions ============
 
@@ -724,6 +730,8 @@ def _fn_abortNotFound = { varsRef, prevRef, varName, value, available, ctxRef -&
 props.put(&quot;fn_abortNotFound&quot;, _fn_abortNotFound)
 
 // multi-entry range
+
+// multi-entry range
 def _fn_parseMultiEntryRange = { v -&gt;
     def raw = v.get(&quot;multiEntryRange&quot;)?.trim()
     if (!raw) return [0, 0]
@@ -743,6 +751,18 @@ def _fn_parseMultiEntryRange = { v -&gt;
 }
 props.put(&quot;fn_parseMultiEntryRange&quot;, _fn_parseMultiEntryRange)
 
+//def _fn_parseMultiEntryRange = { v -&gt;
+//    def raw = v.get(&quot;multiEntryRange&quot;)?.trim()
+//    if (!raw) return [0, 0]
+//    def parts = raw.split(&quot;,&quot;)*.trim()
+//    def minVal = parts[0].isInteger() ? parts[0].toInteger() : 0
+//    def maxVal = parts.size() &gt; 1 ? (parts[1].isInteger() ? parts[1].toInteger() : 0) : minVal
+//    if (minVal &lt; 0 || maxVal &lt; 0) return [0, 0]
+//    return [minVal, maxVal]
+//}
+//
+//props.put(&quot;fn_parseMultiEntryRange&quot;, _fn_parseMultiEntryRange)
+
 // Drop down Multi Select range
 def _fn_parseMultiSelectRange = { v, defaultRange -&gt;
     def raw = (v.get(&quot;multiSelectRange&quot;) ?: defaultRange ?: &quot;1,3&quot;).split(&quot;,&quot;)*.trim()
@@ -751,6 +771,8 @@ def _fn_parseMultiSelectRange = { v, defaultRange -&gt;
     return [min: minVal, max: maxVal]
 }
 props.put(&quot;fn_parseMultiSelectRange&quot;, _fn_parseMultiSelectRange)
+
+
 
 log.info(&quot;Common Utility Functions initialized&quot;)
 log.info(&quot;============================================&quot;)</stringProp>
@@ -762,6 +784,7 @@ log.info(&quot;============================================&quot;)</stringProp>
         <hashTree/>
         <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Common Function - Form Processing" enabled="true">
           <stringProp name="script">SampleResult.setIgnore()
+
 
 // ============ Shared Helper Functions ============
 
@@ -1013,6 +1036,7 @@ props.put(&quot;fn_fieldDiffCheck&quot;, _fn_fieldDiffCheck)
 
 // Activity State Action Selector - picks a random allowed state action from API response _links
 // Pass &quot;prev&quot; so the function can read the HTTP response
+
 def _fn_setIsPrimaryAndFormDataId = { varsRef, logRef -&gt;
     def currentRecordId = varsRef.get(&quot;currentMultiEntryRecordId&quot;)
     def recordCount     = varsRef.get(&quot;multiEntryRecordCount&quot;)?.toInteger() ?: 0
@@ -1057,6 +1081,7 @@ props.put(&quot;fn_setIsPrimaryAndFormDataId&quot;, _fn_setIsPrimaryAndFormDataI
 
 // Form PostProcessor - parses API response, extracts form data records and stores for ForEach iteration
 // Pass &quot;prev&quot; so the function can read the HTTP response
+
 def _fn_formPostProcessor = { varsRef, prevRef, logRef -&gt;
 
     def response      = prevRef.getResponseDataAsString()
@@ -1109,6 +1134,7 @@ props.put(&quot;fn_formPostProcessor&quot;, _fn_formPostProcessor)
 def _fn_beautifyFormConfig = { varsRef, prevRef, logRef -&gt;
 
 // UI Config JSON Beautifier
+
 try {
     def response = prevRef.getResponseDataAsString()
     def json = new groovy.json.JsonSlurper().parseText(response)
@@ -1303,6 +1329,7 @@ allFields.each { field -&gt;
             isMultiple: isMultiple
         ])
         fieldMasterMap[fieldName] = masterTypeId
+        //  to  masterTypeId: ${masterTypeId}&quot;)
     }
 }
 
@@ -1356,6 +1383,8 @@ props.put(&quot;fn_resourceMasterExtractor&quot;, _fn_resourceMasterExtractor)
 
 def _fn_fieldMappingsPostProcessor = { varsRef, prevRef, logRef -&gt;
 
+// Field mappings entry
+
 // Get Current Form Name
 def formName = varsRef.get(&quot;currentFormName&quot;)
 
@@ -1382,6 +1411,7 @@ logRef.info(&quot;-----Terminated: Field Mappings PostProcessor -----&quot;)
 props.put(&quot;fn_fieldMappingsPostProcessor&quot;, _fn_fieldMappingsPostProcessor)
 
 log.info(&quot;============================================&quot;)
+
 log.info(&quot;Common Functions - Form Processing initialized&quot;)
 log.info(&quot;============================================&quot;)</stringProp>
           <stringProp name="scriptLanguage">groovy</stringProp>
@@ -3293,7 +3323,9 @@ log.info(&quot;═════════════════════�
 if (isFirstUser == &quot;true&quot;) {
     log.info(&quot;First user - resetting room counters and processedFields tracking&quot;)
 
-    def maxRooms = (vars.get(&quot;rooms&quot;) ?: &quot;0&quot;).toInteger()
+	def roomsRaw = vars.get(&quot;rooms&quot;) ?: &quot;0&quot;
+	def roomOptions = roomsRaw.split(&quot;,&quot;).findAll { it.trim().isInteger() &amp;&amp; it.trim().toInteger() &gt;= 0 }.collect { it.trim().toInteger() }
+	def maxRooms = roomOptions ? roomOptions[java.util.concurrent.ThreadLocalRandom.current().nextInt(roomOptions.size())] : 0
     for (int day = 1; day &lt;= totalValidDays; day++) {
         vars.put(&quot;createdRoomCount_Day${day}&quot;, &quot;0&quot;)
         System.clearProperty(&quot;jmeter.roomCount.Day${day}&quot;)

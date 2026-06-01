@@ -208,10 +208,12 @@ That means JMeter developers can add/rename groups and arguments in `BIQ.jmx` wi
 
 ### Type inference currently
 
-- Booleans and dates are inferred by parameter name lists in `jmx-parameters.js`
-- Unknown parameters default to `text`
+- `required` — `REQUIRED` in `Argument.desc`
+- `date` — description starts with `DATE,` or `DATE.`
+- `boolean` — description starts with `BOOLEAN,` or `BOOLEAN.`
+- Otherwise defaults to `text`
 
-If JMeter adds new boolean/date variables, update inference sets or accept text input.
+If JMeter adds new boolean/date variables, add the tag to the field description (no backend code change).
 
 ---
 

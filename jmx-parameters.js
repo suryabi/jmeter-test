@@ -1,14 +1,5 @@
 const fs = require("fs");
 
-const BOOLEAN_PARAMS = new Set(["allowWeekends", "checkDuplicateCustomer"]);
-
-const DATE_PARAMS = new Set([
-  "requestStartDate",
-  "requestEndDate",
-  "duplicateCustomerFromDate",
-  "duplicateCustomerToDate"
-]);
-
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -29,9 +20,11 @@ function encodeXml(value) {
     .replace(/>/g, "&gt;");
 }
 
-function inferType(name) {
-  if (BOOLEAN_PARAMS.has(name)) return "boolean";
-  if (DATE_PARAMS.has(name)) return "date";
+function inferType(description) {
+  const desc = String(description || "").trim();
+  // Type tags at the start of Argument.desc (e.g. "BOOLEAN. ...", "DATE, REQUIRED. ...")
+  if (/^BOOLEAN[,.]/i.test(desc)) return "boolean";
+  if (/^DATE[,.]/i.test(desc)) return "date";
   return "text";
 }
 
@@ -82,7 +75,7 @@ function parseArgumentsBlock(blockXml) {
       name,
       defaultValue,
       description,
-      type: inferType(name),
+      type: inferType(description),
       required: /REQUIRED/i.test(description)
     });
   }
