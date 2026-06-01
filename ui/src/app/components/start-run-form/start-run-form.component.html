@@ -75,7 +75,14 @@
             <i class="pi pi-tag"></i>
             Run Label
           </label>
-          <input id="runLabel" class="surface-input hero-input" type="text" formControlName="label" placeholder="e.g. nightly-smoke-2026-11-15" />
+          <input
+            pInputText
+            variant="outlined"
+            id="runLabel"
+            class="surface-input hero-input w-full"
+            formControlName="label"
+            placeholder="e.g. nightly-smoke-2026-11-15"
+          />
         </div>
       </div>
 
@@ -120,12 +127,16 @@
                         {{ fieldLabel(param.name) }}
                         @if (param.required) { <span class="required">*</span> }
                       </span>
-                      <label class="bool-row" [for]="param.name">
-                        <input type="checkbox" class="bool-check" [id]="param.name" [formControlName]="param.name" />
-                        <span class="bool-toggle-label">
+                      <div class="bool-row">
+                        <p-checkbox
+                          [inputId]="param.name"
+                          [formControlName]="param.name"
+                          [binary]="true"
+                        />
+                        <label [for]="param.name" class="bool-toggle-label">
                           @if (form.get(param.name)?.value) { Enabled } @else { Disabled }
-                        </span>
-                      </label>
+                        </label>
+                      </div>
                       @if (param.description) {
                         <small class="field-help">{{ param.description }}</small>
                       }
@@ -135,9 +146,25 @@
                         @if (param.required) { <span class="required">*</span> }
                       </label>
                       @if (param.type === 'date') {
-                        <input class="surface-input" type="date" [id]="param.name" [formControlName]="param.name" />
+                        <p-datepicker
+                          [inputId]="param.name"
+                          class="surface-datepicker w-full"
+                          panelStyleClass="surface-datepicker-panel"
+                          [formControlName]="param.name"
+                          [iconDisplay]="'input'"
+                          [showIcon]="true"
+                          dateFormat="yy-mm-dd"
+                          dataType="string"
+                          placeholder="yyyy-mm-dd"
+                        />
                       } @else {
-                        <input class="surface-input" type="text" [id]="param.name" [formControlName]="param.name" />
+                        <input
+                          pInputText
+                          variant="outlined"
+                          class="surface-input w-full"
+                          [id]="param.name"
+                          [formControlName]="param.name"
+                        />
                       }
                       @if (param.description) {
                         <small class="field-help">{{ param.description }}</small>

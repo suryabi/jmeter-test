@@ -109,6 +109,10 @@
   gap: 0.4rem;
 }
 
+.run-meta-field .p-inputtext.surface-input {
+  display: block;
+}
+
 /* Loading */
 .loading-box {
   display: flex;
@@ -138,9 +142,8 @@
   color: var(--accent);
 }
 
-.hero-input {
-  font-size: 0.95rem !important;
-  padding: 0.75rem 0.9rem !important;
+.field-cell .p-inputtext.surface-input {
+  display: block;
 }
 
 /* Side nav + fields two-card layout */
@@ -383,12 +386,8 @@
   background: rgba(10, 18, 35, 0.9);
 }
 
-.bool-check {
-  width: 15px;
-  height: 15px;
+.bool-row ::ng-deep .p-checkbox {
   flex-shrink: 0;
-  accent-color: #6366f1;
-  cursor: pointer;
 }
 
 .bool-toggle-label {

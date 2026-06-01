@@ -224,6 +224,60 @@ code {
   background: rgba(10, 18, 35, 0.9);
 }
 
+/* InputText — match surface-input (overrides PrimeNG Aura theme) */
+.p-inputtext.surface-input,
+input.p-inputtext.surface-input {
+  width: 100% !important;
+  background: rgba(7, 14, 27, 0.76) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  color: var(--text) !important;
+  padding: 0.55rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  font-family: inherit !important;
+  line-height: 1.4 !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+}
+
+.p-inputtext.surface-input::placeholder {
+  color: var(--text-dim) !important;
+  opacity: 1 !important;
+}
+
+.p-inputtext.surface-input:enabled:hover {
+  border-color: var(--border-strong) !important;
+  background: rgba(7, 14, 27, 0.76) !important;
+}
+
+.p-inputtext.surface-input:enabled:focus,
+.p-inputtext.surface-input:enabled.p-focus,
+.p-inputtext.surface-input:enabled:focus-visible {
+  outline: none !important;
+  border-color: rgba(79, 140, 255, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.22) !important;
+  background: rgba(10, 18, 35, 0.9) !important;
+}
+
+.p-inputtext.surface-input.hero-input {
+  min-height: 2.75rem;
+  padding: 0.75rem 0.9rem !important;
+  font-size: 0.95rem !important;
+}
+
+.p-inputtext.surface-input.p-variant-filled {
+  background: rgba(7, 14, 27, 0.76) !important;
+}
+
+.p-inputtext.surface-input.p-invalid {
+  border-color: rgba(248, 113, 113, 0.55) !important;
+}
+
+.p-inputtext.surface-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 /* Select — match surface-input / hero-input */
 .p-select.surface-select {
   width: 100%;
@@ -297,6 +351,75 @@ code {
 .p-select-overlay.surface-select-panel .p-select-option.p-select-option-selected {
   background: rgba(79, 140, 255, 0.22) !important;
   color: #f8fafc !important;
+}
+
+/* DatePicker — match surface-input */
+.p-datepicker.surface-datepicker {
+  width: 100%;
+}
+
+.p-datepicker.surface-datepicker .p-datepicker-input {
+  width: 100%;
+  background: rgba(7, 14, 27, 0.76) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  color: var(--text) !important;
+  padding: 0.55rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  font-family: inherit !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+}
+
+.p-datepicker.surface-datepicker .p-datepicker-input::placeholder {
+  color: var(--text-dim) !important;
+}
+
+.p-datepicker.surface-datepicker .p-datepicker-input-icon-container {
+  color: var(--text-muted) !important;
+}
+
+.p-datepicker.surface-datepicker:not(.p-disabled) .p-datepicker-input:hover {
+  border-color: var(--border-strong) !important;
+}
+
+.p-datepicker.surface-datepicker:not(.p-disabled).p-focus .p-datepicker-input,
+.p-datepicker.surface-datepicker:not(.p-disabled) .p-datepicker-input:focus {
+  outline: none !important;
+  border-color: rgba(79, 140, 255, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.22) !important;
+  background: rgba(10, 18, 35, 0.9) !important;
+}
+
+.p-datepicker-panel.surface-datepicker-panel {
+  background: rgba(10, 18, 35, 0.98) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  color: var(--text) !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55) !important;
+}
+
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-header {
+  background: transparent !important;
+  color: var(--text) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-day,
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-weekday,
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-select-month,
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-select-year {
+  color: var(--text-muted) !important;
+}
+
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-day:not(.p-disabled):hover,
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-day.p-datepicker-day-selected {
+  background: rgba(79, 140, 255, 0.22) !important;
+  color: #f8fafc !important;
+}
+
+.p-datepicker-panel.surface-datepicker-panel .p-datepicker-today > .p-datepicker-day {
+  border-color: rgba(79, 140, 255, 0.55) !important;
 }
 
 /* Pulse for running status */

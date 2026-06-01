@@ -14,11 +14,25 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
 import { SelectModule } from 'primeng/select';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputTextModule } from 'primeng/inputtext';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @Component({
   selector: 'app-start-run-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, ButtonModule, ProgressSpinnerModule, MessageModule, SelectModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    ProgressSpinnerModule,
+    MessageModule,
+    SelectModule,
+    DatePickerModule,
+    InputTextModule,
+    CheckboxModule
+  ],
   templateUrl: './start-run-form.component.html',
   styleUrl: './start-run-form.component.scss'
 })
