@@ -99,7 +99,7 @@
     }
 
     @if (activeSampleStatus) {
-      <section class="glass-card panel mt-4">
+      <section class="flat-panel panel mt-4">
         <header class="panel-header">
           <span class="panel-title">
             <i class="pi pi-list-check"></i>
@@ -168,7 +168,7 @@
     }
 
     @if (showReportEmbed && reportEmbedUrl) {
-      <section class="glass-card panel report-panel mt-4">
+      <section class="flat-panel panel report-panel mt-4">
         <header class="panel-header">
           <span class="panel-title"><i class="pi pi-chart-line"></i> JMeter HTML report</span>
           <button type="button" class="report-open-tab" (click)="openReportInNewTab()">
@@ -186,7 +186,7 @@
 
     <!-- Insight grid -->
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-4">
-      <section class="glass-card panel">
+      <section class="flat-panel panel">
         <header class="panel-header">
           <span class="panel-title"><i class="pi pi-chart-bar"></i> Insights</span>
         </header>
@@ -210,7 +210,7 @@
         </dl>
       </section>
 
-      <section class="glass-card panel">
+      <section class="flat-panel panel">
         <header class="panel-header">
           <span class="panel-title"><i class="pi pi-clock"></i> Timing</span>
         </header>
@@ -221,6 +221,8 @@
           <dd>{{ run.startedAt | date: 'medium' }}</dd>
           <dt>Ended</dt>
           <dd>{{ run.endedAt ? (run.endedAt | date: 'medium') : '—' }}</dd>
+          <dt>Execution duration</dt>
+          <dd>{{ formatRunExecutionDuration(run) }}</dd>
           <dt>Status</dt>
           <dd>
             <p-tag [value]="run.status" [severity]="statusSeverity(run.status)" />
@@ -233,7 +235,7 @@
 
     <!-- Log + steps (side by side on large screens) -->
     <div class="log-steps-row mt-4">
-      <section class="glass-card panel log-panel">
+      <section class="flat-panel panel log-panel">
         <header class="panel-header log-header">
           <span class="panel-title"><i class="pi pi-code"></i> Live log</span>
           <div class="log-meta">
@@ -251,7 +253,7 @@
         <app-log-console [lines]="logLines" [scrollKey]="runId" />
       </section>
 
-      <section class="glass-card panel steps-panel">
+      <section class="flat-panel panel steps-panel">
         <header class="panel-header steps-header">
           <span class="panel-title"><i class="pi pi-list"></i> Steps</span>
           <span class="steps-count">{{ run.insights.steps.length }}</span>
@@ -269,10 +271,15 @@
             <ul class="steps-list">
               @for (step of run.insights.steps; track $index) {
                 <li class="step-item">
-                  <p-tag
-                    [value]="step.label"
-                    [severity]="step.status === 'success' ? 'success' : step.status === 'failed' ? 'danger' : 'secondary'"
-                  />
+                  <div class="step-row">
+                    <p-tag
+                      [value]="step.label"
+                      [severity]="step.status === 'success' ? 'success' : step.status === 'failed' ? 'danger' : 'secondary'"
+                    />
+                    <span class="step-duration" [title]="step.at ? (step.at | date: 'medium') : ''">
+                      {{ formatStepDuration(run.insights.steps, $index) }}
+                    </span>
+                  </div>
                 </li>
               }
             </ul>

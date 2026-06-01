@@ -378,6 +378,13 @@ function setInsightRequestId(insights, value) {
   if (!insights.requestId) insights.requestId = id;
 }
 
+function parseJmeterLogTimestamp(line) {
+  const m = String(line).match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}),(\d{3})/);
+  if (!m) return null;
+  const ms = Date.parse(`${m[1]}T${m[2]}.${m[3]}`);
+  return Number.isFinite(ms) ? ms : null;
+}
+
 function parseLogInsights(logText) {
   const insights = {
     customerName: null,
@@ -466,24 +473,43 @@ function parseLogInsights(logText) {
         endTimeIso = m[1];
       }
     },
-    { key: "createOk", re: /Create Request Status PostProcessor: Status:\s*SUCCESS/, set: () => pushStep(insights, "Request created", "success") },
-    { key: "submit", re: /Selected Action:\s*SUBMIT/, set: () => { pushStep(insights, "SUBMIT", "success"); addStateAction(insights, "SUBMIT"); } },
-    { key: "confirm", re: /Selected Action:\s*CONFIRM/, set: () => addStateAction(insights, "CONFIRM") },
-    { key: "hold", re: /Selected Action:\s*HOLD/, set: () => addStateAction(insights, "HOLD") },
-    { key: "waitlist", re: /Selected Action:\s*WAITLIST/, set: () => addStateAction(insights, "WAITLIST") },
-    { key: "reqStart", re: /Request \d+\/\d+ Creation Started/, set: () => pushStep(insights, "Request creation started", "info") },
-    { key: "calc", re: /REQUEST CALCULATION/, set: () => pushStep(insights, "Calculated request schedule", "info") }
   ];
 
   const lines = logText.split(/\r?\n/);
   for (const line of lines) {
+    const lineAtMs = parseJmeterLogTimestamp(line);
+
     for (const p of patterns) {
       const m = line.match(p.re);
       if (m) p.set(m);
     }
+
+    if (/Create Request Status PostProcessor: Status:\s*SUCCESS/.test(line)) {
+      pushStep(insights, "Request created", "success", lineAtMs);
+    }
+    if (/Selected Action:\s*SUBMIT/.test(line)) {
+      pushStep(insights, "SUBMIT", "success", lineAtMs);
+      addStateAction(insights, "SUBMIT", lineAtMs);
+    }
+    if (/Selected Action:\s*CONFIRM/.test(line)) {
+      addStateAction(insights, "CONFIRM", lineAtMs);
+    }
+    if (/Selected Action:\s*HOLD/.test(line)) {
+      addStateAction(insights, "HOLD", lineAtMs);
+    }
+    if (/Selected Action:\s*WAITLIST/.test(line)) {
+      addStateAction(insights, "WAITLIST", lineAtMs);
+    }
+    if (/Request \d+\/\d+ Creation Started/.test(line)) {
+      pushStep(insights, "Request creation started", "info", lineAtMs);
+    }
+    if (/REQUEST CALCULATION/.test(line)) {
+      pushStep(insights, "Calculated request schedule", "info", lineAtMs);
+    }
+
     const moduleMatch = line.match(/Module:\s*([^|]+)$/);
     if (moduleMatch && !line.includes("Handler:") && !line.includes("Configs:")) {
-      pushStep(insights, `Module: ${moduleMatch[1].trim()}`, "info");
+      pushStep(insights, `Module: ${moduleMatch[1].trim()}`, "info", lineAtMs);
     }
   }
 
@@ -499,17 +525,21 @@ function parseLogInsights(logText) {
   return insights;
 }
 
-function pushStep(insights, label, status) {
+function pushStep(insights, label, status, atMs = null) {
   const last = insights.steps[insights.steps.length - 1];
   if (last && last.label === label) return;
-  insights.steps.push({ label, status });
+  insights.steps.push({
+    label,
+    status,
+    at: atMs != null ? new Date(atMs).toISOString() : null
+  });
 }
 
-function addStateAction(insights, action) {
+function addStateAction(insights, action, atMs = null) {
   if (!insights.stateActions.includes(action)) {
     insights.stateActions.push(action);
   }
-  pushStep(insights, `State action: ${action}`, "success");
+  pushStep(insights, `State action: ${action}`, "success", atMs);
 }
 
 // ----------------------------

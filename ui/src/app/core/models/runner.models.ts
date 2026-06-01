@@ -54,6 +54,8 @@ export interface RunSummary {
 export interface RunStep {
   label: string;
   status: string;
+  /** ISO timestamp parsed from the JMeter log line when the step was recorded. */
+  at: string | null;
 }
 
 export interface RunInsights {

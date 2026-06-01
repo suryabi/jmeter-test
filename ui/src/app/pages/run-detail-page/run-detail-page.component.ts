@@ -11,9 +11,11 @@ import {
   RunInsights,
   RunSampleRow,
   RunStatus,
+  RunStep,
   SseCompleteEvent,
   SseLogEvent
 } from '../../core/models/runner.models';
+import { formatDurationMs } from '../../core/utils/format-duration';
 import { LogConsoleComponent } from '../../components/log-console/log-console.component';
 import { TopbarComponent } from '../../components/topbar/topbar.component';
 import { CardModule } from 'primeng/card';
@@ -253,6 +255,51 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
       parts.push(`${insights.durationMinutes} min`);
     }
     return parts.length ? parts.join(' · ') : '—';
+  }
+
+  /** Wall-clock time for the JMeter process (startedAt → endedAt or now while running). */
+  formatRunExecutionDuration(run: RunDetail): string {
+    const startMs = Date.parse(run.startedAt);
+    if (!Number.isFinite(startMs)) return '—';
+
+    let endMs: number | null = null;
+    if (run.endedAt) {
+      endMs = Date.parse(run.endedAt);
+    } else if (run.status === 'running') {
+      endMs = Date.now();
+    }
+    if (endMs == null || !Number.isFinite(endMs) || endMs <= startMs) {
+      return '—';
+    }
+    const label = formatDurationMs(endMs - startMs);
+    return run.status === 'running' && !run.endedAt ? `${label} (ongoing)` : label;
+  }
+
+  /** Elapsed time until the next step, run end, or now (for the last step while running). */
+  formatStepDuration(steps: RunStep[], index: number): string {
+    const step = steps[index];
+    if (!step?.at) return '—';
+
+    const startMs = Date.parse(step.at);
+    if (!Number.isFinite(startMs)) return '—';
+
+    let endMs: number | null = null;
+    const next = steps[index + 1];
+    if (next?.at) {
+      endMs = Date.parse(next.at);
+    } else if (this.run?.endedAt) {
+      endMs = Date.parse(this.run.endedAt);
+    } else if (this.run?.status === 'running') {
+      endMs = Date.now();
+    }
+
+    if (endMs == null || !Number.isFinite(endMs) || endMs <= startMs) return '—';
+    const label = formatDurationMs(endMs - startMs);
+    const isLast = index === steps.length - 1;
+    if (isLast && this.run?.status === 'running' && !this.run.endedAt) {
+      return `${label} (ongoing)`;
+    }
+    return label;
   }
 
   statusSeverity(status: RunStatus | undefined): 'success' | 'danger' | 'warn' | 'info' | 'secondary' | 'contrast' {

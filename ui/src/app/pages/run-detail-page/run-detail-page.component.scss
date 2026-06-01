@@ -122,10 +122,16 @@
   border-top-right-radius: 16px;
 }
 
-.metric-neutral::before { background: linear-gradient(90deg, #94a3b8, transparent); }
-.metric-success::before { background: linear-gradient(90deg, #34d399, transparent); }
-.metric-danger::before  { background: linear-gradient(90deg, #f87171, transparent); }
-.metric-info::before    { background: linear-gradient(90deg, #818cf8, transparent); }
+.metric-neutral::before { background: #94a3b8; }
+.metric-success::before { background: #34d399; }
+.metric-danger::before  { background: #f87171; }
+.metric-info::before    { background: #818cf8; }
+
+.metric-label,
+.metric-value {
+  position: relative;
+  z-index: 1;
+}
 
 .metric-label {
   font-size: 0.72rem;
@@ -386,6 +392,23 @@
 
 .step-item {
   display: block;
+}
+
+.step-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+}
+
+.step-duration {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  padding-top: 0.2rem;
+  white-space: nowrap;
 }
 
 .step-item ::ng-deep .p-tag {

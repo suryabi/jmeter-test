@@ -33,36 +33,9 @@ body {
     sans-serif;
   font-feature-settings: 'cv11', 'ss01';
   color: var(--text);
-  background:
-    radial-gradient(120% 80% at 50% -20%, #11203d 0%, #070d1b 48%, #060c18 100%),
-    var(--bg-0);
+  background: var(--bg-0);
   position: relative;
   overflow-x: hidden;
-}
-
-body::before,
-body::after {
-  content: '';
-  position: fixed;
-  inset: -10% -10% auto -10%;
-  height: 70vh;
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(80px);
-}
-
-body::before {
-  background:
-    radial-gradient(42% 62% at 15% 0%, rgba(79, 140, 255, 0.35) 0%, transparent 60%),
-    radial-gradient(40% 60% at 85% 10%, rgba(124, 120, 255, 0.2) 0%, transparent 62%);
-  opacity: 0.78;
-}
-
-body::after {
-  top: auto;
-  bottom: -20%;
-  height: 50vh;
-  background: radial-gradient(50% 50% at 50% 100%, rgba(0, 184, 230, 0.16) 0%, transparent 60%);
 }
 
 #app-root,
@@ -115,9 +88,44 @@ code {
 
 /* ---------- Reusable design utilities ---------- */
 
+/* Hero-style gradient glass (cards, tiles, panels) */
+%glass-gradient-bg {
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(79, 140, 255, 0.16) 0%, transparent 58%),
+    radial-gradient(120% 100% at 100% 100%, rgba(107, 114, 255, 0.18) 0%, transparent 54%),
+    linear-gradient(180deg, rgba(16, 27, 48, 0.9) 0%, rgba(9, 17, 33, 0.92) 100%);
+}
+
+%glass-sheen-overlay {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 28%,
+    rgba(129, 140, 248, 0.09) 50%,
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+%glass-tile-base {
+  @extend %glass-gradient-bg;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 22px 44px -28px rgba(3, 8, 20, 0.75),
+    0 10px 24px -16px rgba(79, 140, 255, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
 .glass-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  @extend %glass-gradient-bg;
+  border: 1px solid rgba(148, 163, 184, 0.22);
   border-radius: 20px;
   backdrop-filter: blur(20px) saturate(150%);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
@@ -147,6 +155,38 @@ code {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+  z-index: 0;
+}
+
+.glass-card::after {
+  @extend %glass-sheen-overlay;
+  z-index: 0;
+}
+
+.glass-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-tile {
+  @extend %glass-tile-base;
+  border-radius: 16px;
+}
+
+.glass-tile::after {
+  @extend %glass-sheen-overlay;
+  z-index: 0;
+}
+
+.glass-tile > * {
+  position: relative;
+  z-index: 1;
+}
+
+.flat-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
 }
 
 .section-title {
