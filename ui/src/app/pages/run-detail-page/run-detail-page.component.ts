@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -8,6 +8,7 @@ import { RunnerService } from '../../core/services/runner.service';
 import { confirmDeleteRun } from '../../core/utils/confirm-delete-run';
 import {
   RunDetail,
+  RunInsights,
   RunSampleRow,
   RunStatus,
   SseCompleteEvent,
@@ -60,10 +61,17 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   sampleRowsTotal = 0;
   sampleRowsLoading = false;
 
+  @ViewChild('samplesTableWrap') samplesTableWrap?: ElementRef<HTMLElement>;
+
   private pollSub?: Subscription;
   private eventSource?: EventSource;
   /** Raw URL string — only refresh iframe when this changes (avoids reload on every poll). */
   private reportEmbedUrlKey = '';
+  /** Avoid refetching JTL samples on every poll when counts are unchanged. */
+  private lastSampleSummaryKey = '';
+  private samplesPinnedToBottom = true;
+  private samplesScrollTarget: HTMLElement | null = null;
+  private readonly onSamplesScrollHandler = () => this.onSamplesTableScroll();
 
   ngOnInit(): void {
     this.runId = this.route.snapshot.paramMap.get('id') || '';
@@ -80,6 +88,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopPolling();
     this.closeStream();
+    this.unbindSamplesScrollListener();
   }
 
   loadRun(afterLoad?: () => void): void {
@@ -197,12 +206,22 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
 
   selectSampleStatus(status: 'passed' | 'failed'): void {
     this.activeSampleStatus = this.activeSampleStatus === status ? null : status;
+    this.lastSampleSummaryKey = '';
     if (!this.activeSampleStatus) {
+      this.unbindSamplesScrollListener();
       this.sampleRows = [];
       this.sampleRowsTotal = 0;
       return;
     }
+    this.samplesPinnedToBottom = true;
     this.loadSampleRows(this.activeSampleStatus);
+  }
+
+  onSamplesTableScroll(): void {
+    const el = this.getSamplesScrollElement();
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    this.samplesPinnedToBottom = distanceFromBottom <= 48;
   }
 
   isSampleStatusActive(status: 'passed' | 'failed'): boolean {
@@ -223,6 +242,17 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   openReportInNewTab(): void {
     if (!this.hasHtmlReport()) return;
     window.open(this.runner.htmlReportUrl(this.runId), '_blank', 'noopener,noreferrer');
+  }
+
+  formatInsightsDuration(insights: RunInsights): string {
+    const parts: string[] = [];
+    if (insights.durationDays != null) {
+      parts.push(`${insights.durationDays} day${insights.durationDays === 1 ? '' : 's'}`);
+    }
+    if (insights.durationMinutes != null) {
+      parts.push(`${insights.durationMinutes} min`);
+    }
+    return parts.length ? parts.join(' · ') : '—';
   }
 
   statusSeverity(status: RunStatus | undefined): 'success' | 'danger' | 'warn' | 'info' | 'secondary' | 'contrast' {
@@ -258,8 +288,27 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     }
 
     if (this.activeSampleStatus) {
-      this.loadSampleRows(this.activeSampleStatus);
+      const summaryKey = this.sampleSummaryKey(run);
+      if (summaryKey !== this.lastSampleSummaryKey) {
+        this.lastSampleSummaryKey = summaryKey;
+        this.loadSampleRows(this.activeSampleStatus, { silent: this.sampleRows.length > 0 });
+      }
     }
+  }
+
+  private sampleSummaryKey(run: RunDetail): string {
+    const s = run.summary;
+    return `${run.status}:${s?.samples ?? 0}:${s?.success ?? 0}:${s?.failed ?? 0}`;
+  }
+
+  private getSamplesScrollElement(): HTMLElement | null {
+    const root = this.samplesTableWrap?.nativeElement;
+    if (!root) return null;
+    return (
+      root.querySelector<HTMLElement>('.p-datatable-scrollable-body') ??
+      root.querySelector<HTMLElement>('.p-virtualscroller') ??
+      root.querySelector<HTMLElement>('.p-datatable-table-container')
+    );
   }
 
   private ensureReportEmbedUrl(): void {
@@ -275,21 +324,72 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     this.showReportEmbed = false;
   }
 
-  private loadSampleRows(status: 'passed' | 'failed'): void {
+  private loadSampleRows(status: 'passed' | 'failed', options: { silent?: boolean } = {}): void {
     if (!this.run) return;
-    this.sampleRowsLoading = true;
+
+    const scrollEl = this.getSamplesScrollElement();
+    const shouldFollow = this.samplesPinnedToBottom;
+    const savedScrollTop =
+      options.silent && scrollEl && !shouldFollow ? scrollEl.scrollTop : null;
+
+    if (!options.silent) {
+      this.sampleRowsLoading = true;
+    }
+
     this.runner.getRunSamples(this.run.id, status, 0, 300).subscribe({
       next: (res) => {
-        this.sampleRowsLoading = false;
+        if (!options.silent) {
+          this.sampleRowsLoading = false;
+        }
         if (this.activeSampleStatus !== status) return;
         this.sampleRows = res.rows;
         this.sampleRowsTotal = res.total;
+        if (this.run) {
+          this.lastSampleSummaryKey = this.sampleSummaryKey(this.run);
+        }
+
+        queueMicrotask(() => {
+          this.bindSamplesScrollListener();
+          if (shouldFollow) {
+            this.scrollSamplesToBottom();
+          } else if (savedScrollTop != null) {
+            requestAnimationFrame(() => {
+              const el = this.getSamplesScrollElement();
+              if (el) el.scrollTop = savedScrollTop;
+            });
+          }
+        });
       },
       error: () => {
-        this.sampleRowsLoading = false;
-        this.sampleRows = [];
-        this.sampleRowsTotal = 0;
+        if (!options.silent) {
+          this.sampleRowsLoading = false;
+          this.sampleRows = [];
+          this.sampleRowsTotal = 0;
+        }
       }
     });
+  }
+
+  private scrollSamplesToBottom(): void {
+    const el = this.getSamplesScrollElement();
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+      this.samplesPinnedToBottom = true;
+    }
+  }
+
+  private bindSamplesScrollListener(): void {
+    const el = this.getSamplesScrollElement();
+    if (!el || el === this.samplesScrollTarget) return;
+    this.unbindSamplesScrollListener();
+    this.samplesScrollTarget = el;
+    el.addEventListener('scroll', this.onSamplesScrollHandler, { passive: true });
+  }
+
+  private unbindSamplesScrollListener(): void {
+    if (this.samplesScrollTarget) {
+      this.samplesScrollTarget.removeEventListener('scroll', this.onSamplesScrollHandler);
+      this.samplesScrollTarget = null;
+    }
   }
 }

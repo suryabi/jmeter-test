@@ -116,12 +116,12 @@
             />
           </div>
         </header>
-        @if (sampleRowsLoading) {
+        @if (sampleRowsLoading && sampleRows.length === 0) {
           <p class="samples-empty">Loading sample rows...</p>
         } @else if (sampleRows.length === 0) {
           <p class="samples-empty">No matching samples found.</p>
         } @else {
-          <div class="samples-table-wrap">
+          <div class="samples-table-wrap" #samplesTableWrap>
             <p-table
               [value]="sampleRows"
               [tableStyle]="{ 'min-width': '74rem', 'table-layout': 'fixed' }"
@@ -201,6 +201,8 @@
           <dd>
             {{ run.insights.startTime ? run.insights.startTime + ' – ' + (run.insights.endTime || '?') : '—' }}
           </dd>
+          <dt>Duration</dt>
+          <dd>{{ formatInsightsDuration(run.insights) }}</dd>
           <dt>Date range</dt>
           <dd>{{ run.insights.dateRange || '—' }}</dd>
           <dt>State actions</dt>

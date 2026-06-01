@@ -224,18 +224,41 @@ function readCombinedLogTail(run, maxLines) {
 // JTL parsing
 // ----------------------------
 
-function parseJtlSummary(jtlFile) {
+function getContextNameFromRun(run) {
+  const props = run?.props || {};
+  const name = String(props.contextname || props.contextName || "").trim();
+  return name || null;
+}
+
+/** Label/dummy HTTP samplers hit only /{contextName}/api with no resource path. */
+function isDummyLabelApiUrl(url, contextName) {
+  if (!url || url === "null") return false;
+  try {
+    const pathname = new URL(url).pathname.replace(/\/+$/, "") || "/";
+    if (contextName) {
+      return pathname.toLowerCase() === `/${String(contextName).trim().toLowerCase()}/api`;
+    }
+    return /^\/[^/]+\/api$/i.test(pathname);
+  } catch {
+    return false;
+  }
+}
+
+function parseJtlSummary(jtlFile, contextName = null) {
   if (!fs.existsSync(jtlFile)) return null;
   try {
     const raw = fs.readFileSync(jtlFile, "utf-8");
     const lines = raw.trim().split(/\r?\n/).filter(Boolean);
     if (lines.length < 2) return { samples: 0, success: 0, failed: 0 };
-    const header = lines[0].split(",");
+    const header = splitCsvLine(lines[0]);
     const successIdx = header.indexOf("success");
+    const urlIdx = header.indexOf("URL");
     let success = 0;
     let failed = 0;
     for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(",");
+      const cols = splitCsvLine(lines[i]);
+      const apiUrl = urlIdx >= 0 ? cols[urlIdx] || "" : "";
+      if (isDummyLabelApiUrl(apiUrl, contextName)) continue;
       const ok = successIdx >= 0 && cols[successIdx]?.toLowerCase() === "true";
       if (ok) success++;
       else failed++;
@@ -274,7 +297,7 @@ function splitCsvLine(line) {
 }
 
 // Returns filtered sample rows used by the Passed/Failed drill-down table.
-function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200 } = {}) {
+function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200, contextName = null } = {}) {
   if (!fs.existsSync(jtlFile)) {
     return { total: 0, offset, limit, rows: [] };
   }
@@ -311,6 +334,9 @@ function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200 } = 
     const filtered = [];
     for (let i = 1; i < lines.length; i++) {
       const cols = splitCsvLine(lines[i]);
+      const apiUrl = idx.url >= 0 ? cols[idx.url] || "" : "";
+      if (isDummyLabelApiUrl(apiUrl, contextName)) continue;
+
       const ok = idx.success >= 0 && String(cols[idx.success] || "").toLowerCase() === "true";
       const rowStatus = ok ? "passed" : "failed";
       if (normalizedStatus !== "all" && rowStatus !== normalizedStatus) continue;
@@ -320,7 +346,7 @@ function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200 } = 
         timeStamp: idx.timeStamp >= 0 ? Number(cols[idx.timeStamp]) || null : null,
         elapsed: idx.elapsed >= 0 ? Number(cols[idx.elapsed]) || null : null,
         label: idx.label >= 0 ? cols[idx.label] || "" : "",
-        apiUrl: idx.url >= 0 ? cols[idx.url] || "" : "",
+        apiUrl,
         responseCode: idx.responseCode >= 0 ? cols[idx.responseCode] || "" : "",
         responseMessage: idx.responseMessage >= 0 ? cols[idx.responseMessage] || "" : "",
         failureMessage: idx.failureMessage >= 0 ? cols[idx.failureMessage] || "" : "",
@@ -343,6 +369,15 @@ function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200 } = 
 // Log insight extraction (business-level events from raw logs)
 // ----------------------------
 
+const INSIGHTS_UUID =
+  "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}";
+
+function setInsightRequestId(insights, value) {
+  const id = String(value || "").trim();
+  if (!id || id === "unknown" || id === "default") return;
+  if (!insights.requestId) insights.requestId = id;
+}
+
 function parseLogInsights(logText) {
   const insights = {
     customerName: null,
@@ -351,16 +386,45 @@ function parseLogInsights(logText) {
     startTime: null,
     endTime: null,
     dateRange: null,
+    durationMinutes: null,
+    durationDays: null,
     stateActions: [],
     steps: []
   };
 
   if (!logText) return insights;
 
+  let startTimeIso = null;
+  let endTimeIso = null;
+
   const patterns = [
     { key: "customer", re: /SUCCESS - Selected unique customer:\s*(.+)/, set: (m) => (insights.customerName = m[1].trim()) },
     { key: "customerUsing", re: /Using customer:\s*(.+)/, set: (m) => { if (!insights.customerName) insights.customerName = m[1].trim(); } },
-    { key: "requestId", re: /Reusing requestId:\s*([A-F0-9-]+)/i, set: (m) => (insights.requestId = m[1].trim()) },
+    {
+      key: "requestIdReuse",
+      re: new RegExp(`(?:SUBSEQUENT USER:\\s*)?Reusing requestId:\\s*(${INSIGHTS_UUID})`, "i"),
+      set: (m) => setInsightRequestId(insights, m[1])
+    },
+    {
+      key: "requestIdSnapshot",
+      re: new RegExp(`existingFormData_snapshot_(${INSIGHTS_UUID})_`, "i"),
+      set: (m) => setInsightRequestId(insights, m[1])
+    },
+    {
+      key: "requestIdFormData",
+      re: new RegExp(`/data/(${INSIGHTS_UUID})/actions/`, "i"),
+      set: (m) => setInsightRequestId(insights, m[1])
+    },
+    {
+      key: "requestIdEventsApi",
+      re: new RegExp(`/api/events/(${INSIGHTS_UUID})(?:/|$)`, "i"),
+      set: (m) => setInsightRequestId(insights, m[1])
+    },
+    {
+      key: "requestIdProcessedFields",
+      re: new RegExp(`processedFields_(${INSIGHTS_UUID})_`, "i"),
+      set: (m) => setInsightRequestId(insights, m[1])
+    },
     {
       key: "dateRange",
       re: /Date Range:\s*(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/,
@@ -374,6 +438,34 @@ function parseLogInsights(logText) {
     { key: "startDate", re: /Start Date:\s*(\d{4}-\d{2}-\d{2})/, set: (m) => (insights.eventDate = insights.eventDate || m[1]) },
     { key: "startTime", re: /Start Time:\s*\d{4}-\d{2}-\d{2}T(\d{2}:\d{2})/, set: (m) => (insights.startTime = m[1]) },
     { key: "endTime", re: /End Time:\s*\d{4}-\d{2}-\d{2}T(\d{2}:\d{2})/, set: (m) => (insights.endTime = m[1]) },
+    {
+      key: "durationMinutes",
+      re: /Duration: (\d+)min\b/,
+      set: (m) => {
+        if (insights.durationMinutes == null) insights.durationMinutes = Number(m[1]);
+      }
+    },
+    {
+      key: "durationDays",
+      re: /(?:New Request|New Event) PreProcessor: Duration: (\d+)/,
+      set: (m) => {
+        if (insights.durationDays == null) insights.durationDays = Number(m[1]);
+      }
+    },
+    {
+      key: "startTimeIso",
+      re: /Start Time:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/,
+      set: (m) => {
+        startTimeIso = m[1];
+      }
+    },
+    {
+      key: "endTimeIso",
+      re: /End Time:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/,
+      set: (m) => {
+        endTimeIso = m[1];
+      }
+    },
     { key: "createOk", re: /Create Request Status PostProcessor: Status:\s*SUCCESS/, set: () => pushStep(insights, "Request created", "success") },
     { key: "submit", re: /Selected Action:\s*SUBMIT/, set: () => { pushStep(insights, "SUBMIT", "success"); addStateAction(insights, "SUBMIT"); } },
     { key: "confirm", re: /Selected Action:\s*CONFIRM/, set: () => addStateAction(insights, "CONFIRM") },
@@ -392,6 +484,14 @@ function parseLogInsights(logText) {
     const moduleMatch = line.match(/Module:\s*([^|]+)$/);
     if (moduleMatch && !line.includes("Handler:") && !line.includes("Configs:")) {
       pushStep(insights, `Module: ${moduleMatch[1].trim()}`, "info");
+    }
+  }
+
+  if (insights.durationMinutes == null && startTimeIso && endTimeIso) {
+    const startMs = Date.parse(startTimeIso);
+    const endMs = Date.parse(endTimeIso);
+    if (Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs) {
+      insights.durationMinutes = Math.round((endMs - startMs) / 60000);
     }
   }
 
@@ -534,7 +634,7 @@ function getRunDetail(run, { logTailLines = DEFAULT_LOG_TAIL_LINES } = {}) {
   return {
     ...getRunSummary(run),
     artifacts: getArtifacts(run),
-    summary: parseJtlSummary(run.jtlFile),
+    summary: parseJtlSummary(run.jtlFile, getContextNameFromRun(run)),
     insights: parseLogInsights(fullLogForInsights),
     logTail,
     logSize: fileSize(run.logFile)
@@ -830,7 +930,7 @@ function handleLogStream(run, req, res) {
         runId: run.id,
         status: run.status,
         exitCode: run.exitCode,
-        summary: parseJtlSummary(run.jtlFile),
+        summary: parseJtlSummary(run.jtlFile, getContextNameFromRun(run)),
         insights: parseLogInsights(
           fs.existsSync(run.logFile) ? fs.readFileSync(run.logFile, "utf-8") : ""
         )
@@ -955,7 +1055,12 @@ const server = http.createServer(async (req, res) => {
       const status = String(url.searchParams.get("status") || "all");
       const offset = Number(url.searchParams.get("offset") || 0);
       const limit = Number(url.searchParams.get("limit") || 200);
-      const samples = parseJtlSamples(run.jtlFile, { status, offset, limit });
+      const samples = parseJtlSamples(run.jtlFile, {
+        status,
+        offset,
+        limit,
+        contextName: getContextNameFromRun(run)
+      });
       return sendJson(res, 200, { runId: run.id, status, ...samples });
     }
 

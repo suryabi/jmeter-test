@@ -63,6 +63,8 @@ export interface RunInsights {
   startTime: string | null;
   endTime: string | null;
   dateRange: string | null;
+  durationMinutes: number | null;
+  durationDays: number | null;
   stateActions: string[];
   steps: RunStep[];
 }
