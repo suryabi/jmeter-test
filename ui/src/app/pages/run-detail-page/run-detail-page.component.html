@@ -213,6 +213,8 @@
           <span class="panel-title"><i class="pi pi-clock"></i> Timing</span>
         </header>
         <dl class="info-grid">
+          <dt>Plan</dt>
+          <dd class="mono">{{ run.planFile || '—' }}</dd>
           <dt>Started</dt>
           <dd>{{ run.startedAt | date: 'medium' }}</dd>
           <dt>Ended</dt>
@@ -244,7 +246,7 @@
             <p-button size="small" severity="secondary" icon="pi pi-refresh" label="Reconnect" (onClick)="connectLogStream()" />
           </div>
         </header>
-        <app-log-console [lines]="logLines" />
+        <app-log-console [lines]="logLines" [scrollKey]="runId" />
       </section>
 
       <section class="glass-card panel steps-panel">

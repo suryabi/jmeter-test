@@ -3,25 +3,27 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ParameterDef, ParameterGroup, RunProps } from '../../core/models/runner.models';
+import { ParameterDef, ParameterGroup, PlanInfo, RunProps } from '../../core/models/runner.models';
 import { RunnerService } from '../../core/services/runner.service';
 import { formatFieldLabel } from '../../core/utils/format-field-label';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-start-run-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, ProgressSpinnerModule, MessageModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ButtonModule, ProgressSpinnerModule, MessageModule, SelectModule],
   templateUrl: './start-run-form.component.html',
   styleUrl: './start-run-form.component.scss'
 })
 export class StartRunFormComponent implements OnInit {
-  @Output() start = new EventEmitter<{ label: string; props: RunProps }>();
+  @Output() start = new EventEmitter<{ label: string; planFile: string; props: RunProps }>();
 
   private readonly fb = inject(FormBuilder);
   private readonly runner = inject(RunnerService);
@@ -30,6 +32,8 @@ export class StartRunFormComponent implements OnInit {
     label: this.fb.nonNullable.control('sample-run')
   });
 
+  plans: PlanInfo[] = [];
+  selectedPlan: PlanInfo | null = null;
   parameterGroups: ParameterGroup[] = [];
   loading = true;
   loadError = '';
@@ -37,7 +41,29 @@ export class StartRunFormComponent implements OnInit {
   activeGroupId = 'global';
 
   ngOnInit(): void {
-    this.runner.getParameters().subscribe({
+    this.runner.getPlans().subscribe({
+      next: ({ plans }) => {
+        this.plans = plans;
+        this.selectedPlan = plans[0] ?? null;
+        this.fetchParameters(this.selectedPlan?.file ?? null);
+      },
+      error: (err) => {
+        this.loadError = err?.error?.error || err?.message || 'Failed to load plans';
+        this.loading = false;
+      }
+    });
+  }
+
+  onPlanChange(plan: PlanInfo | null): void {
+    this.selectedPlan = plan;
+    this.parameterGroups = [];
+    this.loadError = '';
+    this.loading = true;
+    this.fetchParameters(plan?.file ?? null);
+  }
+
+  private fetchParameters(planFile: string | null): void {
+    this.runner.getParameters(planFile).subscribe({
       next: (schema) => {
         this.parameterGroups = schema.groups;
         this.buildForm(schema.groups);
@@ -76,6 +102,7 @@ export class StartRunFormComponent implements OnInit {
 
     const raw = this.form.getRawValue() as Record<string, string | boolean>;
     const label = String(raw['label'] ?? 'sample-run');
+    const planFile = this.selectedPlan?.file ?? '';
     const props: RunProps = {};
 
     for (const group of this.parameterGroups) {
@@ -84,15 +111,11 @@ export class StartRunFormComponent implements OnInit {
       }
     }
 
-    this.start.emit({ label, props });
+    this.start.emit({ label, planFile, props });
   }
 
   setSubmitting(value: boolean): void {
     this.submitting = value;
-  }
-
-  isLongText(param: ParameterDef): boolean {
-    return param.defaultValue.length > 48 || param.defaultValue.includes(',');
   }
 
   fieldLabel(name: string): string {

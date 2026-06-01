@@ -184,6 +184,81 @@ code {
   background: rgba(10, 18, 35, 0.9);
 }
 
+/* Select — match surface-input / hero-input */
+.p-select.surface-select {
+  width: 100%;
+  background: rgba(7, 14, 27, 0.76) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+}
+
+.p-select.surface-select.hero-select {
+  min-height: 2.75rem;
+}
+
+.p-select.surface-select .p-select-label {
+  padding: 0.55rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  font-family: inherit !important;
+  color: var(--text) !important;
+}
+
+.p-select.surface-select.hero-select .p-select-label {
+  padding: 0.75rem 0.9rem !important;
+  font-size: 0.95rem !important;
+}
+
+.p-select.surface-select .p-select-label.p-placeholder {
+  color: var(--text-dim) !important;
+}
+
+.p-select.surface-select .p-select-dropdown {
+  width: 2.5rem;
+  color: var(--text-muted) !important;
+  border-inline-start: 1px solid var(--border) !important;
+}
+
+.p-select.surface-select:hover {
+  border-color: var(--border-strong) !important;
+}
+
+.p-select.surface-select.p-focus,
+.p-select.surface-select.p-inputwrapper-focus,
+.p-select.surface-select.p-select-open {
+  outline: none !important;
+  border-color: rgba(79, 140, 255, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.22) !important;
+  background: rgba(10, 18, 35, 0.9) !important;
+}
+
+.p-select-overlay.surface-select-panel {
+  background: rgba(10, 18, 35, 0.98) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55) !important;
+  color: var(--text) !important;
+}
+
+.p-select-overlay.surface-select-panel .p-select-option {
+  color: var(--text) !important;
+  border-radius: 8px !important;
+  margin: 2px 4px !important;
+}
+
+.p-select-overlay.surface-select-panel .p-select-option:not(.p-disabled):hover,
+.p-select-overlay.surface-select-panel .p-select-option.p-focus {
+  background: rgba(79, 140, 255, 0.14) !important;
+  color: #f1f5f9 !important;
+}
+
+.p-select-overlay.surface-select-panel .p-select-option.p-select-option-selected {
+  background: rgba(79, 140, 255, 0.22) !important;
+  color: #f8fafc !important;
+}
+
 /* Pulse for running status */
 @keyframes pulse-dot {
   0%,
@@ -211,6 +286,47 @@ code {
 
 .live-dot.danger {
   background: var(--danger);
+}
+
+/* ---------- Confirm dialog ---------- */
+
+.p-confirmdialog.biq-confirm-dialog,
+.p-confirmdialog.biq-confirm-dialog .p-dialog {
+  max-width: 28rem;
+}
+
+.p-confirmdialog.biq-confirm-dialog .p-dialog {
+  background: var(--surface) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 16px !important;
+  color: var(--text) !important;
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.65) !important;
+}
+
+.p-confirmdialog.biq-confirm-dialog .p-dialog-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: #f1f5f9 !important;
+  padding: 1.1rem 1.25rem 0.85rem !important;
+}
+
+.p-confirmdialog.biq-confirm-dialog .p-dialog-content {
+  background: transparent !important;
+  color: #cbd5e1 !important;
+  padding: 0 1.25rem 1.1rem !important;
+  line-height: 1.55 !important;
+}
+
+.p-confirmdialog.biq-confirm-dialog .p-confirmdialog-icon {
+  color: #fbbf24 !important;
+  font-size: 1.5rem !important;
+}
+
+.p-confirmdialog.biq-confirm-dialog .p-dialog-footer {
+  background: transparent !important;
+  border-top: 1px solid var(--border) !important;
+  padding: 0.85rem 1.25rem 1.15rem !important;
+  gap: 0.5rem !important;
 }
 
 /* ---------- PrimeNG dark overrides ---------- */

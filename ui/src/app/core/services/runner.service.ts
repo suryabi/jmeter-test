@@ -5,6 +5,7 @@ import { resolveRunnerApiUrl } from '../utils/runner-api-url';
 import {
   LogPollResponse,
   ParametersSchema,
+  PlansResponse,
   RunDetail,
   RunSamplesResponse,
   RunSummary,
@@ -20,8 +21,13 @@ export class RunnerService {
     return this.http.get<{ ok: boolean; service: string }>(`${this.baseUrl}/health`);
   }
 
-  getParameters(): Observable<ParametersSchema> {
-    return this.http.get<ParametersSchema>(`${this.baseUrl}/parameters`);
+  getPlans(): Observable<PlansResponse> {
+    return this.http.get<PlansResponse>(`${this.baseUrl}/plans`);
+  }
+
+  getParameters(planFile?: string | null): Observable<ParametersSchema> {
+    const params = planFile ? new HttpParams().set('plan', planFile) : new HttpParams();
+    return this.http.get<ParametersSchema>(`${this.baseUrl}/parameters`, { params });
   }
 
   listRuns(): Observable<{ runs: RunSummary[] }> {

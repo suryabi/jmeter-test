@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
 import { interval, startWith, Subscription, switchMap, catchError, of } from 'rxjs';
 import { RunnerService } from '../../core/services/runner.service';
 import { RunProps, RunSummary } from '../../core/models/runner.models';
+import { confirmDeleteRun } from '../../core/utils/confirm-delete-run';
 import { StartRunFormComponent } from '../../components/start-run-form/start-run-form.component';
 import { TopbarComponent } from '../../components/topbar/topbar.component';
 import { CardModule } from 'primeng/card';
@@ -36,6 +38,7 @@ export class RunsPageComponent implements OnInit, OnDestroy {
 
   private readonly runner = inject(RunnerService);
   private readonly router = inject(Router);
+  private readonly confirmation = inject(ConfirmationService);
 
   runs = signal<RunSummary[]>([]);
   deletingId = signal<string | null>(null);
@@ -81,7 +84,7 @@ export class RunsPageComponent implements OnInit, OnDestroy {
     this.pollSub?.unsubscribe();
   }
 
-  onStartRun(payload: { label: string; props: RunProps }): void {
+  onStartRun(payload: { label: string; planFile: string; props: RunProps }): void {
     this.error = '';
     this.startForm?.setSubmitting(true);
 
@@ -107,22 +110,19 @@ export class RunsPageComponent implements OnInit, OnDestroy {
     }
 
     const name = run.label || run.id.substring(0, 8);
-    const confirmed = confirm(
-      `Delete run "${name}"?\n\nThis permanently removes logs, JTL, and HTML report files from disk.`
-    );
-    if (!confirmed) return;
-
-    this.error = '';
-    this.deletingId.set(run.id);
-    this.runner.deleteRun(run.id).subscribe({
-      next: () => {
-        this.deletingId.set(null);
-        this.runs.update((list) => list.filter((r) => r.id !== run.id));
-      },
-      error: (err) => {
-        this.deletingId.set(null);
-        this.error = err?.error?.error || err?.message || 'Failed to delete run';
-      }
+    confirmDeleteRun(this.confirmation, name, () => {
+      this.error = '';
+      this.deletingId.set(run.id);
+      this.runner.deleteRun(run.id).subscribe({
+        next: () => {
+          this.deletingId.set(null);
+          this.runs.update((list) => list.filter((r) => r.id !== run.id));
+        },
+        error: (err) => {
+          this.deletingId.set(null);
+          this.error = err?.error?.error || err?.message || 'Failed to delete run';
+        }
+      });
     });
   }
 

@@ -7,16 +7,52 @@ const { parseJmxParameters, applyParameterOverrides } = require("./jmx-parameter
 
 const PORT = Number(process.env.PORT || 5050);
 const JMETER_BIN = process.env.JMETER_BIN || "jmeter";
-const PLAN_PATH = process.env.JMETER_TEST_PLAN || path.join(__dirname, "BIQ.jmx");
+const PLANS_DIR = process.env.PLANS_DIR || path.join(__dirname, "plans");
+// Legacy single-plan fallback for JMETER_TEST_PLAN env var.
+const LEGACY_PLAN_PATH = process.env.JMETER_TEST_PLAN || null;
 const RUNS_DIR = process.env.RUNS_DIR || path.join(__dirname, "runs");
 const ALLOW_CONCURRENT_RUNS = process.env.ALLOW_CONCURRENT_RUNS === "true";
 const DEFAULT_LOG_TAIL_LINES = Number(process.env.DEFAULT_LOG_TAIL_LINES || 100);
 const MAX_LOG_CHUNK_BYTES = Number(process.env.MAX_LOG_CHUNK_BYTES || 256 * 1024);
 const SSE_POLL_MS = Number(process.env.SSE_POLL_MS || 500);
 
-// Ensure runtime artifacts directory exists before any run operations.
+// Ensure runtime directories exist.
 if (!fs.existsSync(RUNS_DIR)) {
   fs.mkdirSync(RUNS_DIR, { recursive: true });
+}
+if (!fs.existsSync(PLANS_DIR)) {
+  fs.mkdirSync(PLANS_DIR, { recursive: true });
+}
+
+// ----------------------------
+// Plans helpers
+// ----------------------------
+
+function listPlans() {
+  if (!fs.existsSync(PLANS_DIR)) return [];
+  return fs
+    .readdirSync(PLANS_DIR)
+    .filter((f) => f.toLowerCase().endsWith(".jmx"))
+    .sort();
+}
+
+function resolvePlanPath(planFile) {
+  // If a legacy env override is set and no planFile is specified, honour it.
+  if (!planFile && LEGACY_PLAN_PATH) return LEGACY_PLAN_PATH;
+
+  const file = planFile || (listPlans()[0] ?? null);
+  if (!file) throw new Error("No JMX plans found in the plans/ directory.");
+
+  // Reject path traversal.
+  if (file.includes("/") || file.includes("\\")) {
+    throw new Error("Invalid plan name.");
+  }
+
+  const resolved = path.join(PLANS_DIR, file);
+  if (!fs.existsSync(resolved)) {
+    throw new Error(`Plan not found: ${file}`);
+  }
+  return resolved;
 }
 
 const RUN_META_FILE = "run.meta.json";
@@ -473,6 +509,7 @@ function getRunSummary(run) {
   return {
     id: run.id,
     label: run.label || "",
+    planFile: run.planFile || null,
     status: run.status,
     pid: run.pid,
     startedAt: run.startedAt,
@@ -529,16 +566,19 @@ function hydrateRunFromDisk(id, runDirHint = null) {
     }
   }
 
+  const runPlanPath = path.join(runDir, "BIQ-run.jmx");
+
   const run = {
     id: parsed.id || id,
     label: meta?.label || parsed.label || "",
+    planFile: meta?.planFile || null,
     status,
     pid: null,
     startedAt: meta?.startedAt || fs.statSync(runDir).birthtime.toISOString(),
     endedAt: status === "unknown" ? null : fs.statSync(logFile).mtime.toISOString(),
     exitCode,
     signal: null,
-    planPath: path.join(runDir, "BIQ-run.jmx"),
+    planPath: fs.existsSync(runPlanPath) ? runPlanPath : null,
     jtlFile,
     logFile,
     reportDir,
@@ -546,10 +586,6 @@ function hydrateRunFromDisk(id, runDirHint = null) {
     props: meta?.props || {},
     process: null
   };
-
-  if (!fs.existsSync(run.planPath)) {
-    run.planPath = PLAN_PATH;
-  }
 
   runs.set(run.id, run);
   return run;
@@ -577,10 +613,9 @@ function parseProps(input) {
 }
 
 // Launch a JMeter non-GUI run with a per-run patched plan copy.
-function startRun({ props = {}, runLabel = "" }) {
-  if (!fs.existsSync(PLAN_PATH)) {
-    throw new Error(`Test plan not found: ${PLAN_PATH}`);
-  }
+function startRun({ props = {}, runLabel = "", planFile = null }) {
+  const sourcePlanPath = resolvePlanPath(planFile);
+  const resolvedPlanFile = planFile || path.basename(sourcePlanPath);
 
   if (!ALLOW_CONCURRENT_RUNS && activeRunExists()) {
     throw new Error("A run is already in progress. Set ALLOW_CONCURRENT_RUNS=true to bypass.");
@@ -597,13 +632,14 @@ function startRun({ props = {}, runLabel = "" }) {
   const runPlanPath = path.join(runDir, "BIQ-run.jmx");
 
   const { label: _ignoredLabel, ...parameterOverrides } = props;
-  const patchedXml = applyParameterOverrides(PLAN_PATH, parameterOverrides);
+  const patchedXml = applyParameterOverrides(sourcePlanPath, parameterOverrides);
   fs.writeFileSync(runPlanPath, patchedXml, "utf-8");
 
   const startedAt = new Date().toISOString();
   writeRunMeta(runDir, {
     id,
     label: runLabel,
+    planFile: resolvedPlanFile,
     props: parameterOverrides,
     startedAt
   });
@@ -631,6 +667,7 @@ function startRun({ props = {}, runLabel = "" }) {
   const run = {
     id,
     label: runLabel,
+    planFile: resolvedPlanFile,
     status: "running",
     pid: child.pid,
     startedAt,
@@ -828,9 +865,10 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         service: "jmeter-local-runner",
         jmeterBin: JMETER_BIN,
-        planPath: PLAN_PATH,
+        plansDir: PLANS_DIR,
         endpoints: {
-          parameters: "GET /parameters",
+          plans: "GET /plans",
+          parameters: "GET /parameters?plan=<filename>",
           runs: "GET /runs",
           startRun: "POST /runs",
           runDetail: "GET /runs/:id",
@@ -845,9 +883,19 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
+    if (req.method === "GET" && pathname === "/plans") {
+      const plans = listPlans().map((file) => ({
+        file,
+        name: file.replace(/\.jmx$/i, "")
+      }));
+      return sendJson(res, 200, { plans });
+    }
+
     if (req.method === "GET" && pathname === "/parameters") {
-      const schema = parseJmxParameters(PLAN_PATH);
-      return sendJson(res, 200, schema);
+      const planFile = url.searchParams.get("plan") || null;
+      const planPath = resolvePlanPath(planFile);
+      const schema = parseJmxParameters(planPath);
+      return sendJson(res, 200, { ...schema, planFile: path.basename(planPath) });
     }
 
     if (req.method === "GET" && pathname === "/runs") {
@@ -875,7 +923,8 @@ const server = http.createServer(async (req, res) => {
       const body = raw ? JSON.parse(raw) : {};
       const run = startRun({
         props: body.props || {},
-        runLabel: body.label || ""
+        runLabel: body.label || "",
+        planFile: body.planFile || null
       });
       return sendJson(res, 202, { run: getRunDetail(run, { logTailLines: 20 }) });
     }
@@ -946,6 +995,8 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`jmeter-local-runner listening on http://localhost:${PORT}`);
-  console.log(`Using plan: ${PLAN_PATH}`);
+  const plans = listPlans();
+  console.log(`Plans dir: ${PLANS_DIR} (${plans.length} plan${plans.length === 1 ? "" : "s"}: ${plans.join(", ") || "none"})`);
+  if (LEGACY_PLAN_PATH) console.log(`Legacy plan override: ${LEGACY_PLAN_PATH}`);
   console.log(`Using jmeter bin: ${JMETER_BIN}`);
 });

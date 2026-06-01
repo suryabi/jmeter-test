@@ -9,12 +9,11 @@
         Live workbench
       </span>
       <h1 class="hero-title">
-        Configure and run BIQ data population
+        Configure and run JMeter tests or data population
         <span class="hero-title-accent">from one place.</span>
       </h1>
       <p class="hero-sub">
-        A control room for <code>BIQ.jmx</code>: set scenario parameters, launch population runs,
-        and follow progress in real time.
+        Set scenario parameters, launch runs, and follow progress in real time.
       </p>
     </div>
     <div class="hero-orb" aria-hidden="true"></div>
@@ -110,6 +109,7 @@
               <ng-template pTemplate="header">
                 <tr>
                   <th>Run</th>
+                  <th>Plan</th>
                   <th>Status</th>
                   <th>Started</th>
                   <th class="w-44 text-right">Actions</th>
@@ -133,6 +133,12 @@
                         </div>
                       </div>
                     </div>
+                  </td>
+                  <td>
+                    <span class="plan-badge">
+                      <i class="pi pi-file text-xs"></i>
+                      {{ run.planFile ? run.planFile.replace('.jmx', '') : '—' }}
+                    </span>
                   </td>
                   <td>
                     <div class="flex items-center gap-2">

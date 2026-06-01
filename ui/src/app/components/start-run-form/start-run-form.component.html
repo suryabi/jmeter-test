@@ -2,114 +2,155 @@
   <form class="form-grid" [formGroup]="form" (ngSubmit)="onSubmit()">
     <!-- Header -->
     <header class="form-header">
-      <div class="flex items-center gap-3">
-        <div class="header-icon">
-          <i class="pi pi-sliders-h"></i>
-        </div>
-        <div>
-          <h2 class="form-title">Scenario configuration</h2>
-          <p class="form-sub">Parameters are written to a run-specific copy of <code>BIQ.jmx</code> before each population run</p>
+      <div class="form-header-main">
+        <div class="flex items-center gap-3">
+          <div class="header-icon">
+            <i class="pi pi-sliders-h"></i>
+          </div>
+          <div>
+            <h2 class="form-title">Scenario configuration</h2>
+            <p class="form-sub">Parameters are written to a run-specific copy of the selected plan before each population run</p>
+            @if (!loading && !loadError) {
+              <p class="form-hint">
+                <i class="pi pi-info-circle"></i>
+                JMeter runs <strong>non-GUI</strong>; logs stream in real time.
+              </p>
+            }
+          </div>
         </div>
       </div>
-      @if (!loading && parameterGroups.length) {
-        <p-button
-          type="button"
-          severity="secondary"
-          icon="pi pi-undo"
-          label="Reset"
-          (onClick)="resetToDefaults()"
-        />
+      @if (!loading && !loadError) {
+        <div class="form-header-actions">
+          @if (parameterGroups.length) {
+            <p-button
+              type="button"
+              severity="secondary"
+              icon="pi pi-undo"
+              label="Reset"
+              (onClick)="resetToDefaults()"
+            />
+          }
+          <p-button
+            type="submit"
+            icon="pi pi-play-circle"
+            [loading]="submitting"
+            [disabled]="form.invalid || submitting"
+            label="Start population run"
+          />
+        </div>
       }
     </header>
 
     @if (loading) {
       <div class="loading-box">
         <p-progress-spinner styleClass="!h-6 !w-6" strokeWidth="6" />
-        <span>Loading parameters from BIQ.jmx…</span>
+        <span>Loading parameters…</span>
       </div>
     } @else if (loadError) {
       <p-message severity="error" [text]="loadError" />
     } @else {
-      <!-- Run label - hero field -->
-      <div class="hero-field">
-        <label for="runLabel" class="field-label">
-          <i class="pi pi-tag"></i>
-          Run Label
-        </label>
-        <input id="runLabel" class="surface-input hero-input" type="text" formControlName="label" placeholder="e.g. nightly-smoke-2026-11-15" />
-      </div>
-
-      <!-- Parameter group selector -->
-      <div class="group-nav">
-        @for (group of parameterGroups; track group.id) {
-          <button
-            type="button"
-            class="group-chip"
-            [class.group-chip-active]="activeGroupId === group.id"
-            (click)="setActiveGroup(group.id)"
-          >
-            <span class="group-chip-icon">
-              <i class="pi" [ngClass]="groupIconClass(group)"></i>
-            </span>
-            <span class="group-chip-label">{{ group.title }}</span>
-            <span class="group-chip-badge">{{ group.parameters.length }}</span>
-          </button>
+      <!-- Plan + label row -->
+      <div class="run-meta-row">
+        @if (plans.length > 0) {
+          <div class="run-meta-field run-meta-plan">
+            <label class="field-label" for="planSelect">
+              <i class="pi pi-file"></i>
+              JMeter Plan
+            </label>
+            <p-select
+              inputId="planSelect"
+              class="surface-select hero-select w-full"
+              panelStyleClass="surface-select-panel"
+              [options]="plans"
+              [(ngModel)]="selectedPlan"
+              [ngModelOptions]="{ standalone: true }"
+              optionLabel="name"
+              placeholder="Select a plan"
+              (onChange)="onPlanChange($event.value)"
+            />
+          </div>
         }
+        <div class="run-meta-field run-meta-label">
+          <label for="runLabel" class="field-label">
+            <i class="pi pi-tag"></i>
+            Run Label
+          </label>
+          <input id="runLabel" class="surface-input hero-input" type="text" formControlName="label" placeholder="e.g. nightly-smoke-2026-11-15" />
+        </div>
       </div>
 
-      <!-- Active group's fields -->
-      @if (activeGroup(); as currentGroup) {
-        <div class="field-grid">
-          @for (param of currentGroup.parameters; track param.name) {
-            <div class="field-cell" [class.field-cell-wide]="isLongText(param)">
-              @if (param.type === 'boolean') {
-                <label class="bool-row" [for]="param.name">
-                  <input type="checkbox" class="bool-check" [id]="param.name" [formControlName]="param.name" />
-                  <span class="flex flex-col">
-                    <span class="field-label-row">
-                      {{ fieldLabel(param.name) }}
-                      @if (param.required) { <span class="required">*</span> }
-                    </span>
-                    @if (param.description) {
-                      <small class="field-help">{{ param.description }}</small>
+      <!-- Side nav + fields -->
+      @if (parameterGroups.length) {
+        <div class="params-layout">
+
+          <!-- Left card: group nav -->
+          <nav class="group-sidenav-card">
+            <p class="sidenav-title">Parameter Groups</p>
+            @for (group of parameterGroups; track group.id) {
+              <button
+                type="button"
+                class="group-navitem"
+                [class.group-navitem-active]="activeGroupId === group.id"
+                (click)="setActiveGroup(group.id)"
+              >
+                <span class="group-navitem-icon">
+                  <i class="pi" [ngClass]="groupIconClass(group)"></i>
+                </span>
+                <span class="group-navitem-label">{{ group.title }}</span>
+                <span class="group-navitem-badge">{{ group.parameters.length }}</span>
+              </button>
+            }
+          </nav>
+
+          <!-- Right card: active group fields -->
+          @if (activeGroup(); as currentGroup) {
+            <div class="fields-card" role="region" [attr.aria-label]="currentGroup.title">
+              <div class="fields-card-header">
+                <span class="group-navitem-icon">
+                  <i class="pi" [ngClass]="groupIconClass(currentGroup)"></i>
+                </span>
+                <span class="fields-card-title">{{ currentGroup.title }}</span>
+                <span class="fields-card-count">{{ currentGroup.parameters.length }} params</span>
+              </div>
+              <div class="field-grid">
+                @for (param of currentGroup.parameters; track param.name) {
+                  <div class="field-cell">
+                    @if (param.type === 'boolean') {
+                      <span class="field-label-row">
+                        {{ fieldLabel(param.name) }}
+                        @if (param.required) { <span class="required">*</span> }
+                      </span>
+                      <label class="bool-row" [for]="param.name">
+                        <input type="checkbox" class="bool-check" [id]="param.name" [formControlName]="param.name" />
+                        <span class="bool-toggle-label">
+                          @if (form.get(param.name)?.value) { Enabled } @else { Disabled }
+                        </span>
+                      </label>
+                      @if (param.description) {
+                        <small class="field-help">{{ param.description }}</small>
+                      }
+                    } @else {
+                      <label [for]="param.name" class="field-label-row">
+                        {{ fieldLabel(param.name) }}
+                        @if (param.required) { <span class="required">*</span> }
+                      </label>
+                      @if (param.type === 'date') {
+                        <input class="surface-input" type="date" [id]="param.name" [formControlName]="param.name" />
+                      } @else {
+                        <input class="surface-input" type="text" [id]="param.name" [formControlName]="param.name" />
+                      }
+                      @if (param.description) {
+                        <small class="field-help">{{ param.description }}</small>
+                      }
                     }
-                  </span>
-                </label>
-              } @else {
-                <label [for]="param.name" class="field-label-row">
-                  {{ fieldLabel(param.name) }}
-                  @if (param.required) { <span class="required">*</span> }
-                </label>
-                @if (param.type === 'date') {
-                  <input class="surface-input" type="date" [id]="param.name" [formControlName]="param.name" />
-                } @else if (isLongText(param)) {
-                  <textarea class="surface-input surface-textarea" rows="2" [id]="param.name" [formControlName]="param.name"></textarea>
-                } @else {
-                  <input class="surface-input" type="text" [id]="param.name" [formControlName]="param.name" />
+                  </div>
                 }
-                @if (param.description) {
-                  <small class="field-help">{{ param.description }}</small>
-                }
-              }
+              </div>
             </div>
           }
+
         </div>
       }
-
-      <!-- Sticky action bar -->
-      <div class="action-bar">
-        <div class="action-bar-info">
-          <i class="pi pi-info-circle"></i>
-          <span>JMeter will run <strong>non-GUI</strong>; logs stream in real-time.</span>
-        </div>
-        <p-button
-          type="submit"
-          icon="pi pi-play-circle"
-          [loading]="submitting"
-          [disabled]="form.invalid || submitting"
-          label="Start population run"
-        />
-      </div>
     }
   </form>
 </section>

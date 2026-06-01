@@ -28,6 +28,17 @@ function inferType(description) {
   return "text";
 }
 
+/**
+ * Strip type/required markers from the description so they don't show in the UI.
+ * e.g. "DATE, REQUIRED. Start date for the run" → "Start date for the run"
+ */
+function cleanDescription(description) {
+  return String(description || "")
+    .replace(/^(DATE|BOOLEAN)(,\s*REQUIRED|,\s*)?[,.]\s*/i, "")
+    .replace(/^REQUIRED[,.]\s*/i, "")
+    .trim();
+}
+
 function sectionIdFromTestname(testname, fallbackIndex) {
   const slug = String(testname || "")
     .trim()
@@ -74,7 +85,7 @@ function parseArgumentsBlock(blockXml) {
     params.push({
       name,
       defaultValue,
-      description,
+      description: cleanDescription(description),
       type: inferType(description),
       required: /REQUIRED/i.test(description)
     });

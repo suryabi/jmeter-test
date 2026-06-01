@@ -2,8 +2,10 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
 import { Subscription, interval, switchMap, catchError, of } from 'rxjs';
 import { RunnerService } from '../../core/services/runner.service';
+import { confirmDeleteRun } from '../../core/utils/confirm-delete-run';
 import {
   RunDetail,
   RunSampleRow,
@@ -42,6 +44,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly confirmation = inject(ConfirmationService);
   readonly runner = inject(RunnerService);
 
   runId = '';
@@ -170,24 +173,21 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     }
 
     const name = this.run.label || this.run.id.substring(0, 8);
-    const confirmed = confirm(
-      `Delete run "${name}"?\n\nThis permanently removes logs, JTL, and HTML report files from disk.`
-    );
-    if (!confirmed) return;
+    confirmDeleteRun(this.confirmation, name, () => {
+      this.error = '';
+      this.deleting = true;
+      this.closeStream();
 
-    this.error = '';
-    this.deleting = true;
-    this.closeStream();
-
-    this.runner.deleteRun(this.runId).subscribe({
-      next: () => {
-        this.deleting = false;
-        void this.router.navigate(['/']);
-      },
-      error: (err) => {
-        this.deleting = false;
-        this.error = err?.error?.error || err?.message || 'Failed to delete run';
-      }
+      this.runner.deleteRun(this.runId).subscribe({
+        next: () => {
+          this.deleting = false;
+          void this.router.navigate(['/']);
+        },
+        error: (err) => {
+          this.deleting = false;
+          this.error = err?.error?.error || err?.message || 'Failed to delete run';
+        }
+      });
     });
   }
 

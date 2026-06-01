@@ -18,7 +18,17 @@ export interface ParameterGroup {
 
 export interface ParametersSchema {
   planPath: string;
+  planFile: string;
   groups: ParameterGroup[];
+}
+
+export interface PlanInfo {
+  file: string;
+  name: string;
+}
+
+export interface PlansResponse {
+  plans: PlanInfo[];
 }
 
 export type RunProps = Record<string, string | undefined>;
@@ -26,6 +36,7 @@ export type RunProps = Record<string, string | undefined>;
 export interface RunSummary {
   id: string;
   label: string;
+  planFile: string | null;
   status: RunStatus;
   pid: number | null;
   startedAt: string;
@@ -91,6 +102,7 @@ export interface LogPollResponse {
 
 export interface StartRunRequest {
   label?: string;
+  planFile?: string;
   props?: RunProps;
 }
 
