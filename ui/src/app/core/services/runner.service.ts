@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { resolveRunnerApiUrl } from '../utils/runner-api-url';
 import {
   LogPollResponse,
   ParametersSchema,
@@ -14,7 +14,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class RunnerService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.runnerApiUrl;
+  private readonly baseUrl = resolveRunnerApiUrl();
 
   health(): Observable<{ ok: boolean; service: string }> {
     return this.http.get<{ ok: boolean; service: string }>(`${this.baseUrl}/health`);
