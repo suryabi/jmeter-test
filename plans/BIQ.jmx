@@ -47,7 +47,7 @@
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
+              <stringProp name="Argument.value">1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Days a request should span (positive integers, comma-separated, e.g. 1,2,3). Empty = defaults to 1</stringProp>
             </elementProp>
@@ -73,19 +73,19 @@
               <stringProp name="Argument.name">categoryType</stringProp>
               <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Category Type UUID (e.g. CATEGORY_TYPE_BRIEFINGS)</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Category type for request creation</stringProp>
             </elementProp>
             <elementProp name="parentCategory" elementType="Argument">
               <stringProp name="Argument.name">parentCategory</stringProp>
               <stringProp name="Argument.value">72DCAF42-C7C0-4006-8F31-7952185E5D61</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Parent Category UUID (e.g. 72DCAF42-C7C0-4006-8F31-7952185E5D61)</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Parent category (location)</stringProp>
             </elementProp>
             <elementProp name="category" elementType="Argument">
               <stringProp name="Argument.name">category</stringProp>
               <stringProp name="Argument.value">D06189A1-69AF-4D17-AC5B-480F7589D427</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Category UUID (e.g. D06189A1-69AF-4D17-AC5B-480F7589D427)</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Request category</stringProp>
             </elementProp>
             <elementProp name="stateActionIterations" elementType="Argument">
               <stringProp name="Argument.name">stateActionIterations</stringProp>
@@ -120,7 +120,7 @@
               <stringProp name="Argument.name">customerName</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Optional. Set a specific customer name (e.g. AllianceIT). If the customer already exists, request creation is skipped. Empty = picks a unique random customer per request from list of companies</stringProp>
+              <stringProp name="Argument.desc">Set a specific customer name (e.g. AllianceIT). If the customer already exists, request creation is skipped. Empty = picks a unique random customer per request from list of companies</stringProp>
             </elementProp>
             <elementProp name="checkDuplicateCustomer" elementType="Argument">
               <stringProp name="Argument.name">checkDuplicateCustomer</stringProp>
@@ -140,6 +140,12 @@
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE. End date for duplicate check (yyyy-MM-dd). Empty = checks across all events in the given category.</stringProp>
             </elementProp>
+            <elementProp name="clientTimeZone" elementType="Argument">
+              <stringProp name="Argument.name">clientTimeZone</stringProp>
+              <stringProp name="Argument.value">Asia/Calcutta</stringProp>
+              <stringProp name="Argument.desc">Timezone of the user creating the request</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
           </collectionProp>
         </Arguments>
         <hashTree/>
@@ -155,7 +161,13 @@
               <stringProp name="Argument.name">allowedRooms</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Optional. Restrict room creation to specific rooms only (comma-separated room names, UUIDs, or a mix of both, e.g. Boardroom A, EAC8F953-99D0-43DF-8E15-CA03F21EA92D). Empty = picks from all vacant rooms based on the rooms variable count. When set, only matching rooms are used and the rooms variable is ignored.</stringProp>
+              <stringProp name="Argument.desc">Restrict room creation to specific rooms only (comma-separated room names, UUIDs, or a mix of both, e.g. Boardroom A, EAC8F953-99D0-43DF-8E15-CA03F21EA92D). Empty = picks from all vacant rooms based on the rooms variable count. When set, only matching rooms are used and the rooms variable is ignored.</stringProp>
+            </elementProp>
+            <elementProp name="roomTimeOffset" elementType="Argument">
+              <stringProp name="Argument.name">roomTimeOffset</stringProp>
+              <stringProp name="Argument.value">0</stringProp>
+              <stringProp name="Argument.desc">Random minutes to add to start time and subtract from end time in logistics (comma-separated, e.g., 0,30,60)</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="vacantSlotDurations" elementType="Argument">
               <stringProp name="Argument.name">vacantSlotDurations</stringProp>
@@ -165,7 +177,7 @@
             </elementProp>
             <elementProp name="caterings" elementType="Argument">
               <stringProp name="Argument.name">caterings</stringProp>
-              <stringProp name="Argument.value">20%</stringProp>
+              <stringProp name="Argument.value">10%</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Number of catering activities to create per room. Accepts positive integers, a percentage of available slots (e.g. 80 or 80%), or a comma-separated mix of both (e.g. 5, 80%). 0 or empty = no caterings. Negative value = skip catering creation entirely.</stringProp>
             </elementProp>
@@ -177,7 +189,7 @@
             </elementProp>
             <elementProp name="topics" elementType="Argument">
               <stringProp name="Argument.name">topics</stringProp>
-              <stringProp name="Argument.value">60%</stringProp>
+              <stringProp name="Argument.value">10%</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Number of topics to create per room. Accepts positive integers, a percentage of available slots (e.g. 80 or 80%), or a comma-separated mix of both (e.g. 5, 80%). 0 or empty = no topics. Negative value = skip topic creation entirely.</stringProp>
             </elementProp>
@@ -201,9 +213,15 @@
             </elementProp>
             <elementProp name="multiEntryRange" elementType="Argument">
               <stringProp name="Argument.name">multiEntryRange</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.value">1,5</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Min and max range for dropdown field selections (positive integers, comma-separated, e.g. 1, 5 means 1 to 5 options selected). 0 or empty = skip dropdown multi-selection.</stringProp>
+              <stringProp name="Argument.desc">Min and max range for multi-entry record iterations like attendees, opportunities (positive integers, e.g. 1,3 means randomly between 1 to 3 records created, or 2 means exactly 2 records created). 0 or empty = skip. Negative values or more than 2 values = error thrown</stringProp>
+            </elementProp>
+            <elementProp name="multiSelectRange" elementType="Argument">
+              <stringProp name="Argument.name">multiSelectRange</stringProp>
+              <stringProp name="Argument.value">1,2</stringProp>
+              <stringProp name="Argument.desc">Min and max range for dropdown field selections (positive integers, e.g. 1,3 means randomly between 1 to 3 options selected, or 1 means exactly 1 option selected). 0 or empty = skip dropdown multi-selection. Negative values or more than 2 values = error thrown</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
           <stringProp name="TestPlan.comments">sales@allianceit.com, admin@allianceit.com</stringProp>
@@ -211,41 +229,29 @@
         <hashTree/>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Configuration Variables" enabled="true">
           <collectionProp name="Arguments.arguments">
-            <elementProp name="clientTimeZone" elementType="Argument">
-              <stringProp name="Argument.name">clientTimeZone</stringProp>
-              <stringProp name="Argument.value">Asia/Calcutta</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Client local timezone</stringProp>
-            </elementProp>
             <elementProp name="journeyModuleType" elementType="Argument">
               <stringProp name="Argument.name">journeyModuleType</stringProp>
               <stringProp name="Argument.value">JOURNEY</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Journey</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Journey</stringProp>
             </elementProp>
             <elementProp name="logisticsModuleType" elementType="Argument">
               <stringProp name="Argument.name">logisticsModuleType</stringProp>
               <stringProp name="Argument.value">LOGISTICS</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Logistics</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Logistics</stringProp>
             </elementProp>
             <elementProp name="agendaModuleType" elementType="Argument">
               <stringProp name="Argument.name">agendaModuleType</stringProp>
               <stringProp name="Argument.value">CALENDAR_LISTING</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Agenda</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Agenda</stringProp>
             </elementProp>
             <elementProp name="virtualConnectionModuleType" elementType="Argument">
               <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
               <stringProp name="Argument.value">VIRTUAL_CONNECTION</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Module Type of Virtual Connection</stringProp>
-            </elementProp>
-            <elementProp name="roomTimeOffset" elementType="Argument">
-              <stringProp name="Argument.name">roomTimeOffset</stringProp>
-              <stringProp name="Argument.value">30,60</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Random minutes to add to start time and subtract from end time in logistics (comma-separated, e.g., 0,30,60)</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Virtual Connection</stringProp>
             </elementProp>
             <elementProp name="blockedSlots" elementType="Argument">
               <stringProp name="Argument.name">blockedSlots</stringProp>
@@ -281,18 +287,18 @@
               <stringProp name="Argument.name">roomResourceTypeId</stringProp>
               <stringProp name="Argument.value">EAC8F953-99D0-43DF-8E15-CA03F21EA92D</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">ResourceTypeId for Room</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API. Resource type for Room</stringProp>
             </elementProp>
             <elementProp name="activityFormId" elementType="Argument">
               <stringProp name="Argument.name">activityFormId</stringProp>
               <stringProp name="Argument.value">5622B58C-55BA-4473-9B3A-38D732DDD04B</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Topic ActivityForm</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API. Topic activity form</stringProp>
             </elementProp>
             <elementProp name="excludedModuleIds" elementType="Argument">
               <stringProp name="Argument.name">excludedModuleIds</stringProp>
               <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.desc">Module IDs to exclude (comma-separated)</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Module IDs to exclude</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -327,6 +333,71 @@
           </collectionProp>
         </Arguments>
         <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="API Field Variables" enabled="false">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="categoryType" elementType="Argument">
+              <stringProp name="Argument.name">categoryType</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/categorytypes</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.categoryTypes display=categoryTypeName value=uniqueId ignore=CATEGORY_TYPE_EVENTS</stringProp>
+            </elementProp>
+            <elementProp name="parentCategory" elementType="Argument">
+              <stringProp name="Argument.name">parentCategory</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/categorytypes/${categoryType}/categories?identifier=LOCATION</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.categories display=categoryName value=uniqueId depends=categoryType</stringProp>
+            </elementProp>
+            <elementProp name="category" elementType="Argument">
+              <stringProp name="Argument.name">category</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/categorytypes/${categoryType}/categories?identifier=REQUEST_TYPE&amp;parent=${parentCategory}&amp;features=CREATE_EVENT</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.categories display=categoryName value=uniqueId depends=categoryType,parentCategory</stringProp>
+            </elementProp>
+            <elementProp name="journeyModuleType" elementType="Argument">
+              <stringProp name="Argument.name">journeyModuleType</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/moduletypes?isActive=true</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.moduleTypes display=moduleTypeName value=uniqueId</stringProp>
+            </elementProp>
+            <elementProp name="logisticsModuleType" elementType="Argument">
+              <stringProp name="Argument.name">logisticsModuleType</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/moduletypes?isActive=true</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.moduleTypes display=moduleTypeName value=uniqueId</stringProp>
+            </elementProp>
+            <elementProp name="agendaModuleType" elementType="Argument">
+              <stringProp name="Argument.name">agendaModuleType</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/moduletypes?isActive=true</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.moduleTypes display=moduleTypeName value=uniqueId</stringProp>
+            </elementProp>
+            <elementProp name="virtualConnectionModuleType" elementType="Argument">
+              <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/moduletypes?isActive=true</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.moduleTypes display=moduleTypeName value=uniqueId</stringProp>
+            </elementProp>
+            <elementProp name="excludedModuleIds" elementType="Argument">
+              <stringProp name="Argument.name">excludedModuleIds</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/modules</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.modules display=moduleName value=uniqueId depends=category,categoryType header.x-cloud-categoryid=field:category header.x-cloud-categorytypeid=field:categoryType multi=true</stringProp>
+            </elementProp>
+            <elementProp name="roomResourceTypeId" elementType="Argument">
+              <stringProp name="Argument.name">roomResourceTypeId</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/resourcetypes</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.resourceTypes display=name value=uniqueId header.x-cloud-customerid=field:customerId</stringProp>
+            </elementProp>
+            <elementProp name="activityFormId" elementType="Argument">
+              <stringProp name="Argument.name">activityFormId</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/forms</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
         <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
           <collectionProp name="HeaderManager.headers">
             <elementProp name="" elementType="Header">
@@ -339,7 +410,7 @@
             </elementProp>
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">Authorization</stringProp>
-              <stringProp name="Header.value">Bearer eyJraWQiOiJ0VWp6U1lGamxhQVFYNjZoRS1sQlNlVDFKUEptc1I0TV9zNmFLWTdfSjhBIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULnRUNnVfNWN1T1RkcnBrdDVtbUNrT0Z5eDMxTGk3bjVaeVpRb09kZC04a3Mub2FyMzdpaGp2anNuNVE3dEw1ZDciLCJpc3MiOiJodHRwczovL2Rldi0zMDczNDMxMC5va3RhLmNvbS9vYXV0aDIvZGVmYXVsdCIsImF1ZCI6ImFwaTovL2RlZmF1bHQiLCJpYXQiOjE3NDQ4NjM4NjEsImV4cCI6MTc0NDg2NzQ2MSwiY2lkIjoiMG9hOHI4bWt1M05YdkFwMzM1ZDciLCJ1aWQiOiIwMHU4dHl4ZWdsNFFIV3B3TDVkNyIsInNjcCI6WyJvcGVuaWQiLCJvZmZsaW5lX2FjY2VzcyIsInByb2ZpbGUiXSwiYXV0aF90aW1lIjoxNzQ0ODYzODU5LCJzdWIiOiJzdXJ5YS55YWRhdmFsbGlAYnJpZWZpbmdpcS5jb20ifQ.lQiQ6pHug7EGpTo5ajN0Xbo8IV8EvE_oQ7QjHlcBPU01ANNpY5XRvqRQ68QA1goc6xsKxNrEcxISoB5f0-01J2DmzV4MwgHwqnN0bCOtqreIlATjYNqoDgSbYIdgQWDWVBWRAWvIpExeE0jwrYRguaSQXbBc_pOZ0vp4GKawfAc2Np8C2qcnjYeCZRyGZ3D4HVtnvwf22EMmUR4SW25G7eua9_QSziWBtcoDqoZ1ZKIGNX2h7urhPen2RIvL7-wRjyPsEbJaSGZbz4hUBAKe1QKx-EsLEGz-nWelMkQGyD-mvFMQerye6VcFyVtDsXMwmSdwWY3YyIq3k1voFUn5aw</stringProp>
+              <stringProp name="Header.value">Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6IncwcWtiVzgtMnBsRDBTRnBSVDNpZF9vWmYtSjhlRmNfOXNJeW5mUjFyNFkiLCJhbGciOiJSUzI1NiIsIng1dCI6IndoMDZzRWt6TEhKNXNOTmFVeVJZMl82TzhLMCIsImtpZCI6IndoMDZzRWt6TEhKNXNOTmFVeVJZMl82TzhLMCJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zZjRhNDA4MC0xMTUzLTRmMDYtOTQwMC1mZGFjMzA4NDY1ZDEvIiwiaWF0IjoxNzgwOTE5MTA4LCJuYmYiOjE3ODA5MTkxMDgsImV4cCI6MTc4MDkyMzM2MiwiYWNjdCI6MCwiYWNyIjoiMSIsImFjcnMiOlsicGZkciJdLCJhaW8iOiJBWFFBaS84Y0FBQUFlMVV0UlpGYWVzS00veVFRVmZ0QytwMXZnRDg1V3MyMW1KUWJISnhleFM1QUJPa2N0dnRXSG45MW0vMFJpUTZvRFV6YVNodkJGa1IwMmk2MTVCS09kMVVGOXBtMy9vbjViL1JOdzFtNldWbHVyQ2NvVzE3aDRKbDM4TWlqZXF0TkdJT09tNE5VS1lkZ1UvR3JxVjlTN3c9PSIsImFtciI6WyJwd2QiXSwiYXBwX2Rpc3BsYXluYW1lIjoiQklRLUVJUSIsImFwcGlkIjoiYWQ4MzY2NDQtMjc3Ni00MmNjLWJkYjItMDcxZTJjM2Y5ZmM3IiwiYXBwaWRhY3IiOiIxIiwiaWR0eXAiOiJ1c2VyIiwiaXBhZGRyIjoiMTAzLjQ0LjIuMjkiLCJuYW1lIjoiU3VwcG9ydCBVc2VyIiwib2lkIjoiNWZiYjhjYTAtNGUzMS00ZjczLWI4MjgtY2JkNTBlMjJkMjI4IiwicGxhdGYiOiI1IiwicHVpZCI6IjEwMDMyMDA1QTYyQ0VFNkMiLCJyaCI6IjEuQVVZQWdFQktQMU1SQmstVUFQMnNNSVJsMFFNQUFBQUFBQUFBd0FBQUFBQUFBQUFBQUFWR0FBLiIsInNjcCI6IkNhbGVuZGFycy5SZWFkIENhbGVuZGFycy5SZWFkQmFzaWMgZW1haWwgT25saW5lTWVldGluZ3MuUmVhZFdyaXRlIG9wZW5pZCBwcm9maWxlIFVzZXIuUmVhZCIsInNpZCI6IjAwNWMzMWFhLWRkMWEtNTUwNS0wOGFkLTkwMjgxNzYwODA3MSIsInNpZ25pbl9zdGF0ZSI6WyJrbXNpIl0sInN1YiI6IkNjcVdHMGc3MkxyRklrZFE3TzdSRlNLRE8yWUVwSDU4b29yazlKa3VFUXMiLCJ0ZW5hbnRfcmVnaW9uX3Njb3BlIjoiTkEiLCJ0aWQiOiIzZjRhNDA4MC0xMTUzLTRmMDYtOTQwMC1mZGFjMzA4NDY1ZDEiLCJ1bmlxdWVfbmFtZSI6InN1cHBvcnR1c2VyQGFsbGlhbmNlaXQuY29tIiwidXBuIjoic3VwcG9ydHVzZXJAYWxsaWFuY2VpdC5jb20iLCJ1dGkiOiJpcmczTjIyNjBVYWFFS2lZTi14WUFBIiwidmVyIjoiMS4wIiwid2lkcyI6WyJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX2FjZCI6MTc3MjUwOTY1MSwieG1zX2FjdF9mY3QiOiIzIDkiLCJ4bXNfZnRkIjoiNkpSTXY1TG1qbWdFQWVKLWhSRHViV0ZDTHdLYWNNSUZkNnBISVVpbFFSb0JkWE51YjNKMGFDMWtjMjF6IiwieG1zX2lkcmVsIjoiMjIgMSIsInhtc19wZnRleHAiOjE3ODEwMDk3NjIsInhtc19zdCI6eyJzdWIiOiJtcUdyY1hyeVRHcks3RlJ1QmR5N0xiR1kwcnI1Rmwzcmk3SEhYcFk4Xy13In0sInhtc19zdWJfZmN0IjoiMTIgMyIsInhtc190Y2R0IjoxNTc1NjYxODc2LCJ4bXNfdG50X2ZjdCI6IjMgMTAifQ.glcbd-3qH-SFe5tHuGWwHc7-j0jXQgfWACuk7u9DbxSpj2u1OX_wHZtMyDs5S6XIWIled9534FAI1TgjkDKUSmE4r1EAxP5VHjX3fSY5GKBggX7wzD4iGzSnQZDM-bHo5SdMjGGpzASVXzdw0gD1uH0jxO_0G_MJalDsyDwplb6_ci-uDXCXoa9lljp-6TvZ8Vb3Cexd-DgP5eyJKULYA0KTH21jwNWVtDMHSom2CCNagJlePRQahDwlfZn9_XBz-tW_u4Eq4b93knxyVlclMpwMiHls9ghqsMizOBfWeFzmIGUiiZHBhffxJaAL8K5t_VEH73aL3v_ftn26gmdrUw</stringProp>
             </elementProp>
             <elementProp name="" elementType="Header">
               <stringProp name="Header.name">X_cloud_user</stringProp>
@@ -573,6 +644,317 @@ def _fn_normalizeDropdownText = { String raw -&gt;
 }
 props.put(&quot;fn_normalizeDropdownText&quot;, _fn_normalizeDropdownText)
 
+def _fn_lookupNameToCamelCase = { String lookupName -&gt;
+    if (!lookupName) return &quot;&quot;
+    def words = lookupName.toLowerCase().split(&apos;_&apos;)
+    return words[0] + words.drop(1).collect { it.capitalize() }.join(&apos;&apos;)
+}
+props.put(&quot;fn_lookupNameToCamelCase&quot;, _fn_lookupNameToCamelCase)
+
+// Form field lookupContext: tenant (customer-wide) or category (category-scoped API)
+def _fn_normalizeLookupContext = { String lookupContext -&gt;
+    def normalized = lookupContext?.trim()?.toLowerCase()
+    if (normalized in [&quot;category&quot;, &quot;location&quot;]) return &quot;category&quot;
+    return &quot;tenant&quot;
+}
+props.put(&quot;fn_normalizeLookupContext&quot;, _fn_normalizeLookupContext)
+
+// Deep-search nested form field JSON for lookupContext (API may nest it under attributes, etc.)
+def _fn_deepFindLookupContext = { obj, depth = 0 -&gt;
+    if (obj == null || depth &gt; 8) return null
+    def deepFind = props.get(&quot;fn_deepFindLookupContext&quot;)
+    if (obj instanceof Map) {
+        if (obj.lookupContext != null &amp;&amp; obj.lookupContext.toString().trim() != &quot;&quot;) {
+            return obj.lookupContext
+        }
+        for (entry in obj.entrySet()) {
+            def k = entry.key
+            def v = entry.value
+            if (k?.toString()?.equalsIgnoreCase(&quot;lookupContext&quot;) &amp;&amp; v != null &amp;&amp; v.toString().trim() != &quot;&quot;) {
+                return v
+            }
+            if (v instanceof Map || v instanceof List) {
+                def found = deepFind(v, depth + 1)
+                if (found) return found
+            }
+        }
+    } else if (obj instanceof List) {
+        for (item in obj) {
+            def found = deepFind(item, depth + 1)
+            if (found) return found
+        }
+    }
+    return null
+}
+props.put(&quot;fn_deepFindLookupContext&quot;, _fn_deepFindLookupContext)
+
+// Resolve lookupContext from form template field (top-level or nested attributes)
+def _fn_resolveFieldLookupContext = { field, logRef = null -&gt;
+    if (!field) return &quot;tenant&quot;
+    def raw = field.lookupContext
+    if (!raw &amp;&amp; field.attributes instanceof Map) {
+        raw = field.attributes.lookupContext ?: field.attributes.get(&quot;lookupContext&quot;)
+    }
+    if (!raw &amp;&amp; field.attributes instanceof List) {
+        def attr = field.attributes.find {
+            def name = it?.name ?: it?.attributeName ?: it?.key ?: it?.code
+            name?.toString()?.equalsIgnoreCase(&quot;lookupContext&quot;)
+        }
+        raw = attr?.value ?: attr?.attributeValue
+    }
+    if (!raw &amp;&amp; field.fieldAttributes instanceof Map) {
+        raw = field.fieldAttributes.lookupContext ?: field.fieldAttributes.get(&quot;lookupContext&quot;)
+    }
+    if (!raw &amp;&amp; field.formFieldAttributes instanceof Map) {
+        raw = field.formFieldAttributes.lookupContext ?: field.formFieldAttributes.get(&quot;lookupContext&quot;)
+    }
+    if (!raw &amp;&amp; field.lookupType instanceof Map) {
+        raw = field.lookupType.lookupContext
+    }
+    if (!raw &amp;&amp; field.lookup instanceof Map) {
+        raw = field.lookup.lookupContext
+    }
+    if (!raw) {
+        raw = props.get(&quot;fn_deepFindLookupContext&quot;)(field)
+    }
+    def resolved = props.get(&quot;fn_normalizeLookupContext&quot;)(raw ?: &quot;tenant&quot;)
+    if (!raw &amp;&amp; field.lookupName &amp;&amp; logRef) {
+        logRef.warn(&quot;lookupContext missing for field ${field.dataMapping ?: field.formControlName} lookupName=${field.lookupName} — defaulting to tenant&quot;)
+    }
+    return resolved
+}
+props.put(&quot;fn_resolveFieldLookupContext&quot;, _fn_resolveFieldLookupContext)
+
+def _fn_valueInLookupStore = { varsRef, lookupName, lookupContext, valueCandidate -&gt;
+    if (!lookupName || valueCandidate == null) return false
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(lookupContext)
+    def base = props.get(&quot;fn_lookupVarBase&quot;)(lookupName, ctx)
+    def allStr = varsRef.get(base + &quot;_all&quot;) ?: &quot;&quot;
+    if (!allStr &amp;&amp; ctx == &quot;tenant&quot;) {
+        def legacy = props.get(&quot;fn_lookupNameToCamelCase&quot;)(lookupName)
+        allStr = varsRef.get(legacy + &quot;_all&quot;) ?: &quot;&quot;
+    }
+    if (!allStr) return false
+    def allowed = allStr.split(&quot;,&quot;).collect { props.get(&quot;fn_normalizeDropdownText&quot;)(it.trim()) } as Set
+    def matches = { v -&gt;
+        def s = props.get(&quot;fn_normalizeDropdownText&quot;)(v?.toString() ?: &quot;&quot;)
+        s &amp;&amp; allowed.contains(s)
+    }
+    if (valueCandidate instanceof List) return valueCandidate.every { matches(it) }
+    return matches(valueCandidate)
+}
+props.put(&quot;fn_valueInLookupStore&quot;, _fn_valueInLookupStore)
+
+def _fn_lookupVarBase = { String lookupName, String lookupContext -&gt;
+    def camel = props.get(&quot;fn_lookupNameToCamelCase&quot;)(lookupName)
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(lookupContext)
+    return ctx + &quot;_&quot; + camel
+}
+props.put(&quot;fn_lookupVarBase&quot;, _fn_lookupVarBase)
+
+def _fn_resolveLookupRowId = { lookup -&gt;
+    def id = lookup?.id ?: lookup?.uniqueId ?: lookup?.lookupValueId
+    return id != null ? id.toString().trim() : null
+}
+props.put(&quot;fn_resolveLookupRowId&quot;, _fn_resolveLookupRowId)
+
+def _fn_resolveLookupRowParentId = { lookup -&gt;
+    def pid = lookup?.parentId
+    if ((pid == null || pid.toString().trim() == &quot;&quot;) &amp;&amp; lookup?.parent instanceof Map) {
+        pid = lookup.parent.id ?: lookup.parent.uniqueId
+    }
+    if (pid == null || pid.toString().trim() == &quot;&quot; || pid.toString().equalsIgnoreCase(&quot;null&quot;)) return null
+    return pid.toString().trim()
+}
+props.put(&quot;fn_resolveLookupRowParentId&quot;, _fn_resolveLookupRowParentId)
+
+def _fn_resolveFieldLookupMode = { field -&gt;
+    if (!field) return null
+    def raw = field.lookupMode
+    if (!raw &amp;&amp; field.attributes instanceof Map) raw = field.attributes.lookupMode
+    if (!raw) return null
+    def mode = raw.toString().trim().toLowerCase()
+    return (mode == &quot;parent&quot; || mode == &quot;child&quot;) ? mode : null
+}
+props.put(&quot;fn_resolveFieldLookupMode&quot;, _fn_resolveFieldLookupMode)
+
+// Child lookup field -&gt; parent field (from dependentControls on parent form fields)
+def _fn_buildLookupParentFieldMap = { allFieldsList -&gt;
+    def map = [:]
+    (allFieldsList ?: []).each { field -&gt;
+        def parentFN = field.dataMapping ?: field.formControlName
+        (field.dependentControls ?: []).each { dep -&gt;
+            def childFN = dep?.formControlName
+            if (childFN) map[childFN] = parentFN
+        }
+    }
+    return map
+}
+props.put(&quot;fn_buildLookupParentFieldMap&quot;, _fn_buildLookupParentFieldMap)
+
+def _fn_getLookupRows = { varsRef, lookupName, lookupContext -&gt;
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(lookupContext)
+    def base = props.get(&quot;fn_lookupVarBase&quot;)(lookupName, ctx)
+    def rowsJson = varsRef.get(base + &quot;_rows&quot;)
+    if (!rowsJson &amp;&amp; ctx == &quot;tenant&quot;) {
+        def legacy = props.get(&quot;fn_lookupNameToCamelCase&quot;)(lookupName)
+        rowsJson = varsRef.get(legacy + &quot;_rows&quot;)
+        if (!rowsJson) base = legacy
+    }
+    if (rowsJson) {
+        try {
+            return new groovy.json.JsonSlurper().parseText(rowsJson) ?: []
+        } catch (Exception ignored) { }
+    }
+    def countStr = varsRef.get(base + &quot;_count&quot;)
+    if (!(countStr &amp;&amp; countStr.isInteger() &amp;&amp; countStr.toInteger() &gt; 0)) return []
+    def count = countStr.toInteger()
+    return (1..count).collect { idx -&gt;
+        [id: null, parentId: null, value: varsRef.get(base + &quot;_&quot; + idx)]
+    }.findAll { it.value }
+}
+props.put(&quot;fn_getLookupRows&quot;, _fn_getLookupRows)
+
+def _fn_lookupParentIdsForValues = { rows, parentFieldValues -&gt;
+    def vals = []
+    if (parentFieldValues instanceof List) vals = parentFieldValues
+    else if (parentFieldValues != null &amp;&amp; parentFieldValues.toString().trim() != &quot;&quot;) vals = [parentFieldValues]
+    if (!vals) return [] as Set
+    def normSet = vals.collect { props.get(&quot;fn_normalizeDropdownText&quot;)(it?.toString() ?: &quot;&quot;) }.findAll { it } as Set
+    def ids = [] as Set
+    (rows ?: []).each { row -&gt;
+        if (row?.parentId) return
+        def nv = props.get(&quot;fn_normalizeDropdownText&quot;)(row?.value?.toString() ?: &quot;&quot;)
+        if (nv &amp;&amp; normSet.contains(nv) &amp;&amp; row?.id) ids.add(row.id.toString())
+    }
+    return ids
+}
+props.put(&quot;fn_lookupParentIdsForValues&quot;, _fn_lookupParentIdsForValues)
+
+def _fn_filterLookupRowsByMode = { rows, lookupMode, parentFieldValues = null -&gt;
+    def mode = lookupMode?.toString()?.trim()?.toLowerCase()
+    if (!mode || mode == &quot;parent&quot;) {
+        return (rows ?: []).findAll { row -&gt; !row?.parentId }
+    }
+    if (mode == &quot;child&quot;) {
+        def parentIds = props.get(&quot;fn_lookupParentIdsForValues&quot;)(rows, parentFieldValues)
+        if (!parentIds) return []
+        return (rows ?: []).findAll { row -&gt;
+            row?.parentId &amp;&amp; parentIds.contains(row.parentId.toString())
+        }
+    }
+    return rows ?: []
+}
+props.put(&quot;fn_filterLookupRowsByMode&quot;, _fn_filterLookupRowsByMode)
+
+def _fn_storeLookupValues = { varsRef, lookupValuesList, contextKey, logRef -&gt;
+    def lookupMap = [:]
+    def rowsMap = [:]
+    def skippedInactive = 0
+    (lookupValuesList ?: []).each { lookup -&gt;
+        def active = lookup?.isActive
+        if (active == false || active?.toString()?.equalsIgnoreCase(&quot;false&quot;)) {
+            skippedInactive++
+            return
+        }
+        def code = lookup.lookupType?.code
+        def value = lookup.value
+        if (code &amp;&amp; value != null &amp;&amp; value.toString().trim() != &quot;&quot;) {
+            def normalizedValue = props.get(&quot;fn_normalizeDropdownText&quot;)(value.toString())
+            def rowId = props.get(&quot;fn_resolveLookupRowId&quot;)(lookup)
+            def rowParentId = props.get(&quot;fn_resolveLookupRowParentId&quot;)(lookup)
+            if (!lookupMap.containsKey(code)) lookupMap[code] = []
+            if (!rowsMap.containsKey(code)) rowsMap[code] = []
+            lookupMap[code].add(normalizedValue)
+            rowsMap[code].add([id: rowId, parentId: rowParentId, value: normalizedValue])
+        }
+    }
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(contextKey)
+    rowsMap.each { code, rows -&gt;
+        def values = lookupMap[code] ?: []
+        def base = props.get(&quot;fn_lookupVarBase&quot;)(code, ctx)
+        def rowsJson = groovy.json.JsonOutput.toJson(rows)
+        varsRef.put(base + &quot;_rows&quot;, rowsJson)
+        varsRef.put(base + &quot;_all&quot;, values.join(&quot;,&quot;))
+        varsRef.put(base + &quot;_count&quot;, String.valueOf(values.size()))
+        values.eachWithIndex { val, idx -&gt; varsRef.put(base + &quot;_&quot; + (idx + 1), val) }
+        // Backward compat: tenant lookups also mirror unprefixed vars (e.g. customerSector_count)
+        if (ctx == &quot;tenant&quot;) {
+            def camel = props.get(&quot;fn_lookupNameToCamelCase&quot;)(code)
+            varsRef.put(camel + &quot;_rows&quot;, rowsJson)
+            varsRef.put(camel + &quot;_all&quot;, values.join(&quot;,&quot;))
+            varsRef.put(camel + &quot;_count&quot;, String.valueOf(values.size()))
+            values.eachWithIndex { val, idx -&gt; varsRef.put(camel + &quot;_&quot; + (idx + 1), val) }
+        }
+    }
+    varsRef.put(ctx + &quot;LookupValues&quot;, groovy.json.JsonOutput.toJson(lookupMap))
+    if (skippedInactive &gt; 0) {
+        logRef.info(&quot;Stored ${lookupMap.size()} lookup type(s) for context &apos;${ctx}&apos; (skipped ${skippedInactive} inactive rows)&quot;)
+    }
+    return lookupMap
+}
+props.put(&quot;fn_storeLookupValues&quot;, _fn_storeLookupValues)
+
+def _fn_pickLookupValue = { varsRef, lookupName, lookupContext, isMultiple, selectionCountFn, randRef, fieldName = null, logRef = null, pickOptions = null -&gt;
+    if (lookupName == &quot;ROOM_TYPE&quot;) {
+        def existingRoomType = varsRef.get(&quot;roomType&quot;)
+        if (existingRoomType) return existingRoomType
+    }
+    def logFn = logRef ?: log
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(lookupContext)
+    def lookupMode = pickOptions?.lookupMode?.toString()?.trim()?.toLowerCase()
+    def base = props.get(&quot;fn_lookupVarBase&quot;)(lookupName, ctx)
+    def allRows = props.get(&quot;fn_getLookupRows&quot;)(varsRef, lookupName, ctx)
+    if (!allRows &amp;&amp; ctx == &quot;tenant&quot;) {
+        def legacy = props.get(&quot;fn_lookupNameToCamelCase&quot;)(lookupName)
+        def legacyCount = varsRef.get(legacy + &quot;_count&quot;)
+        if (legacyCount &amp;&amp; legacyCount.isInteger() &amp;&amp; legacyCount.toInteger() &gt; 0) base = legacy
+    }
+    def parentFieldValues = pickOptions?.parentFieldValues
+    def candidates = lookupMode
+        ? props.get(&quot;fn_filterLookupRowsByMode&quot;)(allRows, lookupMode, parentFieldValues)
+        : allRows
+    if (lookupMode == &quot;child&quot; &amp;&amp; !candidates) {
+        logFn.warn(&quot;fn_pickLookupValue: no child rows for ${lookupName} context=${ctx} field=${fieldName ?: &apos;n/a&apos;} (parent selections=${parentFieldValues})&quot;)
+        return null
+    }
+    if (lookupMode == &quot;parent&quot; &amp;&amp; !candidates) {
+        logFn.warn(&quot;fn_pickLookupValue: no parent rows (parentId null) for ${lookupName} context=${ctx} field=${fieldName ?: &apos;n/a&apos;}&quot;)
+        return null
+    }
+    if (!candidates) {
+        def countStr = varsRef.get(base + &quot;_count&quot;)
+        if (!(countStr &amp;&amp; countStr.isInteger() &amp;&amp; countStr.toInteger() &gt; 0)) {
+            logFn.warn(&quot;fn_pickLookupValue: no values for lookupName=${lookupName} context=${ctx} (checked ${base}_count)&quot;)
+            return null
+        }
+        def count = countStr.toInteger()
+        if (isMultiple) {
+            def selectCount = selectionCountFn(count)
+            def selectedValues = []
+            def indices = (1..count).toList()
+            Collections.shuffle(indices)
+            indices.take(selectCount).each { idx -&gt;
+                def val = varsRef.get(base + &quot;_&quot; + idx)
+                if (val) selectedValues.add(val)
+            }
+            return selectedValues ?: null
+        }
+        def randomIndex = randRef.nextInt(count) + 1
+        return varsRef.get(base + &quot;_&quot; + randomIndex)
+    }
+    if (isMultiple) {
+        def selectCount = selectionCountFn(candidates.size())
+        def shuffled = candidates.toList()
+        Collections.shuffle(shuffled)
+        def selectedValues = shuffled.take(selectCount).collect { it.value }.findAll { it }
+        return selectedValues ?: null
+    }
+    def pickedRow = candidates[randRef.nextInt(candidates.size())]
+    return pickedRow?.value
+}
+props.put(&quot;fn_pickLookupValue&quot;, _fn_pickLookupValue)
+
 // Generate 4-digit random number
 def _fn_random4 = { java.util.concurrent.ThreadLocalRandom.current().nextInt(1000, 10000) }       // 4 digits (1000-9999)
 props.put(&quot;fn_random4&quot;, _fn_random4)
@@ -734,7 +1116,7 @@ props.put(&quot;fn_abortNotFound&quot;, _fn_abortNotFound)
 // multi-entry range
 def _fn_parseMultiEntryRange = { v -&gt;
     def raw = v.get(&quot;multiEntryRange&quot;)?.trim()
-    if (!raw) return [0, 0]
+    if (!raw || raw == &quot;0&quot;) return [0, 0]
     def parts = raw.split(&quot;,&quot;)*.trim()
     if (parts.size() &gt; 2) {
         log.warn(&quot;multiEntryRange &apos;${raw}&apos; has too many values (${parts.size()}) — expected exactly 2 (min,max). Using [0,0].&quot;)
@@ -742,7 +1124,11 @@ def _fn_parseMultiEntryRange = { v -&gt;
     }
     def minVal = parts[0].isInteger() ? parts[0].toInteger() : 0
     def maxVal = parts.size() &gt; 1 ? (parts[1].isInteger() ? parts[1].toInteger() : 0) : minVal
-    if (minVal &lt; 0 || maxVal &lt; 0) return [0, 0]
+    if (minVal &lt; 0 || maxVal &lt; 0) {
+        def errorMsg = &quot;multiEntryRange &apos;${raw}&apos; is invalid — negative values are not allowed. Use positive integers only (e.g. 1,3) or leave empty to skip.&quot;
+        log.error(errorMsg)
+        throw new IllegalArgumentException(errorMsg)
+    }
     if (minVal &gt; maxVal) {
         log.warn(&quot;multiEntryRange &apos;${raw}&apos; is invalid — min (${minVal}) &gt; max (${maxVal}). Expected format: min,max e.g. 1,3. Using [0,0].&quot;)
         return [0, 0]
@@ -751,23 +1137,18 @@ def _fn_parseMultiEntryRange = { v -&gt;
 }
 props.put(&quot;fn_parseMultiEntryRange&quot;, _fn_parseMultiEntryRange)
 
-//def _fn_parseMultiEntryRange = { v -&gt;
-//    def raw = v.get(&quot;multiEntryRange&quot;)?.trim()
-//    if (!raw) return [0, 0]
-//    def parts = raw.split(&quot;,&quot;)*.trim()
-//    def minVal = parts[0].isInteger() ? parts[0].toInteger() : 0
-//    def maxVal = parts.size() &gt; 1 ? (parts[1].isInteger() ? parts[1].toInteger() : 0) : minVal
-//    if (minVal &lt; 0 || maxVal &lt; 0) return [0, 0]
-//    return [minVal, maxVal]
-//}
-//
-//props.put(&quot;fn_parseMultiEntryRange&quot;, _fn_parseMultiEntryRange)
-
 // Drop down Multi Select range
 def _fn_parseMultiSelectRange = { v, defaultRange -&gt;
-    def raw = (v.get(&quot;multiSelectRange&quot;) ?: defaultRange ?: &quot;1,3&quot;).split(&quot;,&quot;)*.trim()
-    def minVal = raw[0].isInteger() ? raw[0].toInteger() : 1
-    def maxVal = raw.size() &gt; 1 ? (raw[1].isInteger() ? raw[1].toInteger() : minVal) : minVal
+    def raw = v.get(&quot;multiSelectRange&quot;)?.trim()
+    if (!raw || raw == &quot;0&quot;) return [min: 0, max: 0]
+    def parts = raw.split(&quot;,&quot;)*.trim()
+    def minVal = parts[0].isInteger() ? parts[0].toInteger() : 0
+    def maxVal = parts.size() &gt; 1 ? (parts[1].isInteger() ? parts[1].toInteger() : 0) : minVal
+    if (minVal &lt; 0 || maxVal &lt; 0) {
+        def errorMsg = &quot;multiSelectRange &apos;${raw}&apos; is invalid — negative values are not allowed. Use positive integers only (e.g. 1,3) or leave empty to skip.&quot;
+        log.error(errorMsg)
+        throw new IllegalArgumentException(errorMsg)
+    }
     return [min: minVal, max: maxVal]
 }
 props.put(&quot;fn_parseMultiSelectRange&quot;, _fn_parseMultiSelectRange)
@@ -838,10 +1219,11 @@ def _fn_buildDependentControlsMap = { allFieldsList -&gt;
             def depList = []
             depControls.each { dep -&gt;
                 def depFN = dep.formControlName
+                if (!depFN) return
+                dcFieldSet.add(depFN)
                 def hideR = dep.rules?.hide
-                if (depFN &amp;&amp; hideR) {
+                if (hideR) {
                     depList.add([fieldName: depFN, evalCondition: hideR.evalCondition, evalValue: hideR.evalValue])
-                    dcFieldSet.add(depFN)
                 }
             }
             if (depList) { dcMap[parentFN] = depList }
@@ -1630,8 +2012,8 @@ def formName = varsRef.get(&quot;currentFormName&quot;)
 def rand = java.util.concurrent.ThreadLocalRandom.current()
 
 // Multi-select configuration from User Defined Variables
-def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, &quot;1,3&quot;).min
-def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, &quot;1,3&quot;).max
+def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, null).min
+def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, null).max
 
 def currentEntryIndex = (varsRef.get(&quot;currentEntryIndex&quot;) ?: &quot;1&quot;).toInteger()
 
@@ -1684,6 +2066,7 @@ def textareaValues = props.get(&quot;fn_defaultTextAreas&quot;)
 def _depResult = props.get(&quot;fn_buildDependentControlsMap&quot;)(allFields)
 def dependentControlsMap = _depResult.map
 def dependentFieldsSet = _depResult.fieldSet
+def lookupParentFieldMap = props.get(&quot;fn_buildLookupParentFieldMap&quot;)(allFields)
 
 // FIX: Two-pass ordering — process parent/standalone fields first, dependent fields second.
 // This ensures the parent field value is already in formData when shouldShowDependentField
@@ -1727,6 +2110,8 @@ orderedFields.each { field -&gt;
     def fieldLabel = field.fieldLabel ?: fieldName
     def isMultiple = field.isMultiple ?: false
     def lookupName = field.lookupName
+    def lookupContext = props.get(&quot;fn_resolveFieldLookupContext&quot;)(field, logRef)
+    def lookupMode = props.get(&quot;fn_resolveFieldLookupMode&quot;)(field)
     def isHidden = field.hide ?: false
     def isDisabled = field.disabled ?: false
 
@@ -1796,8 +2181,10 @@ orderedFields.each { field -&gt;
     def _earlyAliasName = _earlyMappingInfo?.aliasName
     def _earlyAliasValue = _earlyAliasName ? varsRef.get(_earlyAliasName) : null
     boolean skipExistingForIndexedAlias = (_earlyAliasValue instanceof String &amp;&amp; _earlyAliasValue.contains(&quot;,&quot;) &amp;&amp; fieldType != &quot;TEXTAREA&quot;)
+    // Any SELECT with lookupName is a lookup field (API often omits enumType=LOOKUP on formUIConfig)
+    def isLookupSelect = lookupName != null &amp;&amp; lookupName.toString().trim() != &quot;&quot;
 
-    if (!skipExistingForIndexedAlias &amp;&amp; isFirstUser == &quot;true&quot; &amp;&amp; existingValue != null &amp;&amp; existingValue.toString().trim() != &quot;&quot; &amp;&amp; !isEmptyNumeric &amp;&amp; !isEmptyBoolean) {
+    if (!skipExistingForIndexedAlias &amp;&amp; !isLookupSelect &amp;&amp; isFirstUser == &quot;true&quot; &amp;&amp; existingValue != null &amp;&amp; existingValue.toString().trim() != &quot;&quot; &amp;&amp; !isEmptyNumeric &amp;&amp; !isEmptyBoolean) {
         // FIX: Also normalize date fields for first user on UPDATE path (re-fill scenario)
         if (fieldType in [&quot;CLOUD_DATE&quot;, &quot;CLOUD_TIME&quot;] &amp;&amp; existingValue instanceof Map) {
             def isoDate = null
@@ -1875,10 +2262,11 @@ orderedFields.each { field -&gt;
     def value = null
     def skipField = false
     // PRIORITY 1: Get Value from JMeter Variable (via alias)
-    // For SELECT fields with isMultiple=true and lookupName, skip alias to use multi-select logic
+    // Lookup SELECT: always pick from tenant/category store (alias/unprefixed tenant vars must not override)
+    def skipAliasForLookup = (fieldType == &quot;SELECT&quot; &amp;&amp; lookupName)
     def skipAliasForMultiSelect = (fieldType == &quot;SELECT&quot; &amp;&amp; isMultiple &amp;&amp; lookupName)
 
-    if (aliasName &amp;&amp; !skipAliasForMultiSelect) {
+    if (aliasName &amp;&amp; !skipAliasForMultiSelect &amp;&amp; !skipAliasForLookup) {
         value = varsRef.get(aliasName)
 
         if (value != null &amp;&amp; value != &quot;&quot;) {
@@ -1898,6 +2286,13 @@ orderedFields.each { field -&gt;
                     value = [value]
                 }
             }
+        }
+    }
+    // LOOKUP via alias: reject values not in the correct context store (e.g. tenant region_* vs category_region_*)
+    if (value != null &amp;&amp; value != &quot;&quot; &amp;&amp; isLookupSelect) {
+        if (!props.get(&quot;fn_valueInLookupStore&quot;)(varsRef, lookupName, lookupContext, value)) {
+            logRef.warn(&quot;Alias &apos;${aliasName}&apos; value &apos;${value}&apos; not in ${lookupContext} store for ${lookupName} — re-picking from lookup API&quot;)
+            value = null
         }
     }
     // PRIORITY 2: Auto-generate if No Alias or No Value
@@ -1984,53 +2379,18 @@ orderedFields.each { field -&gt;
                         skipField = true
                     }
                 } else if (lookupName) {
-                    // Convert SNAKE_CASE to camelCase
-                    def words = lookupName.toLowerCase().split(&apos;_&apos;)
-                    def camelCaseName = words[0] + words.drop(1).collect { it.capitalize() }.join(&apos;&apos;)
-
-                    if (isMultiple) {
-                        // Multi-select: pick random values based on minSelection/maxSelection
-                        def countStr = varsRef.get(camelCaseName + &quot;_count&quot;)
-
-                        if (countStr &amp;&amp; countStr.isInteger()) {
-                            def count = countStr.toInteger()
-                            def selectCount = getRandomSelectionCount(count)
-                            def selectedValues = []
-                            def indices = (1..count).toList()
-                            Collections.shuffle(indices)
-                            indices.take(selectCount).each { idx -&gt;
-                                def val = varsRef.get(camelCaseName + &quot;_&quot; + idx)
-                                if (val) selectedValues.add(val)
-                            }
-                            if (selectedValues) {
-                                value = selectedValues
-
-                            } else {
-                                logRef.warn(&quot;No lookup values for &apos;${lookupName}&apos; - SKIPPING field&quot;)
-                                skipField = true
-                            }
-                        } else {
-                            logRef.warn(&quot;No lookup count for &apos;${lookupName}&apos; - SKIPPING field&quot;)
-                            skipField = true
+                    def pickOptions = null
+                    if (lookupMode) {
+                        pickOptions = [lookupMode: lookupMode]
+                        if (lookupMode == &quot;child&quot;) {
+                            def parentFN = lookupParentFieldMap[fieldName]
+                            if (parentFN) pickOptions.parentFieldValues = formData[parentFN]
                         }
-                    } else {
-                        // Single select: pick one random value
-
-                        def countStr = varsRef.get(camelCaseName + &quot;_count&quot;)
-                        if (countStr &amp;&amp; countStr.isInteger()) {
-                            def count = countStr.toInteger()
-                            def randomIndex = rand.nextInt(count) + 1
-                            value = varsRef.get(camelCaseName + &quot;_&quot; + randomIndex)
-
-                        } else {
-                            value = varsRef.get(camelCaseName)
-                            if (value) {
-
-                            } else {
-                                logRef.warn(&quot;No lookup value for &apos;${lookupName}&apos; - SKIPPING field&quot;)
-                                skipField = true
-                            }
-                        }
+                    }
+                    value = props.get(&quot;fn_pickLookupValue&quot;)(varsRef, lookupName, lookupContext, isMultiple, getRandomSelectionCount, rand, fieldName, logRef, pickOptions)
+                    if (!value) {
+                        logRef.warn(&quot;No lookup values for &apos;${lookupName}&apos; (lookupContext=${lookupContext}, lookupMode=${lookupMode ?: &apos;flat&apos;}) - SKIPPING field&quot;)
+                        skipField = true
                     }
                 } else {
                     logRef.warn(&quot;No lookupName defined - SKIPPING field&quot;)
@@ -2242,8 +2602,8 @@ if (rtCount &gt; 0 || mtCount &gt; 0) {
     def rand = java.util.concurrent.ThreadLocalRandom.current()
 
     // Multi-select configuration from User Defined Variables
-    def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, &quot;1,3&quot;).min
-    def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, &quot;1,3&quot;).max
+    def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, null).min
+    def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(varsRef, null).max
 
     // Helper function to generate random selection count
     def getRandomSelectionCount = { int availableCount -&gt;
@@ -3121,10 +3481,36 @@ def rawRange = vars.get(&quot;multiEntryRange&quot;)?.trim()
 if (rawRange &amp;&amp; rawRange != &quot;0&quot;) {
     def rangeParts = rawRange.split(&quot;,&quot;)*.trim()
     if (rangeParts.size() &gt; 2) {
-        errors.add(&quot;multiEntryRange &apos;${rawRange}&apos; is invalid — expected exactly 2 values (min,max e.g. 1,3), got ${rangeParts.size()} values&quot;)
+        errors.add(&quot;multiEntryRange &apos;${rawRange}&apos; is invalid — expected either a single value (e.g. 1) or a range (e.g. 1,3)&quot;)
     } else if (rangeParts.size() == 2 &amp;&amp; rangeParts[0].isInteger() &amp;&amp; rangeParts[1].isInteger()) {
         if (rangeParts[0].toInteger() &gt; rangeParts[1].toInteger()) {
             errors.add(&quot;multiEntryRange &apos;${rawRange}&apos; is invalid — min (${rangeParts[0]}) must be &lt;= max (${rangeParts[1]}), e.g. 1,3&quot;)
+        }
+    }
+}
+
+// ===== Validate multiSelectRange for mandatory multi-select fields =====
+def rawMultiSelectRange = vars.get(&quot;multiSelectRange&quot;)?.trim()
+
+// Optional field - empty or 0 = skip, validate only if provided
+if (rawMultiSelectRange &amp;&amp; rawMultiSelectRange != &quot;0&quot;) {
+    def parts = rawMultiSelectRange.split(&quot;,&quot;)*.trim()
+
+    // Only single value or min,max range allowed
+    if (parts.size() &gt; 2) {
+        errors.add(&quot;multiSelectRange &apos;${rawMultiSelectRange}&apos; is invalid — expected either a single value (e.g. 1) or a range (e.g. 1,3)&quot;)
+    }
+
+    // Validate positive integers (&gt;0)
+    def invalid = parts.findAll { !it.isInteger() || it.toInteger() &lt;= 0 }
+
+    if (!invalid.isEmpty()) {
+        errors.add(&quot;multiSelectRange has invalid entries: ${invalid} in &apos;${rawMultiSelectRange}&apos; (expected: positive integers for min,max range, e.g. 1,3)&quot;)
+    } else if (parts.size() == 2) {
+        int min = parts[0].toInteger()
+        int max = parts[1].toInteger()
+        if (min &gt; max) {
+            errors.add(&quot;multiSelectRange &apos;${rawMultiSelectRange}&apos; is invalid — min (${min}) must be &lt;= max (${max}), e.g. 1,3&quot;)
         }
     }
 }
@@ -3527,6 +3913,10 @@ log.info(&quot;----- Terminated: Extracted Active Customer -----&quot;)</stringP
                       <stringProp name="Header.name">x-cloud-customerid</stringProp>
                       <stringProp name="Header.value">${customerId}</stringProp>
                     </elementProp>
+                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                    </elementProp>
                   </collectionProp>
                 </HeaderManager>
                 <hashTree/>
@@ -3624,6 +4014,10 @@ log.info(&quot;----- Terminated: Category Type PostProcessor -----&quot;)</strin
                       <elementProp name="" elementType="Header">
                         <stringProp name="Header.name">x-cloud-customerid</stringProp>
                         <stringProp name="Header.value">${customerId}</stringProp>
+                      </elementProp>
+                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
                       </elementProp>
                     </collectionProp>
                   </HeaderManager>
@@ -3765,6 +4159,10 @@ log.info(&quot;----- Terminated: Parent Category PostProcessor -----&quot;)</str
                         <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                         <stringProp name="Header.value">${categoryTypeId}</stringProp>
                       </elementProp>
+                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                      </elementProp>
                     </collectionProp>
                   </HeaderManager>
                   <hashTree/>
@@ -3833,7 +4231,7 @@ log.info(&quot;----- Terminated: Category Selection PostProcessor -----&quot;)</
                   <hashTree/>
                 </hashTree>
               </hashTree>
-              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Lookup Values" enabled="true">
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Tenant Lookup Values" enabled="true">
                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                   <collectionProp name="Arguments.arguments"/>
                 </elementProp>
@@ -3858,43 +4256,83 @@ log.info(&quot;----- Terminated: Category Selection PostProcessor -----&quot;)</
                       <stringProp name="Header.name">x-cloud-customerid</stringProp>
                       <stringProp name="Header.value">${customerId}</stringProp>
                     </elementProp>
+                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                    </elementProp>
                   </collectionProp>
                 </HeaderManager>
                 <hashTree/>
-                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Lookup Values PostProcessor" enabled="true">
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Tenant Lookup Values PostProcessor" enabled="true">
                   <stringProp name="script">
 
 def response = prev.getResponseDataAsString()
 def json = new groovy.json.JsonSlurper().parseText(response)
 def lookupValues = json._embedded?.lookupValues ?: []
+def lookupMap = props.get(&quot;fn_storeLookupValues&quot;)(vars, lookupValues, &quot;tenant&quot;, log)
+vars.put(&quot;lookupValues&quot;, vars.get(&quot;tenantLookupValues&quot;) ?: &quot;{}&quot;)
+log.info(&quot;Tenant lookups: HTTP ${prev.getResponseCode()} | rows=${lookupValues.size()} | types=${lookupMap?.size() ?: 0}&quot;)
 
-// Group lookup values by lookupType.code
-def lookupMap = [:]
-lookupValues.each { lookup -&gt;
-    def code = lookup.lookupType?.code
-    def value = lookup.value
-    if (code &amp;&amp; value) {
-        // Normalize value to fix double-encoded non-breaking spaces (e.g. Holy See\u00c2\u00a0(...))
-        def normalizedValue = props.get(&quot;fn_normalizeDropdownText&quot;)(value)
-        if (!lookupMap.containsKey(code)) lookupMap[code] = []
-        lookupMap[code].add(normalizedValue)
-    }
-}
+log.info(&quot;----- Terminated: Tenant Lookup Values PostProcessor -----&quot;)</stringProp>
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">false</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                <hashTree/>
+              </hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Category Lookup Values" enabled="true">
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                  <collectionProp name="Arguments.arguments"/>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain"></stringProp>
+                <stringProp name="HTTPSampler.port"></stringProp>
+                <stringProp name="HTTPSampler.protocol"></stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/${contextname}/api/lookupvalues</stringProp>
+                <stringProp name="HTTPSampler.method">GET</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                      <stringProp name="Header.value">${customerId}</stringProp>
+                    </elementProp>
+                    <elementProp name="x-cloud-categorytypeid" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                      <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                    </elementProp>
+                    <elementProp name="x-cloud-categoryid" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                      <stringProp name="Header.value">${parentCategoryId}</stringProp>
+                    </elementProp>
+                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Category Lookup Values PostProcessor" enabled="true">
+                  <stringProp name="script">
 
-// Store each lookup type as JMeter variables
-lookupMap.each { code, values -&gt;
-    def words = code.toLowerCase().split(&apos;_&apos;)
-    def camelCaseName = words[0] + words.drop(1).collect { it.capitalize() }.join(&apos;&apos;)
+def response = prev.getResponseDataAsString()
+def json = new groovy.json.JsonSlurper().parseText(response)
+def lookupValues = json._embedded?.lookupValues ?: []
+def lookupMap = props.get(&quot;fn_storeLookupValues&quot;)(vars, lookupValues, &quot;category&quot;, log)
+log.info(&quot;Category lookups: HTTP ${prev.getResponseCode()} | categoryId(header)=${vars.get(&apos;parentCategoryId&apos;)} | rows=${lookupValues.size()} | types=${lookupMap?.size() ?: 0}&quot;)
 
-    vars.put(camelCaseName + &quot;_all&quot;, values.join(&quot;,&quot;))
-    vars.put(camelCaseName + &quot;_count&quot;, String.valueOf(values.size()))
-    values.eachWithIndex { val, idx -&gt; vars.put(camelCaseName + &quot;_&quot; + (idx + 1), val) }
-}
-
-vars.put(&quot;lookupValues&quot;, groovy.json.JsonOutput.toJson(lookupMap))
-log.info(&quot;Lookup types stored: ${lookupMap.size()}&quot;)
-
-log.info(&quot;----- Terminated: Lookup Values PostProcessor -----&quot;)</stringProp>
+log.info(&quot;----- Terminated: Category Lookup Values PostProcessor -----&quot;)</stringProp>
                   <stringProp name="scriptLanguage">groovy</stringProp>
                   <stringProp name="parameters"></stringProp>
                   <stringProp name="filename"></stringProp>
@@ -4279,6 +4717,10 @@ log.info(&quot;----- Terminated: Customer Name PostProcessor -----&quot;)</strin
                         <stringProp name="Header.name">x-cloud-categoryid</stringProp>
                         <stringProp name="Header.value">${categoryId}</stringProp>
                       </elementProp>
+                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                      </elementProp>
                     </collectionProp>
                   </HeaderManager>
                   <hashTree/>
@@ -4341,6 +4783,10 @@ log.info(&quot;----- Terminated: Customer Name PostProcessor -----&quot;)</strin
                         <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                         <stringProp name="Header.value">${categoryTypeId}</stringProp>
                       </elementProp>
+                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                      </elementProp>
                     </collectionProp>
                   </HeaderManager>
                   <hashTree/>
@@ -4383,6 +4829,10 @@ log.info(&quot;----- Terminated: Customer Name PostProcessor -----&quot;)</strin
                       <elementProp name="" elementType="Header">
                         <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                         <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                      </elementProp>
+                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
                       </elementProp>
                     </collectionProp>
                   </HeaderManager>
@@ -4428,6 +4878,10 @@ log.info(&quot;----- Terminated: Customer Name PostProcessor -----&quot;)</strin
                       <elementProp name="" elementType="Header">
                         <stringProp name="Header.name">x-cloud-customerid</stringProp>
                         <stringProp name="Header.value">${customerId}</stringProp>
+                      </elementProp>
+                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
                       </elementProp>
                     </collectionProp>
                   </HeaderManager>
@@ -4572,8 +5026,8 @@ log.info(&quot;----- Terminated: Timezone PostProcessor -----&quot;)</stringProp
 def random4 = { -&gt; props.get(&quot;fn_random4&quot;)() }
 
 // Multi-select configuration from User Defined Variables
-def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).min
-def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).max
+def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).min
+def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).max
 
 // Helper function to generate random selection count
 def getRandomSelectionCount = { int availableCount -&gt;
@@ -5187,6 +5641,10 @@ log.info(&quot;Module: ${vars.get(&apos;currentModuleName&apos;)} | Handler: ${m
                             <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                             <stringProp name="Header.value">${categoryTypeId}</stringProp>
                           </elementProp>
+                          <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                          </elementProp>
                         </collectionProp>
                       </HeaderManager>
                       <hashTree/>
@@ -5229,6 +5687,10 @@ log.info(&quot;Module: ${vars.get(&apos;currentModuleName&apos;)} | Handler: ${m
                           <elementProp name="" elementType="Header">
                             <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                             <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                          </elementProp>
+                          <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
                           </elementProp>
                         </collectionProp>
                       </HeaderManager>
@@ -5964,8 +6426,14 @@ def fieldMappingsMap = props.get(&quot;fn_parseFieldMappings&quot;)(fieldMapping
 def allFields = props.get(&quot;fn_extractAllFields&quot;)(formUIConfigStr)
 log.info(&quot;=== DYNAMIC DOCUMENT PARAMS (${allFields.size()} form fields) ===&quot;)
 
-// STEP 4: Process each field and collect into dataMap
-allFields.each { field -&gt;
+def _docDepResult = props.get(&quot;fn_buildDependentControlsMap&quot;)(allFields)
+def docDependentFieldsSet = _docDepResult.fieldSet
+def docLookupParentFieldMap = props.get(&quot;fn_buildLookupParentFieldMap&quot;)(allFields)
+def docOrderedFields = allFields.findAll { f -&gt; !docDependentFieldsSet.contains(f.dataMapping ?: f.formControlName) } +
+    allFields.findAll { f -&gt;  docDependentFieldsSet.contains(f.dataMapping ?: f.formControlName) }
+
+// STEP 4: Process each field and collect into dataMap (parents before dependents)
+docOrderedFields.each { field -&gt;
     def fieldName = field.dataMapping ?: field.formControlName
     def fieldType = field.formControlType ?: &quot;&quot;
     def fieldLabel = field.fieldLabel ?: fieldName
@@ -5974,6 +6442,8 @@ allFields.each { field -&gt;
     def isDisabled = field.disabled ?: false
     def isMultiple = field.isMultiple ?: false
     def lookupName = field.lookupName
+    def lookupContext = props.get(&quot;fn_resolveFieldLookupContext&quot;)(field, log)
+    def lookupMode = props.get(&quot;fn_resolveFieldLookupMode&quot;)(field)
 
     // Skip hidden/disabled
     if (isHidden || isDisabled) return
@@ -5993,8 +6463,8 @@ allFields.each { field -&gt;
 
     def value = null
 
-    // PRIORITY 1: Check aliasName variable (same as Journey)
-    if (aliasName) {
+    // PRIORITY 1: alias (skip for lookup SELECT — use fn_pickLookupValue with lookupContext from form template)
+    if (aliasName &amp;&amp; !(fieldType == &quot;SELECT&quot; &amp;&amp; lookupName)) {
         value = vars.get(aliasName)
     }
 
@@ -6020,26 +6490,22 @@ allFields.each { field -&gt;
         // ========== SELECT (normal, same as Journey) ==========
         } else if (fieldType == &quot;SELECT&quot;) {
             if (lookupName) {
-                def words = lookupName.toLowerCase().split(&apos;_&apos;)
-                def camelCaseName = words[0] + words.drop(1).collect { it.capitalize() }.join(&apos;&apos;)
-
-                if (isMultiple) {
-                    def countStr = vars.get(camelCaseName + &quot;_count&quot;)
-                    if (countStr &amp;&amp; countStr.isInteger()) {
-                        def count = countStr.toInteger()
-                        def randomIndex = rand.nextInt(count) + 1
-                        value = vars.get(camelCaseName + &quot;_&quot; + randomIndex)
-                    }
-                } else {
-                    def countStr = vars.get(camelCaseName + &quot;_count&quot;)
-                    if (countStr &amp;&amp; countStr.isInteger()) {
-                        def count = countStr.toInteger()
-                        def randomIndex = rand.nextInt(count) + 1
-                        value = vars.get(camelCaseName + &quot;_&quot; + randomIndex)
-                    } else {
-                        value = vars.get(camelCaseName)
+                def minSel = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).min
+                def maxSel = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).max
+                def pickCount = { int available -&gt;
+                    def maxPossible = Math.min(available, maxSel)
+                    def minPossible = Math.min(minSel, maxPossible)
+                    return minPossible + rand.nextInt((maxPossible - minPossible) + 1)
+                }
+                def pickOptions = null
+                if (lookupMode) {
+                    pickOptions = [lookupMode: lookupMode]
+                    if (lookupMode == &quot;child&quot;) {
+                        def parentFN = docLookupParentFieldMap[fieldName]
+                        if (parentFN) pickOptions.parentFieldValues = dataMap[parentFN]
                     }
                 }
+                value = props.get(&quot;fn_pickLookupValue&quot;)(vars, lookupName, lookupContext, isMultiple, pickCount, rand, fieldName, log, pickOptions)
             }
 
         // ========== TEXT → &quot;{docTypeName} for {customerName}&quot; ==========
@@ -6446,6 +6912,11 @@ vars.put(&quot;oracleSecondaryHostCellPhone&quot;, generatePhone())
 // ============ Strategic Client ============
 vars.put(&quot;isStrategicClient&quot;, rand.nextBoolean().toString())
 
+// ============ Cost Center Apporving Manager Email ============
+def costCenterApprManagerFirstName = vars.get(&quot;randomUser_${secIndex}_firstName&quot;)
+def costCenterApprManagerLastName = vars.get(&quot;randomUser_${secIndex}_lastName&quot;)
+vars.put(&quot;costCenterApprovingManagerEmail&quot;, costCenterApprManagerFirstName.toLowerCase() + &quot;.&quot; + costCenterApprManagerLastName.toLowerCase() + &quot;@&quot; + emailDomain)
+
 // ============ Logging ============
 log.info(&quot;companyName: &quot; + vars.get(&quot;companyName&quot;))
 log.info(&quot;accountName: &quot; + vars.get(&quot;accountName&quot;))
@@ -6472,6 +6943,7 @@ log.info(&quot;oracleSecondaryHostName: &quot; + vars.get(&quot;oracleSecondaryH
 log.info(&quot;oracleSecondaryHostBusinessTitle: &quot; + vars.get(&quot;oracleSecondaryHostBusinessTitle&quot;))
 log.info(&quot;oracleSecondaryHostCellPhone: &quot; + vars.get(&quot;oracleSecondaryHostCellPhone&quot;))
 log.info(&quot;oracleSecondaryHostEmail: &quot; + vars.get(&quot;oracleSecondaryHostEmail&quot;))
+log.info(&quot;costCenterApprovingManagerEmail: &quot; + vars.get(&quot;costCenterApprovingManagerEmail&quot;))
 
 log.info(&quot;----- Terminated: Visit Info Form PostProcessor -----&quot;)</stringProp>
                           </JSR223PreProcessor>
@@ -7248,6 +7720,10 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                             <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                             <stringProp name="Header.value">${categoryTypeId}</stringProp>
                           </elementProp>
+                          <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                          </elementProp>
                         </collectionProp>
                       </HeaderManager>
                       <hashTree/>
@@ -7290,6 +7766,10 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                           <elementProp name="" elementType="Header">
                             <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                             <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                          </elementProp>
+                          <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
                           </elementProp>
                         </collectionProp>
                       </HeaderManager>
@@ -7642,6 +8122,10 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                             <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                             <stringProp name="Header.value">${categoryTypeId}</stringProp>
                           </elementProp>
+                          <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                          </elementProp>
                         </collectionProp>
                       </HeaderManager>
                       <hashTree/>
@@ -7684,6 +8168,10 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                           <elementProp name="" elementType="Header">
                             <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                             <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                          </elementProp>
+                          <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
                           </elementProp>
                         </collectionProp>
                       </HeaderManager>
@@ -8815,8 +9303,8 @@ def roomNameUsed = false
 def rand = java.util.concurrent.ThreadLocalRandom.current()
 
 // Multi-select configuration from User Defined Variables
-def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).min
-def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).max
+def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).min
+def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).max
 
 // Helper function to generate random selection count
 def getRandomSelectionCount = { int availableCount -&gt;
@@ -10276,6 +10764,12 @@ SampleResult.setResponseMessage(&quot;Room ${counter}/${roomCount}: ${currentRoo
 
   vars.put(&quot;skipActivityModule&quot;, shouldSkip ? &quot;true&quot; : &quot;false&quot;)
 
+  if (shouldSkip) {
+      vars.put(&quot;currentActivityLoopCount&quot;, &quot;0&quot;)
+      vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
+      log.info(&quot;[Activity Module PreProcessor] Skipping ${activityType} - resetting currentActivityLoopCount to 0&quot;)
+  }
+
   vars.put(&quot;activityCounter_&quot; + activityType, &quot;0&quot;)
   vars.put(&quot;activityLoopIteration_&quot; + activityType, &quot;0&quot;)
 
@@ -10424,6 +10918,10 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                                       <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                                       <stringProp name="Header.value">${categoryTypeId}</stringProp>
                                     </elementProp>
+                                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                                    </elementProp>
                                   </collectionProp>
                                 </HeaderManager>
                                 <hashTree/>
@@ -10466,6 +10964,10 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                                     <elementProp name="" elementType="Header">
                                       <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
                                       <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                    </elementProp>
+                                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
                                     </elementProp>
                                   </collectionProp>
                                 </HeaderManager>
@@ -11147,19 +11649,29 @@ int reservedSlotsPerRoom = 0
 def skipActivityTypesRaw = vars.get(&quot;skipActivityTypes&quot;)?.trim()?.toLowerCase() ?: &quot;&quot;
 def skipBlockedSlots = skipActivityTypesRaw.split(&quot;,&quot;).collect { it.trim() }.contains(&quot;blocked&quot;)
 
-if (skipBlockedSlots) {
+// Determine if blocked slots should be skipped:
+// Case 1: &apos;blocked&apos; is in skipActivityTypes UDV
+// Case 2: blockedSlots UDV is empty or 0 (no valid positive integers)
+def blockedSlotsOptions = reservedSlotsPerRoomRaw ? reservedSlotsPerRoomRaw.split(&quot;,&quot;).collect { it.trim() }.findAll { it.isInteger() &amp;&amp; it.toInteger() &gt; 0 }.collect { it.toInteger() } : []
+def skipDueToEmptyOrZero = blockedSlotsOptions.isEmpty()
+
+if (skipBlockedSlots || skipDueToEmptyOrZero) {
     reservedSlotsPerRoom = 0
     vars.put(reservedSlotsKey, &quot;0&quot;)
-    log.info(&quot;Blocked slots skipped - &apos;blocked&apos; found in skipActivityTypes&quot;)
+    vars.remove(&quot;reservedMinutes_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex)
+    vars.remove(&quot;reservedDurations_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex)
+    vars.remove(&quot;reservedBlockedTimes_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex)
+    if (skipBlockedSlots) {
+        log.info(&quot;Blocked slots skipped - &apos;blocked&apos; found in skipActivityTypes&quot;)
+    } else {
+        log.info(&quot;Blocked slots skipped - blockedSlots is empty or 0&quot;)
+    }
 } else if (storedReservedSlots) {
     reservedSlotsPerRoom = storedReservedSlots.toInteger()
 } else {
     try {
-        if (reservedSlotsPerRoomRaw) {
-            def options = reservedSlotsPerRoomRaw.split(&quot;,&quot;).collect { it.trim() }.findAll { it.isInteger() &amp;&amp; it.toInteger() &gt; 0 }.collect { it.toInteger() }
-            if (options) {
-                reservedSlotsPerRoom = options[java.util.concurrent.ThreadLocalRandom.current().nextInt(options.size())]
-            }
+        if (blockedSlotsOptions) {
+            reservedSlotsPerRoom = blockedSlotsOptions[java.util.concurrent.ThreadLocalRandom.current().nextInt(blockedSlotsOptions.size())]
         }
     } catch (Exception e) {
         reservedSlotsPerRoom = 0
@@ -11195,7 +11707,7 @@ def rand = java.util.concurrent.ThreadLocalRandom.current()
 
 def isBlockedActivityType = activityType?.trim()?.toLowerCase() == &quot;blocked&quot;
 
-if (skipBlockedSlots) {
+if (skipBlockedSlots || skipDueToEmptyOrZero) {
     reservedMinutes = 0
     reservedSlotDurations = []
     reservedBlockedRanges = []
@@ -11421,6 +11933,7 @@ String loopCountSource = &quot;&quot;
 
 if (activityType.toLowerCase() == blockedTypeName) {
     loopCount = 0
+    vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
     loopCountSource = &quot;blocked type - time ranges reserved (no activities created)&quot;
 } else {
     def activityTypeLower = activityType.toLowerCase()
@@ -11767,8 +12280,7 @@ if (vars.get(&quot;skipActivity&quot;) == &quot;true&quot;) {
                                     </JSONPostProcessor>
                                     <hashTree/>
                                     <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Smart Slot Selector" enabled="true">
-                                      <stringProp name="script">
-import java.time.LocalDateTime
+                                      <stringProp name="script">import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 def rand = java.util.concurrent.ThreadLocalRandom.current()
@@ -11857,9 +12369,9 @@ def parseTimeToMinutes = { timeStr -&gt;
             def parts = timeStr.trim().split(&quot;:&quot;)
             return parts[0].toInteger() * 60 + parts[1].toInteger()
         }
-    } catch (Exception e) { 
+    } catch (Exception e) {
         log.warn(&quot;[parseTimeToMinutes] Failed to parse: ${timeStr}&quot;)
-        return -1 
+        return -1
     }
 }
 
@@ -11882,7 +12394,40 @@ def formatMinutesToDateTime = { int mins, String dateStr -&gt;
 try {
     def json = jsonSlurper.parseText(responseData)
     def timeSlots = json?._embedded?.resourceTimeSlots ?: []
-    def validSlots = timeSlots.findAll { slot -&gt; (slot?.resources ?: []).size() &gt; 0 }
+    // Exclude BLOCKED slots regardless of whether resources[] is populated.
+    // Logistics-created blocks have resources populated, so a resources-only
+    // check is not sufficient — slotType must be checked explicitly.
+    def validSlots = timeSlots.findAll { slot -&gt;
+        (slot?.resources ?: []).size() &gt; 0 &amp;&amp; slot?.slotType != &quot;BLOCKED&quot;
+    }
+
+    // ✅ FIX: Pre-load API BLOCKED slots into usedSlotRanges so the slot picker
+    // treats them as occupied — matching the UI behaviour where blocked windows
+    // are never selectable. Runs once per room before any slot selection logic.
+    def usedSlotRangesKeyForBlocked = &quot;usedSlotRanges_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
+    def apiBlockedSlots = timeSlots.findAll { slot -&gt;
+        slot?.slotType == &quot;BLOCKED&quot; &amp;&amp;
+        slot?.resourceId == currentRoomId
+    }
+    if (apiBlockedSlots) {
+        def existingRangesStr = vars.get(usedSlotRangesKeyForBlocked) ?: &quot;&quot;
+        def existingRanges = existingRangesStr
+            ? existingRangesStr.split(&quot;;&quot;).collect { it.trim() }.findAll { it }
+            : []
+        apiBlockedSlots.each { blockedSlot -&gt;
+            def bStart = getTimeMinutes(blockedSlot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
+            def bEnd   = getTimeMinutes(blockedSlot?.endTime?.context?.contextZoneDate ?: &quot;&quot;)
+            if (bStart &gt;= 0 &amp;&amp; bEnd &gt; bStart) {
+                def rangeStr = &quot;${bStart}:${bEnd}&quot;
+                if (!existingRanges.contains(rangeStr)) {
+                    existingRanges.add(rangeStr)
+                    log.info(&quot;🚫 [API BLOCKED] Registered ${formatMinutesToTime(bStart)}-${formatMinutesToTime(bEnd)} for Room ${currentRoomId}&quot;)
+                }
+            }
+        }
+        vars.put(usedSlotRangesKeyForBlocked, existingRanges.join(&quot;;&quot;))
+    }
+    // ── END FIX ──────────────────────────────────────────────────────────────
 
     if (!currentRoomId || currentRoomId.trim().isEmpty()) {
         vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
@@ -11968,252 +12513,256 @@ try {
 
     if (roomSlots.size() &gt; 0) {
 
-            if (skipOtherActivity) {
-                log.info(&quot;[${currentActivityType}] Skipping - vacantSlotDurations is empty or 0&quot;)
-                vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
-                vars.put(&quot;currentActivityDuration&quot;, &quot;0&quot;)
-                return
+        if (skipOtherActivity) {
+            log.info(&quot;[${currentActivityType}] Skipping - vacantSlotDurations is empty or 0&quot;)
+            vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
+            vars.put(&quot;currentActivityDuration&quot;, &quot;0&quot;)
+            return
+        }
+
+        def usedSlotRangesKey = &quot;usedSlotRanges_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
+        def usedSlotRangesStr = vars.get(usedSlotRangesKey) ?: &quot;&quot;
+        def usedSlotRanges = []
+        if (usedSlotRangesStr) {
+            usedSlotRanges = usedSlotRangesStr.split(&quot;;&quot;).collect { rangeStr -&gt;
+                def parts = rangeStr.split(&quot;:&quot;)
+                if (parts.size() == 2) return [start: parts[0].toInteger(), end: parts[1].toInteger()]
+                return null
+            }.findAll { it != null }
+        }
+
+        globalReservedBlockedRanges.each { range -&gt;
+            def blockedRange = [start: range[0], end: range[1]]
+            if (!usedSlotRanges.any { it.start == blockedRange.start &amp;&amp; it.end == blockedRange.end }) {
+                usedSlotRanges.add(blockedRange)
+            }
+        }
+
+        def overlapsWithUsed = { int slotStart, int slotDuration -&gt;
+            int slotEnd = slotStart + slotDuration
+            def freshRangesStr = vars.get(usedSlotRangesKey) ?: &quot;&quot;
+            def freshRanges = []
+            if (freshRangesStr) {
+                freshRanges = freshRangesStr.split(&quot;;&quot;).collect { rangeStr -&gt;
+                    def parts = rangeStr.split(&quot;:&quot;)
+                    if (parts.size() == 2) return [start: parts[0].toInteger(), end: parts[1].toInteger()]
+                    return null
+                }.findAll { it != null }
+            }
+            globalReservedBlockedRanges.each { range -&gt; freshRanges.add([start: range[0], end: range[1]]) }
+            for (def usedRange : freshRanges) {
+                if (!(slotEnd &lt;= usedRange.start || slotStart &gt;= usedRange.end)) return true
+            }
+            return false
+        }
+
+        def durationOptions = vacantSlotsDurationRaw.contains(&quot;,&quot;) ?
+            vacantSlotsDurationRaw.split(&quot;,&quot;).collect { it.trim().toInteger() } : [vacantSlotsDurationRaw.toInteger()]
+
+        def allValidDurationsStr = vars.get(&quot;allValidDurations&quot;)?.trim()
+        if (allValidDurationsStr) {
+            durationOptions = allValidDurationsStr.split(&quot;,&quot;).collect { it.trim().toInteger() }.findAll { it &gt; 0 }
+        }
+
+        def minDuration = durationOptions.min()
+        def maxDuration = durationOptions.max()
+
+        def availableSlots = roomSlots.findAll { slot -&gt;
+            def slotStart = getTimeMinutes(slot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
+            if (slotStart &lt; 0) return false
+            if (slotStart + minDuration &gt; windowEndMins) return false
+            return !isSlotInBlockedRange(slotStart, minDuration) &amp;&amp; !overlapsWithUsed(slotStart, minDuration)
+        }
+
+        if (availableSlots.size() &gt; 0) {
+            selectedSlot = availableSlots[rand.nextInt(availableSlots.size())]
+            def selectedSlotTime = getTimeMinutes(selectedSlot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
+
+            def maxRetries = availableSlots.size()
+            def retryCount = 0
+            def foundValidSlot = false
+            def latestRanges = []
+
+            while (!foundValidSlot &amp;&amp; retryCount &lt; maxRetries) {
+                def latestRangesStr = vars.get(usedSlotRangesKey) ?: &quot;&quot;
+                latestRanges = []
+                if (latestRangesStr) {
+                    latestRanges = latestRangesStr.split(&quot;;&quot;).collect { rangeStr -&gt;
+                        def parts = rangeStr.split(&quot;:&quot;)
+                        if (parts.size() == 2) return [start: parts[0].toInteger(), end: parts[1].toInteger()]
+                        return null
+                    }.findAll { it != null }
+                }
+                globalReservedBlockedRanges.each { range -&gt; latestRanges.add([start: range[0], end: range[1]]) }
+
+                def slotEndCheck = selectedSlotTime + minDuration
+                def alreadyUsed = latestRanges.any { range -&gt; !(slotEndCheck &lt;= range.start || selectedSlotTime &gt;= range.end) }
+
+                if (alreadyUsed) {
+                    availableSlots = availableSlots.findAll { slot -&gt;
+                        getTimeMinutes(slot?.startTime?.context?.contextZoneDate ?: &quot;&quot;) != selectedSlotTime
+                    }
+                    if (availableSlots.size() &gt; 0) {
+                        selectedSlot = availableSlots[rand.nextInt(availableSlots.size())]
+                        selectedSlotTime = getTimeMinutes(selectedSlot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
+                        retryCount++
+                    } else {
+                        selectedSlot = null
+                        vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
+                        break
+                    }
+                } else {
+                    foundValidSlot = true
+                }
             }
 
-            def usedSlotRangesKey = &quot;usedSlotRanges_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
-            def usedSlotRangesStr = vars.get(usedSlotRangesKey) ?: &quot;&quot;
-            def usedSlotRanges = []
-            if (usedSlotRangesStr) {
-                usedSlotRanges = usedSlotRangesStr.split(&quot;;&quot;).collect { rangeStr -&gt;
+            if (!foundValidSlot &amp;&amp; selectedSlot != null) {
+                selectedSlot = null
+                vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
+            }
+
+            if (selectedSlot) {
+                def maxAvailableTime = windowEndMins - selectedSlotTime
+                def nextBlockStart = windowEndMins
+                latestRanges.each { range -&gt;
+                    if (range.start &gt; selectedSlotTime &amp;&amp; range.start &lt; nextBlockStart) nextBlockStart = range.start
+                }
+                maxAvailableTime = Math.min(maxAvailableTime, nextBlockStart - selectedSlotTime)
+
+                def fittingDurations = durationOptions.findAll { it &lt;= maxAvailableTime }
+
+                if (fittingDurations.size() == 0) {
+                    selectedSlot = null
+                    vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
+                    vars.put(&quot;stopRoomActivityLoop&quot;, &quot;true&quot;)
+                } else {
+                    def topicDuration = fittingDurations[rand.nextInt(fittingDurations.size())]
+                    selectedDuration = topicDuration
+                    def slotEnd = selectedSlotTime + topicDuration
+
+                    def hasOverlap = latestRanges.any { range -&gt; !(slotEnd &lt;= range.start || selectedSlotTime &gt;= range.end) }
+
+                    if (hasOverlap) {
+                        vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
+                    } else {
+                        def activityCountKey = currentActivityType + &quot;Count_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
+                        def activityNum = (vars.get(activityCountKey)?.toInteger() ?: 0) + 1
+                        vars.put(activityCountKey, activityNum.toString())
+
+                        log.info(&quot;✅ #${activityNum} ${currentActivityType.toUpperCase()} at ${formatMinutesToTime(selectedSlotTime)}-${formatMinutesToTime(slotEnd)} (${topicDuration}m) | ${vars.get(&apos;currentRoomName&apos;)}&quot;)
+
+                        def currentRanges = vars.get(usedSlotRangesKey) ?: &quot;&quot;
+                        vars.put(usedSlotRangesKey, currentRanges ? currentRanges + &quot;;&quot; + selectedSlotTime + &quot;:&quot; + slotEnd : selectedSlotTime + &quot;:&quot; + slotEnd)
+
+                        def actTimingsUdvName2 = currentActivityType.toLowerCase() + &quot;Timings&quot;
+                        if (vars.get(actTimingsUdvName2)?.trim()) {
+                            def usedTimingsKey2 = &quot;usedTimings_${currentActivityType}_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
+                            def existing2 = vars.get(usedTimingsKey2) ?: &quot;&quot;
+                            vars.put(usedTimingsKey2, existing2 ? existing2 + &quot;,&quot; + selectedSlotTime : selectedSlotTime.toString())
+                            log.info(&quot;[${actTimingsUdvName2}] Marked ${formatMinutesToTime(selectedSlotTime)} as used for Day ${dayIndex} Room ${roomIndex}&quot;)
+                        }
+                    }
+                }
+            }
+        } else {
+            // Gap fill runs even when all API slots are BLOCKED — those are Logistics
+            // buffer windows (Start+30min / End-30min offsets) registered in usedSlotRanges.
+            // Gap fill calculates free time BETWEEN those blocked ranges and books there.
+            vars.put(&quot;gapFillActive&quot;, &quot;true&quot;)
+            def latestRangesForGapFill = []
+            def latestRangesStrForGapFill = vars.get(usedSlotRangesKey) ?: &quot;&quot;
+            if (latestRangesStrForGapFill) {
+                latestRangesForGapFill = latestRangesStrForGapFill.split(&quot;;&quot;).collect { rangeStr -&gt;
                     def parts = rangeStr.split(&quot;:&quot;)
                     if (parts.size() == 2) return [start: parts[0].toInteger(), end: parts[1].toInteger()]
                     return null
                 }.findAll { it != null }
             }
 
-            globalReservedBlockedRanges.each { range -&gt;
-                def blockedRange = [start: range[0], end: range[1]]
-                if (!usedSlotRanges.any { it.start == blockedRange.start &amp;&amp; it.end == blockedRange.end }) {
-                    usedSlotRanges.add(blockedRange)
+            def allOccupied = []
+            latestRangesForGapFill.each { allOccupied.add([start: it.start, end: it.end]) }
+            globalReservedBlockedRanges.each { allOccupied.add([start: it[0], end: it[1]]) }
+            allOccupied.sort { it.start }
+
+            def gaps = []
+            def currentPos = windowStartMins
+            allOccupied.each { occupied -&gt;
+                if (occupied.start &gt; currentPos &amp;&amp; (occupied.start - currentPos) &gt;= minDuration) {
+                    gaps.add([start: currentPos, end: occupied.start, size: occupied.start - currentPos])
                 }
+                currentPos = Math.max(currentPos, occupied.end)
+            }
+            if (currentPos &lt; windowEndMins &amp;&amp; (windowEndMins - currentPos) &gt;= minDuration) {
+                gaps.add([start: currentPos, end: windowEndMins, size: windowEndMins - currentPos])
             }
 
-            def overlapsWithUsed = { int slotStart, int slotDuration -&gt;
-                int slotEnd = slotStart + slotDuration
-                def freshRangesStr = vars.get(usedSlotRangesKey) ?: &quot;&quot;
-                def freshRanges = []
-                if (freshRangesStr) {
-                    freshRanges = freshRangesStr.split(&quot;;&quot;).collect { rangeStr -&gt;
-                        def parts = rangeStr.split(&quot;:&quot;)
-                        if (parts.size() == 2) return [start: parts[0].toInteger(), end: parts[1].toInteger()]
-                        return null
-                    }.findAll { it != null }
+            if (gaps.size() &gt; 0) {
+                def sortedDurations = durationOptions.sort { -it }
+                def selectedGap = null
+                def topicDuration = minDuration
+
+                def actTimingsUdvNameGap = currentActivityType.toLowerCase() + &quot;Timings&quot;
+                def actTimingsRawGap = vars.get(actTimingsUdvNameGap)?.trim()
+                if (actTimingsRawGap) {
+                    def usedTimingsKeyGap = &quot;usedTimings_${currentActivityType}_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
+                    def usedTimingsStrGap = vars.get(usedTimingsKeyGap) ?: &quot;&quot;
+                    def usedTimingsMinsGap = usedTimingsStrGap ? usedTimingsStrGap.split(&quot;,&quot;).collect { it.trim().toInteger() } : []
+                    def allowedTimeMinsGap = actTimingsRawGap.split(&quot;,&quot;).collect { it.trim() }.findAll { it ==~ /^\d{2}:\d{2}$/ }.collect { t -&gt;
+                        def parts = t.split(&quot;:&quot;)
+                        parts[0].toInteger() * 60 + parts[1].toInteger()
+                    }.findAll { !usedTimingsMinsGap.contains(it) }
+                    gaps = gaps.findAll { g -&gt; allowedTimeMinsGap.contains(g.start) }
+                    log.info(&quot;[${actTimingsUdvNameGap}] Gap fill filtered to ${gaps.size()} gap(s) matching allowed times&quot;)
                 }
-                globalReservedBlockedRanges.each { range -&gt; freshRanges.add([start: range[0], end: range[1]]) }
-                for (def usedRange : freshRanges) {
-                    if (!(slotEnd &lt;= usedRange.start || slotStart &gt;= usedRange.end)) return true
-                }
-                return false
-            }
 
-            def durationOptions = vacantSlotsDurationRaw.contains(&quot;,&quot;) ?
-                vacantSlotsDurationRaw.split(&quot;,&quot;).collect { it.trim().toInteger() } : [vacantSlotsDurationRaw.toInteger()]
-
-            def allValidDurationsStr = vars.get(&quot;allValidDurations&quot;)?.trim()
-            if (allValidDurationsStr) {
-                durationOptions = allValidDurationsStr.split(&quot;,&quot;).collect { it.trim().toInteger() }.findAll { it &gt; 0 }
-            }
-
-            def minDuration = durationOptions.min()
-            def maxDuration = durationOptions.max()
-
-            def availableSlots = roomSlots.findAll { slot -&gt;
-                def slotStart = getTimeMinutes(slot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
-                if (slotStart &lt; 0) return false
-                if (slotStart + minDuration &gt; windowEndMins) return false
-                return !isSlotInBlockedRange(slotStart, minDuration) &amp;&amp; !overlapsWithUsed(slotStart, minDuration)
-            }
-
-            if (availableSlots.size() &gt; 0) {
-                selectedSlot = availableSlots[rand.nextInt(availableSlots.size())]
-                def selectedSlotTime = getTimeMinutes(selectedSlot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
-
-                def maxRetries = availableSlots.size()
-                def retryCount = 0
-                def foundValidSlot = false
-                def latestRanges = []
-
-                while (!foundValidSlot &amp;&amp; retryCount &lt; maxRetries) {
-                    def latestRangesStr = vars.get(usedSlotRangesKey) ?: &quot;&quot;
-                    latestRanges = []
-                    if (latestRangesStr) {
-                        latestRanges = latestRangesStr.split(&quot;;&quot;).collect { rangeStr -&gt;
-                            def parts = rangeStr.split(&quot;:&quot;)
-                            if (parts.size() == 2) return [start: parts[0].toInteger(), end: parts[1].toInteger()]
-                            return null
-                        }.findAll { it != null }
-                    }
-                    globalReservedBlockedRanges.each { range -&gt; latestRanges.add([start: range[0], end: range[1]]) }
-
-                    def slotEndCheck = selectedSlotTime + minDuration
-                    def alreadyUsed = latestRanges.any { range -&gt; !(slotEndCheck &lt;= range.start || selectedSlotTime &gt;= range.end) }
-
-                    if (alreadyUsed) {
-                        availableSlots = availableSlots.findAll { slot -&gt;
-                            getTimeMinutes(slot?.startTime?.context?.contextZoneDate ?: &quot;&quot;) != selectedSlotTime
-                        }
-                        if (availableSlots.size() &gt; 0) {
-                            selectedSlot = availableSlots[rand.nextInt(availableSlots.size())]
-                            selectedSlotTime = getTimeMinutes(selectedSlot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
-                            retryCount++
-                        } else {
-                            selectedSlot = null
-                            vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
-                            break
-                        }
-                    } else {
-                        foundValidSlot = true
+                for (def tryDuration : sortedDurations) {
+                    def fittingGaps = gaps.findAll { it.size &gt;= tryDuration }
+                    if (fittingGaps.size() &gt; 0) {
+                        selectedGap = fittingGaps[rand.nextInt(fittingGaps.size())]
+                        topicDuration = tryDuration
+                        break
                     }
                 }
 
-                if (!foundValidSlot &amp;&amp; selectedSlot != null) {
-                    selectedSlot = null
-                    vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
-                }
+                if (selectedGap) {
+                    def selectedSlotTime = selectedGap.start
+                    selectedDuration = topicDuration
+                    def slotEnd = selectedSlotTime + topicDuration
 
-                if (selectedSlot) {
-                    def maxAvailableTime = windowEndMins - selectedSlotTime
-                    def nextBlockStart = windowEndMins
-                    latestRanges.each { range -&gt;
-                        if (range.start &gt; selectedSlotTime &amp;&amp; range.start &lt; nextBlockStart) nextBlockStart = range.start
-                    }
-                    maxAvailableTime = Math.min(maxAvailableTime, nextBlockStart - selectedSlotTime)
+                    def activityCountKey = currentActivityType + &quot;Count_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
+                    def activityNum = (vars.get(activityCountKey)?.toInteger() ?: 0) + 1
+                    vars.put(activityCountKey, activityNum.toString())
 
-                    def fittingDurations = durationOptions.findAll { it &lt;= maxAvailableTime }
+                    log.info(&quot;✅ #${activityNum} ${currentActivityType.toUpperCase()} (gap) at ${formatMinutesToTime(selectedSlotTime)}-${formatMinutesToTime(slotEnd)} (${topicDuration}m) | ${vars.get(&apos;currentRoomName&apos;)}&quot;)
 
-                    if (fittingDurations.size() == 0) {
-                        selectedSlot = null
-                        vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
-                        vars.put(&quot;stopRoomActivityLoop&quot;, &quot;true&quot;)
-                    } else {
-                        def topicDuration = fittingDurations[rand.nextInt(fittingDurations.size())]
-                        selectedDuration = topicDuration
-                        def slotEnd = selectedSlotTime + topicDuration
+                    def currentRanges = vars.get(usedSlotRangesKey) ?: &quot;&quot;
+                    vars.put(usedSlotRangesKey, currentRanges ? currentRanges + &quot;;&quot; + selectedSlotTime + &quot;:&quot; + slotEnd : selectedSlotTime + &quot;:&quot; + slotEnd)
 
-                        def hasOverlap = latestRanges.any { range -&gt; !(slotEnd &lt;= range.start || selectedSlotTime &gt;= range.end) }
-
-                        if (hasOverlap) {
-                            vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
-                        } else {
-                            def activityCountKey = currentActivityType + &quot;Count_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
-                            def activityNum = (vars.get(activityCountKey)?.toInteger() ?: 0) + 1
-                            vars.put(activityCountKey, activityNum.toString())
-
-                            log.info(&quot;✅ #${activityNum} ${currentActivityType.toUpperCase()} at ${formatMinutesToTime(selectedSlotTime)}-${formatMinutesToTime(slotEnd)} (${topicDuration}m) | ${vars.get(&apos;currentRoomName&apos;)}&quot;)
-
-                            def currentRanges = vars.get(usedSlotRangesKey) ?: &quot;&quot;
-                            vars.put(usedSlotRangesKey, currentRanges ? currentRanges + &quot;;&quot; + selectedSlotTime + &quot;:&quot; + slotEnd : selectedSlotTime + &quot;:&quot; + slotEnd)
-
-                            def actTimingsUdvName2 = currentActivityType.toLowerCase() + &quot;Timings&quot;
-                            if (vars.get(actTimingsUdvName2)?.trim()) {
-                                def usedTimingsKey2 = &quot;usedTimings_${currentActivityType}_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
-                                def existing2 = vars.get(usedTimingsKey2) ?: &quot;&quot;
-                                vars.put(usedTimingsKey2, existing2 ? existing2 + &quot;,&quot; + selectedSlotTime : selectedSlotTime.toString())
-                                log.info(&quot;[${actTimingsUdvName2}] Marked ${formatMinutesToTime(selectedSlotTime)} as used for Day ${dayIndex} Room ${roomIndex}&quot;)
-                            }
-                        }
-                    }
-                }
-            } else {
-                vars.put(&quot;gapFillActive&quot;, &quot;true&quot;)
-                def latestRangesForGapFill = []
-                def latestRangesStrForGapFill = vars.get(usedSlotRangesKey) ?: &quot;&quot;
-                if (latestRangesStrForGapFill) {
-                    latestRangesForGapFill = latestRangesStrForGapFill.split(&quot;;&quot;).collect { rangeStr -&gt;
-                        def parts = rangeStr.split(&quot;:&quot;)
-                        if (parts.size() == 2) return [start: parts[0].toInteger(), end: parts[1].toInteger()]
-                        return null
-                    }.findAll { it != null }
-                }
-
-                def allOccupied = []
-                latestRangesForGapFill.each { allOccupied.add([start: it.start, end: it.end]) }
-                globalReservedBlockedRanges.each { allOccupied.add([start: it[0], end: it[1]]) }
-                allOccupied.sort { it.start }
-
-                def gaps = []
-                def currentPos = windowStartMins
-                allOccupied.each { occupied -&gt;
-                    if (occupied.start &gt; currentPos &amp;&amp; (occupied.start - currentPos) &gt;= minDuration) {
-                        gaps.add([start: currentPos, end: occupied.start, size: occupied.start - currentPos])
-                    }
-                    currentPos = Math.max(currentPos, occupied.end)
-                }
-                if (currentPos &lt; windowEndMins &amp;&amp; (windowEndMins - currentPos) &gt;= minDuration) {
-                    gaps.add([start: currentPos, end: windowEndMins, size: windowEndMins - currentPos])
-                }
-
-                if (gaps.size() &gt; 0) {
-                    def sortedDurations = durationOptions.sort { -it }
-                    def selectedGap = null
-                    def topicDuration = minDuration
-
-                    def actTimingsUdvNameGap = currentActivityType.toLowerCase() + &quot;Timings&quot;
-                    def actTimingsRawGap = vars.get(actTimingsUdvNameGap)?.trim()
-                    if (actTimingsRawGap) {
-                        def usedTimingsKeyGap = &quot;usedTimings_${currentActivityType}_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
-                        def usedTimingsStrGap = vars.get(usedTimingsKeyGap) ?: &quot;&quot;
-                        def usedTimingsMinsGap = usedTimingsStrGap ? usedTimingsStrGap.split(&quot;,&quot;).collect { it.trim().toInteger() } : []
-                        def allowedTimeMinsGap = actTimingsRawGap.split(&quot;,&quot;).collect { it.trim() }.findAll { it ==~ /^\d{2}:\d{2}$/ }.collect { t -&gt;
-                            def parts = t.split(&quot;:&quot;)
-                            parts[0].toInteger() * 60 + parts[1].toInteger()
-                        }.findAll { !usedTimingsMinsGap.contains(it) }
-                        gaps = gaps.findAll { g -&gt; allowedTimeMinsGap.contains(g.start) }
-                        log.info(&quot;[${actTimingsUdvNameGap}] Gap fill filtered to ${gaps.size()} gap(s) matching allowed times&quot;)
+                    def actTimingsUdvNameGapTrack = currentActivityType.toLowerCase() + &quot;Timings&quot;
+                    if (vars.get(actTimingsUdvNameGapTrack)?.trim()) {
+                        def usedTimingsKeyGapTrack = &quot;usedTimings_${currentActivityType}_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
+                        def existing3 = vars.get(usedTimingsKeyGapTrack) ?: &quot;&quot;
+                        vars.put(usedTimingsKeyGapTrack, existing3 ? existing3 + &quot;,&quot; + selectedSlotTime : selectedSlotTime.toString())
+                        log.info(&quot;[${actTimingsUdvNameGapTrack}] Marked ${formatMinutesToTime(selectedSlotTime)} as used (gap fill) for Day ${dayIndex} Room ${roomIndex}&quot;)
                     }
 
-                    for (def tryDuration : sortedDurations) {
-                        def fittingGaps = gaps.findAll { it.size &gt;= tryDuration }
-                        if (fittingGaps.size() &gt; 0) {
-                            selectedGap = fittingGaps[rand.nextInt(fittingGaps.size())]
-                            topicDuration = tryDuration
-                            break
-                        }
-                    }
-
-                    if (selectedGap) {                        def selectedSlotTime = selectedGap.start
-                        selectedDuration = topicDuration
-                        def slotEnd = selectedSlotTime + topicDuration
-
-                        def activityCountKey = currentActivityType + &quot;Count_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
-                        def activityNum = (vars.get(activityCountKey)?.toInteger() ?: 0) + 1
-                        vars.put(activityCountKey, activityNum.toString())
-
-                        log.info(&quot;✅ #${activityNum} ${currentActivityType.toUpperCase()} (gap) at ${formatMinutesToTime(selectedSlotTime)}-${formatMinutesToTime(slotEnd)} (${topicDuration}m) | ${vars.get(&apos;currentRoomName&apos;)}&quot;)
-
-                        def currentRanges = vars.get(usedSlotRangesKey) ?: &quot;&quot;
-                        vars.put(usedSlotRangesKey, currentRanges ? currentRanges + &quot;;&quot; + selectedSlotTime + &quot;:&quot; + slotEnd : selectedSlotTime + &quot;:&quot; + slotEnd)
-
-                        def actTimingsUdvNameGapTrack = currentActivityType.toLowerCase() + &quot;Timings&quot;
-                        if (vars.get(actTimingsUdvNameGapTrack)?.trim()) {
-                            def usedTimingsKeyGapTrack = &quot;usedTimings_${currentActivityType}_Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
-                            def existing3 = vars.get(usedTimingsKeyGapTrack) ?: &quot;&quot;
-                            vars.put(usedTimingsKeyGapTrack, existing3 ? existing3 + &quot;,&quot; + selectedSlotTime : selectedSlotTime.toString())
-                            log.info(&quot;[${actTimingsUdvNameGapTrack}] Marked ${formatMinutesToTime(selectedSlotTime)} as used (gap fill) for Day ${dayIndex} Room ${roomIndex}&quot;)
-                        }
-
-                        def eventDateStr = vars.get(&quot;activityDate_&quot; + (vars.get(&quot;ActivityDayCount&quot;) ?: &quot;1&quot;)) ?: &quot;&quot;
-                        selectedSlot = [
-                            startTime: [context: [contextZoneDate: formatMinutesToDateTime(selectedSlotTime, eventDateStr)]],
-                            endTime: [context: [contextZoneDate: formatMinutesToDateTime(slotEnd, eventDateStr)]]
-                        ]
-                    } else {
-                        vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
-                        def hasTimingsRestriction = vars.get(currentActivityType.toLowerCase() + &quot;Timings&quot;)?.trim()
-                        if (!hasTimingsRestriction) { vars.put(&quot;stopRoomActivityLoop&quot;, &quot;true&quot;) }
-                    }
+                    def eventDateStr = vars.get(&quot;activityDate_&quot; + (vars.get(&quot;ActivityDayCount&quot;) ?: &quot;1&quot;)) ?: &quot;&quot;
+                    selectedSlot = [
+                        startTime: [context: [contextZoneDate: formatMinutesToDateTime(selectedSlotTime, eventDateStr)]],
+                        endTime: [context: [contextZoneDate: formatMinutesToDateTime(slotEnd, eventDateStr)]]
+                    ]
                 } else {
                     vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
-                    def hasTimingsRestriction2 = vars.get(currentActivityType.toLowerCase() + &quot;Timings&quot;)?.trim()
-                    if (!hasTimingsRestriction2) { vars.put(&quot;stopRoomActivityLoop&quot;, &quot;true&quot;) }
+                    def hasTimingsRestriction = vars.get(currentActivityType.toLowerCase() + &quot;Timings&quot;)?.trim()
+                    if (!hasTimingsRestriction) { vars.put(&quot;stopRoomActivityLoop&quot;, &quot;true&quot;) }
                 }
+            } else {
+                vars.put(&quot;skipActivity&quot;, &quot;true&quot;)
+                def hasTimingsRestriction2 = vars.get(currentActivityType.toLowerCase() + &quot;Timings&quot;)?.trim()
+                if (!hasTimingsRestriction2) { vars.put(&quot;stopRoomActivityLoop&quot;, &quot;true&quot;) }
             }
         }
+    }
 
     if (selectedSlot) {
         vars.put(&quot;skipActivity&quot;, &quot;false&quot;)
@@ -12300,7 +12849,8 @@ if (vars.get(&quot;skipActivity&quot;) != &quot;true&quot;) {
     def slotDuration = (defaultDuration ?: &quot;30&quot;).toInteger()
     int slotsUsed = slotDuration &gt; 0 ? (int) Math.ceil(activityDuration / slotDuration) : 1
     vars.put(&quot;totalSlotsUsed_&quot; + slotKey, (currentTotal + slotsUsed).toString())
-}</stringProp>
+}
+</stringProp>
                                       <stringProp name="scriptLanguage">groovy</stringProp>
                                       <stringProp name="parameters"></stringProp>
                                       <stringProp name="filename"></stringProp>
@@ -12979,8 +13529,8 @@ def formName = vars.get(&quot;currentFormName&quot;)
 
 def rand = java.util.concurrent.ThreadLocalRandom.current()
 
-def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).min
-def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).max
+def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).min
+def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).max
 
 def getRandomSelectionCount = { int availableCount -&gt;
     def maxPossible = Math.min(availableCount, maxSelection)
@@ -14359,8 +14909,8 @@ if (isMultiEntry) {
 }
 
 if (targetPresenterCount == 0 &amp;&amp; isMultiEntry) {
-    def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,5&quot;).min
-    def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,5&quot;).max
+    def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).min
+    def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, null).max
 
     log.info(&quot;Module Config not found - using UDV: multiSelectRange=${vars.get(&apos;multiSelectRange&apos;)} (min=${minSelection}, max=${maxSelection})&quot;)
 
@@ -14713,650 +15263,6 @@ vars.put(&quot;participantLoopIdx&quot;, idx.toString())
                                           <hashTree/>
                                         </hashTree>
                                       </hashTree>
-                                    </hashTree>
-                                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update - ${activityType}" enabled="true">
-                                      <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-                                      <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-                                        <collectionProp name="Arguments.arguments">
-                                          <elementProp name="" elementType="HTTPArgument">
-                                            <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                                            <stringProp name="Argument.value">${dynamicFormPayload}</stringProp>
-                                            <stringProp name="Argument.metadata">=</stringProp>
-                                          </elementProp>
-                                        </collectionProp>
-                                      </elementProp>
-                                      <stringProp name="HTTPSampler.domain"></stringProp>
-                                      <stringProp name="HTTPSampler.port"></stringProp>
-                                      <stringProp name="HTTPSampler.protocol"></stringProp>
-                                      <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                      <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/data/${activityDataId}</stringProp>
-                                      <stringProp name="HTTPSampler.method">PUT</stringProp>
-                                      <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                      <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                      <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                      <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                      <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                      <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                      <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                                    </HTTPSamplerProxy>
-                                    <hashTree>
-                                      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                        <collectionProp name="HeaderManager.headers">
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                            <stringProp name="Header.value">${customerId}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                            <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                            <stringProp name="Header.value">${categoryId}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
-                                            <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
-                                            <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">x-cloud-eventid</stringProp>
-                                            <stringProp name="Header.value">${requestId}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">x-cloud-activityid</stringProp>
-                                            <stringProp name="Header.value">${activityId}</stringProp>
-                                          </elementProp>
-                                          <elementProp name="" elementType="Header">
-                                            <stringProp name="Header.name">X_cloud_user</stringProp>
-                                            <stringProp name="Header.value">${currentUser}</stringProp>
-                                          </elementProp>
-                                        </collectionProp>
-                                      </HeaderManager>
-                                      <hashTree/>
-                                      <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Dynamic Payload Builder PreProcessor" enabled="true">
-                                        <stringProp name="script">
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
-def formName = vars.get(&quot;currentFormName&quot;)
-
-def rand = java.util.concurrent.ThreadLocalRandom.current()
-
-def minSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).min
-def maxSelection = props.get(&quot;fn_parseMultiSelectRange&quot;)(vars, &quot;1,3&quot;).max
-
-def getRandomSelectionCount = { int availableCount -&gt;
-    def maxPossible = Math.min(availableCount, maxSelection)
-    def minPossible = Math.min(minSelection, maxPossible)
-    return minPossible + rand.nextInt((maxPossible - minPossible) + 1)
-}
-
-def generateRandomNumber(int min, int max) { return props.get(&quot;fn_generateRandomNumber&quot;)(min, max) }
-
-def generateFutureDate = { props.get(&quot;fn_generateFutureDate&quot;)(vars) }
-
-def generateFutureTime(int hoursOffset) { return props.get(&quot;fn_generateFutureTime&quot;)(vars, hoursOffset) }
-props.get(&quot;fn_resetFutureTimeDayOffset&quot;)(vars)
-
-def formUIConfigStr = vars.get(&quot;currentFormUIConfig&quot;)
-
-if (!formUIConfigStr) {
-    log.warn(&quot;formUIConfig not found - skipping&quot;)
-    vars.put(&quot;dynamicFormPayload&quot;, &quot;{}&quot;)
-    log.info(&quot;Terminated: Dynamic Payload Builder&quot;)
-    return
-}
-
-def fieldMappingsStr = vars.get(&quot;currentFieldMappings&quot;)
-def fieldMappingsMap = props.get(&quot;fn_parseFieldMappings&quot;)(fieldMappingsStr)
-
-def allFields = props.get(&quot;fn_extractAllFields&quot;)(formUIConfigStr)
-
-def currentActivityType = (vars.get(&quot;calcActivityType&quot;) ?: vars.get(&quot;loopActivityType&quot;) ?: vars.get(&quot;activityType&quot;) ?: &quot;unknown&quot;).toLowerCase()
-def cateringTypeName = (vars.get(&quot;cateringTypeName&quot;) ?: &quot;catering&quot;).toLowerCase()
-
-vars.remove(&quot;meetingName&quot;)
-vars.remove(&quot;meetingDescription&quot;)
-vars.remove(&quot;meetingAgenda&quot;)
-
-if (currentActivityType == cateringTypeName) {
-    def activityModuleName = vars.get(&quot;currentActivityModuleName&quot;) ?: vars.get(&quot;currentModuleName&quot;) ?: &quot;Catering&quot;
-    vars.put(&quot;meetingName&quot;, activityModuleName)
-
-    def cateringNotes = [
-        &quot;Include extra napkins and utensils&quot;,
-        &quot;Ensure hot items are kept warm until serving&quot;,
-        &quot;Water and refreshments should be available throughout&quot;,
-        &quot;Serve coffee and tea after the main course&quot;,
-        &quot;Keep dietary restriction labels visible&quot;,
-        &quot;Ensure gluten-free options are available&quot;,
-        &quot;Set up a separate station for beverages&quot;,
-        &quot;Include fresh fruit as a healthy option&quot;,
-        &quot;Provide to-go containers for leftovers&quot;,
-        &quot;Please bring serving spoons and tongs&quot;,
-        &quot;Keep cold items refrigerated until serving&quot;,
-        &quot;Setup should be complete before guests arrive&quot;,
-        &quot;Ensure portion sizes are adequate for all guests&quot;,
-        &quot;Desserts should be individually portioned&quot;,
-        &quot;Avoid strongly scented foods for this meeting&quot;,
-        &quot;Vegetarian options should be clearly marked&quot;,
-        &quot;Use eco-friendly cutlery if possible&quot;,
-        &quot;No peanuts or tree nuts in any dishes&quot;
-    ]
-    def note = cateringNotes[rand.nextInt(cateringNotes.size())]
-    vars.put(&quot;notes&quot;, note)
-    vars.put(&quot;meetingDescription&quot;, note)
-    vars.put(&quot;meetingAgenda&quot;, &quot;&quot;)
-
-    String[] caterers = [
-        &quot;Sodexo Catering Services&quot;,
-        &quot;Aramark Corporate Dining&quot;,
-        &quot;Compass Group Catering&quot;,
-        &quot;Wolfgang Puck Catering&quot;,
-        &quot;Delaware North Catering&quot;,
-        &quot;Fresh Ideas Food Service&quot;,
-        &quot;Canteen Vending Services&quot;,
-        &quot;Eurest Dining Services&quot;
-    ]
-    vars.put(&quot;catererOrderedFrom&quot;, caterers[rand.nextInt(caterers.length)])
-
-    def contactIndex = rand.nextInt(1, (vars.get(&quot;randomUserCount&quot;) ?: &quot;50&quot;).toInteger() + 1)
-    def contactFirst = vars.get(&quot;randomUser${contactIndex}firstName&quot;) ?: &quot;John&quot;
-    def contactLast = vars.get(&quot;randomUser${contactIndex}lastName&quot;) ?: &quot;Doe&quot;
-    def contactStartDigit = [7, 8, 9][rand.nextInt(3)]
-    def contactPhone = String.valueOf(contactStartDigit) +
-        String.valueOf(java.util.concurrent.ThreadLocalRandom.current().nextLong(100000000L, 1000000000L))
-    vars.put(&quot;onsiteDeliveryContact&quot;, contactFirst + &quot; &quot; + contactLast + &quot; - &quot; + contactPhone)
-
-    String[] setupLocations = [
-        &quot;Main Cafeteria&quot;, &quot;Executive Dining Hall&quot;,
-        &quot;Food Court&quot;, &quot;Bistro Corner&quot;,
-        &quot;Coffee Bar&quot;, &quot;Snack Bar&quot;, &quot;Juice Bar&quot;, &quot;Pantry - Floor 1&quot;, &quot;Pantry - Floor 2&quot;,
-        &quot;Pantry - Floor 3&quot;,
-        &quot;Kitchen Area&quot;, &quot;Dining Area - East&quot;, &quot;Dining Area - West&quot;,
-        &quot;Dining Area - North&quot;, &quot;Catering Station A&quot;, &quot;Catering Station B&quot;,
-        &quot;Catering Station C&quot;, &quot;Buffet Area&quot;,
-        &quot;Outdoor Dining Area&quot;, &quot;Patio Dining&quot;, &quot;Terrace Cafe&quot;,
-        &quot;Vending Area&quot;, &quot;Refreshment Station&quot;, &quot;Beverage Station&quot;,
-        &quot;Banquet Hall&quot;, &quot;Private Dining Room&quot;, &quot;Guest Dining Area&quot;,
-        &quot;Staff Kitchen&quot;, &quot;Shared Kitchen&quot;, &quot;Satellite Kitchen&quot;,
-        &quot;Tea Station&quot;, &quot;Coffee Lounge&quot;, &quot;Espresso Bar&quot;,
-        &quot;Salad Bar Area&quot;, &quot;Hot Food Counter&quot;, &quot;Grab and Go Station&quot;,
-        &quot;Food Service Area&quot;, &quot;Dining Lounge&quot;,
-        &quot;Rooftop Cafe&quot;, &quot;Basement Cafeteria&quot;, &quot;Lobby Cafe&quot;
-    ]
-    vars.put(&quot;setupLocation&quot;, setupLocations[rand.nextInt(setupLocations.length)])
-
-    log.info(&quot;[Activity DPB] CATERING: notes=&quot; + note)
-    log.info(&quot;[Activity DPB] CATERING: catererOrderedFrom=&quot; + vars.get(&quot;catererOrderedFrom&quot;))
-    log.info(&quot;[Activity DPB] CATERING: onsiteDeliveryContact=&quot; + vars.get(&quot;onsiteDeliveryContact&quot;))
-    log.info(&quot;[Activity DPB] CATERING: setupLocation=&quot; + vars.get(&quot;setupLocation&quot;))
-}
-
-def formData = [:]
-
-def defaultTexts = props.get(&quot;fn_defaultTextFields&quot;)
-
-def textareaValues = props.get(&quot;fn_defaultTextAreas&quot;)
-
-def _depResult = props.get(&quot;fn_buildDependentControlsMap&quot;)(allFields)
-def dependentControlsMap = _depResult.map
-def dependentFieldsSet = _depResult.fieldSet
-
-// FIX: Two-pass ordering — process parent/standalone fields first, dependent fields second.
-def nonDependentFields = allFields.findAll { f -&gt; !dependentFieldsSet.contains(f.dataMapping ?: f.formControlName) }
-def dependentFields    = allFields.findAll { f -&gt;  dependentFieldsSet.contains(f.dataMapping ?: f.formControlName) }
-def orderedFields = nonDependentFields + dependentFields
-log.info(&quot;PayloadBuilder: field order — ${nonDependentFields.size()} parent/standalone + ${dependentFields.size()} dependent&quot;)
-
-def shouldShowDependentField(String depFieldName, Map formDataSoFar) {
-    props.get(&quot;fn_shouldShowDependentField&quot;)(depFieldName, formDataSoFar, dependentControlsMap, vars)
-}
-
-def existingFormDataStr = vars.get(&quot;existingFormData&quot;)
-def existingFormData = existingFormDataStr ? new groovy.json.JsonSlurper().parseText(existingFormDataStr) : [:]
-
-// STEP 5: Process Each Field (ordered: parents first, dependent children second)
-orderedFields.each { field -&gt;
-
-    def fieldName = field.dataMapping ?: field.formControlName
-    def fieldType = field.formControlType
-    def fieldLabel = field.fieldLabel ?: fieldName
-    def isMultiple = field.isMultiple ?: false
-    def lookupName = field.lookupName
-    def isHidden = field.hide ?: false
-    def isDisabled = field.disabled ?: false
-
-    def existingValue = existingFormData[fieldName]
-    def isNumericField = fieldType in [&quot;NUMBER&quot;, &quot;CURRENCY&quot;, &quot;DECIMAL&quot;]
-    def isBooleanField = fieldType == &quot;CHECKBOX&quot;
-    def isEmptyNumeric = isNumericField &amp;&amp; (existingValue == 0 || existingValue == 0.0 || existingValue == &quot;0&quot;)
-    def isEmptyBoolean = isBooleanField &amp;&amp; (existingValue == false || existingValue == &quot;false&quot;)
-
-    if (existingValue != null &amp;&amp; existingValue.toString().trim() != &quot;&quot; &amp;&amp; !isEmptyNumeric &amp;&amp; !isEmptyBoolean) {
-        formData[fieldName] = existingValue
-        return
-    }
-
-    def resourceTypeId = field.resourceTypeId ?: field.resourceType?.id ?:
-                         field.resourceType?.uniqueId ?:
-                         (field.resourceType instanceof String ? field.resourceType : null)
-    def masterTypeId = field.masterTypeId ?: field.masterType?.id ?:
-                       field.masterType?.uniqueId ?:
-                       (field.masterType instanceof String ? field.masterType : null)
-    def enumType = field.enumType ?: &quot;&quot;
-
-    def mappingInfo = fieldMappingsMap[fieldName]
-    def aliasName = mappingInfo?.aliasName
-
-    if (isHidden) {
-        return
-    }
-
-    def hiddenRoles = field.hiddenRoles ?: []
-    if (hiddenRoles) {
-        def userRole = vars.get(&quot;roleId&quot;) ?: &quot;&quot;
-
-        if (hiddenRoles.contains(userRole)) {
-            log.info(&quot;Skipping field &apos;${fieldName}&apos; - user role &apos;${userRole}&apos; is in hiddenRoles: ${hiddenRoles}&quot;)
-            return
-        }
-    }
-
-    def readOnlyRoles = field.readOnlyRoles ?: []
-    if (readOnlyRoles) {
-
-        if (readOnlyRoles.contains(userRole)) {
-            log.info(&quot;Skipping field &apos;${fieldName}&apos; - user role &apos;${userRole}&apos; is in readOnlyRoles: ${readOnlyRoles}&quot;)
-            return
-        }
-    }
-
-	if (isDisabled) {
-    		return
-	}
-    if (dependentFieldsSet.contains(fieldName)) {
-        if (!shouldShowDependentField(fieldName, formData)) {
-            return
-        }
-    }
-
-    def value = null
-    def skipField = false
-
-    def skipAliasForMultiSelect = (fieldType == &quot;SELECT&quot; &amp;&amp; isMultiple &amp;&amp; lookupName)
-
-    if (aliasName &amp;&amp; !skipAliasForMultiSelect) {
-        value = vars.get(aliasName)
-
-        if (value != null &amp;&amp; value != &quot;&quot;) {
-            if (fieldType != &quot;TEXTAREA&quot; &amp;&amp; value instanceof String &amp;&amp; value.contains(&quot;,&quot;)) {
-                if (isMultiple) {
-                    value = value.split(&quot;,&quot;).collect { it.trim() }.toList()
-                } else {
-                    value = value.split(&quot;,&quot;)[0].trim()
-                }
-            } else {
-                if (isMultiple) {
-                    value = [value]
-                }
-            }
-        }
-    }
-
-    if (value == null || value == &quot;&quot;) {
-
-        def nameAliases = (vars.get(&quot;meetingNameAliases&quot;) ?: &quot;NAME,TITLE,SUBJECT&quot;).toUpperCase().split(&quot;,&quot;).collect{it.trim()}
-        def descAliases = (vars.get(&quot;meetingDescAliases&quot;) ?: &quot;DESCRIPTION,DESC&quot;).toUpperCase().split(&quot;,&quot;).collect{it.trim()}
-        def agendaAliases = (vars.get(&quot;meetingAgendaAliases&quot;) ?: &quot;AGENDA&quot;).toUpperCase().split(&quot;,&quot;).collect{it.trim()}
-
-        def aliasUpper = aliasName?.toUpperCase() ?: &quot;&quot;
-        def isNameField = nameAliases.any { aliasUpper.contains(it) }
-        def isDescField = descAliases.any { aliasUpper.contains(it) }
-        def isAgendaField = agendaAliases.any { aliasUpper.contains(it) }
-
-        switch(fieldType) {
-
-            case &quot;TEXT&quot;:
-                if (isNameField) {
-                    value = vars.get(&quot;meetingName&quot;) ?: defaultTexts[rand.nextInt(defaultTexts.length)]
-                } else if (isDescField) {
-                    value = vars.get(&quot;meetingDescription&quot;) ?: defaultTexts[rand.nextInt(defaultTexts.length)]
-                } else if (isMultiple) {
-                    def count = getRandomSelectionCount(defaultTexts.length)
-                    def values = []
-                    for (int j = 0; j &lt; count; j++) {
-                        values.add(defaultTexts[rand.nextInt(defaultTexts.length)])
-                    }
-                    value = values
-                } else {
-                    value = defaultTexts[rand.nextInt(defaultTexts.length)]
-                }
-                break
-
-            case &quot;TEXTAREA&quot;:
-                if (isDescField) {
-                    value = vars.get(&quot;meetingDescription&quot;) ?: textareaValues[rand.nextInt(textareaValues.length)]
-                } else if (isAgendaField) {
-                    value = vars.get(&quot;meetingAgenda&quot;) ?: textareaValues[rand.nextInt(textareaValues.length)]
-                } else {
-                    value = textareaValues[rand.nextInt(textareaValues.length)]
-                }
-                break
-
-            case &quot;NUMBER&quot;:
-                value = props.get(&quot;fn_randomNumber1to5&quot;)()
-                break
-
-            case &quot;CURRENCY&quot;:
-                value = props.get(&quot;fn_randomNumber1to5&quot;)()
-                break
-
-            case &quot;CLOUD_DATE&quot;:
-                value = generateFutureDate()
-                break
-
-            case &quot;CLOUD_TIME&quot;:
-                def slotStartTime = vars.get(&quot;currentVacantSlotStartTime&quot;) ?: &quot;&quot;
-                def slotEndTime = vars.get(&quot;currentVacantSlotEndTime&quot;) ?: &quot;&quot;
-                def durationMinsStr2 = vars.get(&quot;currentActivityDuration&quot;)
-                if (!durationMinsStr2 || !durationMinsStr2.isInteger() || durationMinsStr2.toInteger() &lt;= 0) {
-                    def vacantRaw2 = vars.get(&quot;vacantSlotDurations&quot;)?.trim()
-                    if (vacantRaw2) {
-                        def validDurs2 = vacantRaw2.split(&quot;,&quot;).collect { it.trim() }.findAll { it.isInteger() &amp;&amp; it.toInteger() &gt; 0 }
-                        durationMinsStr2 = validDurs2 ? validDurs2[0] : &quot;0&quot;
-                    } else {
-                        durationMinsStr2 = &quot;0&quot;
-                    }
-                }
-                def durationMins = durationMinsStr2.toInteger()
-
-                def fieldLower = fieldName?.toLowerCase() ?: &quot;&quot;
-                def aliasLower = aliasName?.toLowerCase() ?: &quot;&quot;
-                def isStartField = fieldLower.contains(&quot;start&quot;) || aliasLower.contains(&quot;start&quot;)
-                def isEndField = fieldLower.contains(&quot;end&quot;) || aliasLower.contains(&quot;end&quot;)
-
-                if (isStartField &amp;&amp; slotStartTime) {
-                    value = slotStartTime
-                } else if (isEndField &amp;&amp; slotStartTime) {
-                    try {
-                        def formatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&quot;)
-                        def startDT = LocalDateTime.parse(slotStartTime, formatter)
-                        def endDT = startDT.plusMinutes(durationMins)
-                        value = endDT.format(formatter)
-                    } catch (Exception e) {
-                        log.warn(&quot;CLOUD_TIME: Could not calculate endTime: ${e.message}&quot;)
-                        value = slotEndTime ?: generateFutureTime(18)
-                    }
-                } else {
-                    if (slotStartTime) {
-                        value = slotStartTime
-                    } else {
-                        value = generateFutureTime(rand.nextInt(9) + 8)
-                    }
-                }
-                break
-
-            case &quot;SELECT&quot;:
-                if (enumType == &quot;TIMEZONE&quot;) {
-                    value = vars.get(&quot;requestTimeZone&quot;) ?: &quot;&quot;
-                } else if (enumType == &quot;MASTER&quot; &amp;&amp; masterTypeId) {
-
-                    def mtCountStr = vars.get(&quot;mastersFor_&quot; + masterTypeId + &quot;_count&quot;)
-                    if (mtCountStr &amp;&amp; mtCountStr.isInteger() &amp;&amp; mtCountStr.toInteger() &gt; 0) {
-                        def mtCount = mtCountStr.toInteger()
-
-                        if (isMultiple) {
-                            def selectCount = getRandomSelectionCount(mtCount)
-                            def selectedValues = []
-                            def indices = (1..mtCount).toList()
-                            Collections.shuffle(indices)
-                            for (def idx : indices.take(selectCount)) {
-                                def masterId = vars.get(&quot;mastersFor_&quot; + masterTypeId + &quot;_&quot; + idx + &quot;_id&quot;)
-                                if (masterId) selectedValues.add(masterId)
-                            }
-                            if (selectedValues) {
-                                value = selectedValues
-                            }
-                        } else {
-                            def randomIndex = rand.nextInt(mtCount) + 1
-                            def masterId = vars.get(&quot;mastersFor_&quot; + masterTypeId + &quot;_&quot; + randomIndex + &quot;_id&quot;)
-                            def masterName = vars.get(&quot;mastersFor_&quot; + masterTypeId + &quot;_&quot; + randomIndex + &quot;_name&quot;) ?: &quot;Unknown&quot;
-                            value = masterId
-                        }
-                    } else {
-                        log.warn(&quot;No masters found for masterTypeId: ${masterTypeId} - SKIPPING field&quot;)
-                        skipField = true
-                    }
-                } else if (lookupName) {
-                    def words = lookupName.toLowerCase().split(&apos;_&apos;)
-                    def camelCaseName = words[0] + words.drop(1).collect { it.capitalize() }.join(&apos;&apos;)
-
-                    if (isMultiple) {
-                        def countStr = vars.get(camelCaseName + &quot;_count&quot;)
-
-                        if (countStr &amp;&amp; countStr.isInteger()) {
-                            def count = countStr.toInteger()
-                            def selectCount = getRandomSelectionCount(count)
-                            def selectedValues = []
-                            def indices = (1..count).toList()
-                            Collections.shuffle(indices)
-                            for (def idx : indices.take(selectCount)) {
-                                def val = vars.get(camelCaseName + &quot;_&quot; + idx)
-                                if (val) selectedValues.add(val)
-                            }
-                            if (selectedValues) {
-                                value = selectedValues
-
-                            } else {
-                                log.warn(&quot;No lookup values for &apos;${lookupName}&apos; - SKIPPING field&quot;)
-                                skipField = true
-                            }
-                        } else {
-                            log.warn(&quot;No lookup count for &apos;${lookupName}&apos; - SKIPPING field&quot;)
-                            skipField = true
-                        }
-                    } else {
-
-                        def countStr = vars.get(camelCaseName + &quot;_count&quot;)
-
-                        if (countStr &amp;&amp; countStr.isInteger() &amp;&amp; countStr.toInteger() &gt; 0) {
-                            def count = countStr.toInteger()
-
-                            def dayIndex = vars.get(&quot;ActivityDayCount&quot;) ?: vars.get(&quot;dayLoopCounter&quot;) ?: &quot;1&quot;
-                            def actType = vars.get(&quot;activityType&quot;) ?: &quot;unknown&quot;
-                            def roomIdx = vars.get(&quot;roomLoopCounter&quot;) ?: vars.get(&quot;currentRoomCounter&quot;) ?: &quot;1&quot;
-                            def activityIter = vars.get(&quot;activityLoopCounter&quot;) ?: &quot;1&quot;
-
-                            def usedKey = &quot;usedLookup_${camelCaseName}_Day${dayIndex}_Room${roomIdx}_${actType}&quot;
-                            def usedValuesStr = vars.get(usedKey) ?: &quot;&quot;
-                            def usedIndices = usedValuesStr ? usedValuesStr.split(&quot;,&quot;).collect { it.trim().toInteger() } : []
-
-                            def allIndices = (1..count).toList()
-                            def availableIndices = allIndices - usedIndices
-
-                            def randomIndex
-                            if (availableIndices.size() &gt; 0) {
-                                randomIndex = availableIndices[rand.nextInt(availableIndices.size())]
-                            } else {
-                                randomIndex = rand.nextInt(count) + 1
-                            }
-
-                            usedIndices.add(randomIndex)
-                            def newUsedStr = usedIndices.join(&quot;,&quot;)
-                            vars.put(usedKey, newUsedStr)
-
-                            value = vars.get(camelCaseName + &quot;_&quot; + randomIndex)
-
-                        } else {
-                            log.warn(&quot;No valid _count for &apos;${camelCaseName}&apos; - attempting fallback&quot;)
-                            def foundValues = []
-                            for (int i = 1; i &lt;= 20; i++) {
-                                def v = vars.get(camelCaseName + &quot;_&quot; + i)
-                                if (v) foundValues.add(v)
-                                else break
-                            }
-
-                            if (foundValues.size() &gt; 0) {
-                                value = foundValues[rand.nextInt(foundValues.size())]
-
-                            } else {
-                                value = vars.get(camelCaseName)
-                                if (value) {
-
-                                } else {
-                                    log.warn(&quot;No lookup value for &apos;${lookupName}&apos; - SKIPPING field&quot;)
-                                    skipField = true
-                                }
-                            }
-                        }
-                    }
-                } else if (enumType == &quot;RESOURCE&quot; &amp;&amp; resourceTypeId) {
-
-                    def rtCountStr = vars.get(&quot;resourcesFor_&quot; + resourceTypeId + &quot;_count&quot;)
-                    if (rtCountStr &amp;&amp; rtCountStr.isInteger() &amp;&amp; rtCountStr.toInteger() &gt; 0) {
-                        def rtCount = rtCountStr.toInteger()
-                        def randomIndex = rand.nextInt(rtCount) + 1
-                        def resourceId = vars.get(&quot;resourcesFor_&quot; + resourceTypeId + &quot;_&quot; + randomIndex + &quot;_id&quot;)
-                        value = [&quot;uniqueId&quot;: resourceId]
-
-                    } else {
-                        log.warn(&quot;No resources found for resourceTypeId: ${resourceTypeId} - SKIPPING field&quot;)
-                        skipField = true
-                    }
-                } else {
-                    log.warn(&quot;SELECT field without lookupName/enumType - SKIPPING field&quot;)
-                    skipField = true
-                }
-                break
-
-            case &quot;CHECKBOX&quot;:
-                value = rand.nextBoolean()
-                break
-
-            case &quot;RESOURCE&quot;:
-                if (resourceTypeId) {
-
-                    def rtCountStr = vars.get(&quot;resourcesFor_&quot; + resourceTypeId + &quot;_count&quot;)
-                    if (rtCountStr &amp;&amp; rtCountStr.isInteger() &amp;&amp; rtCountStr.toInteger() &gt; 0) {
-                        def rtCount = rtCountStr.toInteger()
-
-                        if (isMultiple) {
-                            def selectCount = getRandomSelectionCount(rtCount)
-                            def selectedValues = []
-                            def indices = (1..rtCount).toList()
-                            Collections.shuffle(indices)
-                            for (def idx : indices.take(selectCount)) {
-                                def resourceId = vars.get(&quot;resourcesFor_&quot; + resourceTypeId + &quot;_&quot; + idx + &quot;_id&quot;)
-                                if (resourceId) selectedValues.add(resourceId)
-                            }
-                            if (selectedValues) {
-                                value = selectedValues
-
-                            }
-                        } else {
-                            def randomIndex = rand.nextInt(rtCount) + 1
-                            value = vars.get(&quot;resourcesFor_&quot; + resourceTypeId + &quot;_&quot; + randomIndex + &quot;_id&quot;)
-                        }
-                    } else {
-                        log.warn(&quot;No resources fetched for resourceTypeId: ${resourceTypeId} - SKIPPING&quot;)
-                        skipField = true
-                    }
-                } else {
-                    log.warn(&quot;RESOURCE field without resourceTypeId - SKIPPING&quot;)
-                    skipField = true
-                }
-                break
-
-            case &quot;MASTER&quot;:
-                if (masterTypeId) {
-
-                    def mtCountStr = vars.get(&quot;mastersFor_&quot; + masterTypeId + &quot;_count&quot;)
-                    if (mtCountStr &amp;&amp; mtCountStr.isInteger() &amp;&amp; mtCountStr.toInteger() &gt; 0) {
-                        def mtCount = mtCountStr.toInteger()
-
-                        if (isMultiple) {
-                            def selectCount = getRandomSelectionCount(mtCount)
-                            def selectedValues = []
-                            def indices = (1..mtCount).toList()
-                            Collections.shuffle(indices)
-                            for (def idx : indices.take(selectCount)) {
-                                def masterId = vars.get(&quot;mastersFor_&quot; + masterTypeId + &quot;_&quot; + idx + &quot;_id&quot;)
-                                if (masterId) selectedValues.add(masterId)
-                            }
-                            if (selectedValues) {
-                                value = selectedValues
-
-                            }
-                        } else {
-                            def randomIndex = rand.nextInt(mtCount) + 1
-                            value = vars.get(&quot;mastersFor_&quot; + masterTypeId + &quot;_&quot; + randomIndex + &quot;_id&quot;)
-                        }
-                    } else {
-                        log.warn(&quot;No masters fetched for masterTypeId: ${masterTypeId} - SKIPPING&quot;)
-                        skipField = true
-                    }
-                } else {
-                    log.warn(&quot;MASTER field without masterTypeId - SKIPPING&quot;)
-                    skipField = true
-                }
-                break
-
-            default:
-                log.warn(&quot;Unknown field type &apos;${fieldType}&apos; - SKIPPING field&quot;)
-                skipField = true
-        }
-    }
-
-    if (!skipField &amp;&amp; value != null &amp;&amp; value != &quot;&quot;) {
-        if ((fieldType == &quot;CLOUD_DATE&quot; || fieldType == &quot;CLOUD_TIME&quot;) &amp;&amp; !(value instanceof Map)) {
-            formData[fieldName] = [&quot;isoDate&quot;: value]
-        } else if (fieldType == &quot;CHECKBOX&quot;) {
-            formData[fieldName] = (value instanceof String) ? value.toLowerCase() == &quot;true&quot; : value
-        } else if (fieldType == &quot;NUMBER&quot;) {
-            formData[fieldName] = (value instanceof String &amp;&amp; value.isInteger()) ? value.toInteger() : value
-        } else if (isMultiple &amp;&amp; !(value instanceof List)) {
-            formData[fieldName] = [value]
-        } else {
-            formData[fieldName] = value
-        }
-    }
-}
-
-def payload = [
-    &quot;moduleId&quot; : vars.get(&quot;activityConfig_0_moduleId&quot;) ?: vars.get(&quot;currentActivityModuleId&quot;) ?: vars.get(&quot;moduleId&quot;),
-    &quot;formId&quot;   : vars.get(&quot;activityConfig_0_formId&quot;) ?: vars.get(&quot;formId&quot;),
-    &quot;journeyId&quot;: vars.get(&quot;activityJourneyId&quot;) ?: vars.get(&quot;currentJourneyId&quot;),
-    &quot;pageId&quot;   : vars.get(&quot;activityPageId&quot;) ?: vars.get(&quot;currentPageId&quot;),
-    &quot;data&quot;     : formData
-]
-
-def payloadJson = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(payload))
-vars.put(&quot;dynamicFormPayload&quot;, payloadJson)
-// FIX: Scope by requestId to prevent processedFields bleeding across different requests
-def _trackModuleName = vars.get(&quot;currentModuleName&quot;) ?: vars.get(&quot;currentActivityModuleName&quot;) ?: vars.get(&quot;newRequestModuleName&quot;) ?: &quot;unknown&quot;
-def _trackFormName = vars.get(&quot;currentFormName&quot;) ?: vars.get(&quot;requestFormName&quot;) ?: &quot;unknown&quot;
-def _trackRequestId = vars.get(&quot;requestId&quot;) ?: &quot;unknown&quot;
-def _trackKey = &quot;processedFields_&quot; + _trackRequestId + &quot;_&quot; + _trackModuleName + &quot;_&quot; + _trackFormName
-def _existingTracked = props.get(_trackKey) ?: (new HashSet())
-for (def k : formData.keySet()) { _existingTracked.add(k) }
-props.put(_trackKey, _existingTracked)
-log.info(&quot;Field Tracking: Stored ${formData.size()} fields for &apos;${_trackKey}&apos; (total tracked: ${_existingTracked.size()})&quot;)
-</stringProp>
-                                        <stringProp name="scriptLanguage">groovy</stringProp>
-                                        <stringProp name="parameters"></stringProp>
-                                        <stringProp name="filename"></stringProp>
-                                        <stringProp name="cacheKey">false</stringProp>
-                                      </JSR223PreProcessor>
-                                      <hashTree/>
                                     </hashTree>
                                     <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get By Id - ${activityType}" enabled="true">
                                       <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">

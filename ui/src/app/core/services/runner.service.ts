@@ -3,6 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { resolveRunnerApiUrl } from '../utils/runner-api-url';
 import {
+  FieldOptionsRequest,
+  FieldOptionsResponse,
   LogPollResponse,
   ParametersSchema,
   PlansResponse,
@@ -28,6 +30,10 @@ export class RunnerService {
   getParameters(planFile?: string | null): Observable<ParametersSchema> {
     const params = planFile ? new HttpParams().set('plan', planFile) : new HttpParams();
     return this.http.get<ParametersSchema>(`${this.baseUrl}/parameters`, { params });
+  }
+
+  getFieldOptions(body: FieldOptionsRequest): Observable<FieldOptionsResponse> {
+    return this.http.post<FieldOptionsResponse>(`${this.baseUrl}/field-options`, body);
   }
 
   listRuns(): Observable<{ runs: RunSummary[] }> {

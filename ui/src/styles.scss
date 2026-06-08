@@ -280,6 +280,8 @@ input.p-inputtext.surface-input {
 
 /* Select — match surface-input / hero-input */
 .p-select.surface-select {
+  display: inline-flex !important;
+  align-items: stretch !important;
   width: 100%;
   background: rgba(7, 14, 27, 0.76) !important;
   border: 1px solid var(--border) !important;
@@ -310,9 +312,16 @@ input.p-inputtext.surface-input {
 }
 
 .p-select.surface-select .p-select-dropdown {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: stretch !important;
+  flex-shrink: 0 !important;
   width: 2.5rem;
   color: var(--text-muted) !important;
   border-inline-start: 1px solid var(--border) !important;
+  border-start-end-radius: 10px !important;
+  border-end-end-radius: 10px !important;
 }
 
 .p-select.surface-select:hover {
@@ -351,6 +360,136 @@ input.p-inputtext.surface-input {
 .p-select-overlay.surface-select-panel .p-select-option.p-select-option-selected {
   background: rgba(79, 140, 255, 0.22) !important;
   color: #f8fafc !important;
+}
+
+/* MultiSelect — match surface-select */
+.p-multiselect.surface-select {
+  display: inline-flex !important;
+  align-items: stretch !important;
+  width: 100%;
+  background: rgba(7, 14, 27, 0.76) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
+}
+
+.p-multiselect.surface-select .p-multiselect-label-container {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.p-multiselect.surface-select .p-multiselect-label {
+  padding: 0.55rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  font-family: inherit !important;
+  color: var(--text) !important;
+  gap: 0.35rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.p-multiselect.surface-select .p-multiselect-label.p-placeholder {
+  color: var(--text-dim) !important;
+}
+
+.p-multiselect.surface-select .p-multiselect-chip {
+  background: rgba(79, 140, 255, 0.18) !important;
+  color: #e8f0ff !important;
+  border: 1px solid rgba(79, 140, 255, 0.32) !important;
+  border-radius: 6px !important;
+  font-size: 0.78rem !important;
+  padding: 0.15rem 0.45rem !important;
+}
+
+.p-multiselect.surface-select .p-multiselect-chip-icon {
+  color: #c0d8ff !important;
+}
+
+.p-multiselect.surface-select .p-multiselect-dropdown {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: stretch !important;
+  flex-shrink: 0 !important;
+  width: 2.5rem;
+  color: var(--text-muted) !important;
+  border-inline-start: 1px solid var(--border) !important;
+  border-start-end-radius: 10px !important;
+  border-end-end-radius: 10px !important;
+}
+
+.p-multiselect.surface-select .p-multiselect-loading-icon,
+.p-multiselect.surface-select .p-multiselect-dropdown-icon {
+  color: var(--text-muted) !important;
+}
+
+.p-multiselect.surface-select:hover {
+  border-color: var(--border-strong) !important;
+}
+
+.p-multiselect.surface-select.p-focus,
+.p-multiselect.surface-select.p-inputwrapper-focus,
+.p-multiselect.surface-select.p-multiselect-open {
+  outline: none !important;
+  border-color: rgba(79, 140, 255, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.22) !important;
+  background: rgba(10, 18, 35, 0.9) !important;
+}
+
+.p-multiselect-overlay.surface-select-panel {
+  background: rgba(10, 18, 35, 0.98) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55) !important;
+  color: var(--text) !important;
+}
+
+.p-multiselect-overlay.surface-select-panel .p-multiselect-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 0.55rem 0.65rem !important;
+}
+
+.p-multiselect-overlay.surface-select-panel .p-multiselect-filter {
+  width: 100%;
+  background: rgba(7, 14, 27, 0.76) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  color: var(--text) !important;
+  padding: 0.45rem 0.65rem !important;
+  font-size: 0.84rem !important;
+  box-shadow: none !important;
+}
+
+.p-multiselect-overlay.surface-select-panel .p-multiselect-filter::placeholder {
+  color: var(--text-dim) !important;
+}
+
+.p-multiselect-overlay.surface-select-panel .p-multiselect-option {
+  color: var(--text) !important;
+  border-radius: 8px !important;
+  margin: 2px 4px !important;
+}
+
+.p-multiselect-overlay.surface-select-panel .p-multiselect-option:not(.p-disabled):hover,
+.p-multiselect-overlay.surface-select-panel .p-multiselect-option.p-focus {
+  background: rgba(79, 140, 255, 0.14) !important;
+  color: #f1f5f9 !important;
+}
+
+.p-multiselect-overlay.surface-select-panel .p-multiselect-option.p-multiselect-option-selected {
+  background: rgba(79, 140, 255, 0.22) !important;
+  color: #f8fafc !important;
+}
+
+.p-multiselect-overlay.surface-select-panel .p-multiselect-empty-message {
+  color: var(--text-dim) !important;
 }
 
 /* DatePicker — match surface-input */
@@ -392,6 +531,7 @@ input.p-inputtext.surface-input {
 }
 
 .p-datepicker-panel.surface-datepicker-panel {
+  z-index: 1200 !important;
   background: rgba(10, 18, 35, 0.98) !important;
   border: 1px solid var(--border-strong) !important;
   border-radius: 10px !important;

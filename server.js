@@ -3,7 +3,11 @@ const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 const { randomUUID } = require("crypto");
-const { parseJmxParameters, applyParameterOverrides } = require("./jmx-parameters");
+const {
+  parseJmxParameters,
+  applyParameterOverrides,
+  fetchApiFieldOptions
+} = require("./jmx-parameters");
 
 const PORT = Number(process.env.PORT || 5050);
 const JMETER_BIN = process.env.JMETER_BIN || "jmeter";
@@ -999,6 +1003,7 @@ const server = http.createServer(async (req, res) => {
         endpoints: {
           plans: "GET /plans",
           parameters: "GET /parameters?plan=<filename>",
+          fieldOptions: "POST /field-options",
           runs: "GET /runs",
           startRun: "POST /runs",
           runDetail: "GET /runs/:id",
@@ -1026,6 +1031,27 @@ const server = http.createServer(async (req, res) => {
       const planPath = resolvePlanPath(planFile);
       const schema = parseJmxParameters(planPath);
       return sendJson(res, 200, { ...schema, planFile: path.basename(planPath) });
+    }
+
+    if (req.method === "POST" && pathname === "/field-options") {
+      const raw = await readBody(req);
+      const body = raw ? JSON.parse(raw) : {};
+      const planPath = resolvePlanPath(body.planFile || null);
+      const field = String(body.field || "").trim();
+      if (!field) {
+        return sendJson(res, 400, { error: "field is required" });
+      }
+      try {
+        const result = await fetchApiFieldOptions(planPath, field, body.props || {});
+        return sendJson(res, 200, result);
+      } catch (err) {
+        const status = err.statusCode || 500;
+        return sendJson(res, status, {
+          error: err.message || "Failed to load field options",
+          field,
+          upstreamStatus: err.upstreamStatus || null
+        });
+      }
     }
 
     if (req.method === "GET" && pathname === "/runs") {

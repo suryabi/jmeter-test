@@ -1,6 +1,24 @@
 export type RunStatus = 'running' | 'succeeded' | 'failed' | 'cancelled' | 'unknown';
 
-export type ParameterType = 'text' | 'boolean' | 'date';
+export type ParameterType = 'text' | 'boolean' | 'date' | 'dropdown' | 'multiselect';
+export type ParameterKind = 'argument' | 'header';
+
+export interface ApiFieldConfig {
+  endpoint: string;
+  itemsPath: string;
+  displayField: string;
+  valueField: string;
+  depends?: string[];
+  ignore?: string[];
+  requestHeaders?: Record<string, string>;
+  multi?: boolean;
+  defaultPopulateFirstElement?: boolean;
+}
+
+export interface FieldOption {
+  label: string;
+  value: string;
+}
 
 export interface ParameterDef {
   name: string;
@@ -8,6 +26,9 @@ export interface ParameterDef {
   description: string;
   type: ParameterType;
   required: boolean;
+  kind?: ParameterKind;
+  headerName?: string;
+  apiConfig?: ApiFieldConfig;
 }
 
 export interface ParameterGroup {
@@ -108,6 +129,17 @@ export interface StartRunRequest {
   label?: string;
   planFile?: string;
   props?: RunProps;
+}
+
+export interface FieldOptionsRequest {
+  planFile?: string;
+  field: string;
+  props?: RunProps;
+}
+
+export interface FieldOptionsResponse {
+  field: string;
+  options: FieldOption[];
 }
 
 export interface SseLogEvent {

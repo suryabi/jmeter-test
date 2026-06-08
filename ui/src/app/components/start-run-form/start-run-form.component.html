@@ -124,7 +124,7 @@
                   <div class="field-cell">
                     @if (param.type === 'boolean') {
                       <span class="field-label-row">
-                        {{ fieldLabel(param.name) }}
+                        {{ fieldLabel(param) }}
                         @if (param.required) { <span class="required">*</span> }
                       </span>
                       <div class="bool-row">
@@ -142,7 +142,7 @@
                       }
                     } @else {
                       <label [for]="param.name" class="field-label-row">
-                        {{ fieldLabel(param.name) }}
+                        {{ fieldLabel(param) }}
                         @if (param.required) { <span class="required">*</span> }
                       </label>
                       @if (param.type === 'date') {
@@ -150,12 +150,42 @@
                           [inputId]="param.name"
                           class="surface-datepicker w-full"
                           panelStyleClass="surface-datepicker-panel"
+                          appendTo="body"
                           [formControlName]="param.name"
                           [iconDisplay]="'input'"
                           [showIcon]="true"
                           dateFormat="yy-mm-dd"
                           dataType="string"
                           placeholder="yyyy-mm-dd"
+                        />
+                      } @else if (param.type === 'dropdown') {
+                        <p-select
+                          [inputId]="param.name"
+                          class="surface-select w-full"
+                          panelStyleClass="surface-select-panel"
+                          appendTo="body"
+                          [options]="dropdownOptions(param)"
+                          optionLabel="label"
+                          optionValue="value"
+                          [formControlName]="param.name"
+                          [loading]="fieldOptionsLoading[param.name]"
+                          [placeholder]="dropdownPlaceholder(param)"
+                          (onChange)="onDropdownChange(param.name)"
+                        />
+                      } @else if (param.type === 'multiselect') {
+                        <p-multiselect
+                          [inputId]="param.name"
+                          class="surface-select w-full"
+                          panelStyleClass="surface-select-panel"
+                          appendTo="body"
+                          display="chip"
+                          [options]="dropdownOptions(param)"
+                          optionLabel="label"
+                          optionValue="value"
+                          [formControlName]="param.name"
+                          [loading]="fieldOptionsLoading[param.name]"
+                          [placeholder]="dropdownPlaceholder(param)"
+                          (onChange)="onDropdownChange(param.name)"
                         />
                       } @else {
                         <input
@@ -166,7 +196,9 @@
                           [formControlName]="param.name"
                         />
                       }
-                      @if (param.description) {
+                      @if (fieldOptionsError[param.name]) {
+                        <small class="field-help field-error">{{ fieldOptionsError[param.name] }}</small>
+                      } @else if (param.description) {
                         <small class="field-help">{{ param.description }}</small>
                       }
                     }
