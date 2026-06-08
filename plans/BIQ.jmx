@@ -96,7 +96,7 @@
             <elementProp name="includedStateActions" elementType="Argument">
               <stringProp name="Argument.name">includedStateActions</stringProp>
               <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
-              <stringProp name="Argument.desc">State actions to pick from after SUBMIT (comma-separated, e.g. CONFIRM,HOLD). Empty = all available actions allowed</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. State actions to pick from after SUBMIT. Empty = all available actions allowed</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -394,6 +394,12 @@
               <stringProp name="Argument.value">/${contextname}/api/forms</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
+            </elementProp>
+            <elementProp name="includedStateActions" elementType="Argument">
+              <stringProp name="Argument.name">includedStateActions</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/admin/actions</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.actions display=displayText value=uniqueId multi=true</stringProp>
             </elementProp>
           </collectionProp>
         </Arguments>

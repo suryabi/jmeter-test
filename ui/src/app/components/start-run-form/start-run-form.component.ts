@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -50,6 +50,7 @@ export class StartRunFormComponent implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly runner = inject(RunnerService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   form: FormGroup = this.fb.group({
     label: this.fb.nonNullable.control('sample-run')
@@ -294,8 +295,9 @@ export class StartRunFormComponent implements OnInit {
 
     for (const name of dependents) {
       const param = this.findParam(name);
-      const cleared = param?.type === 'multiselect' ? [] : '';
-      this.form.get(name)?.setValue(cleared, { emitEvent: false });
+      if (param) {
+        this.form.get(name)?.setValue(this.defaultControlValue(param), { emitEvent: false });
+      }
       this.fieldOptions[name] = [];
       this.fieldOptionsError[name] = '';
       this.fieldOptionsLoading[name] = false;
@@ -359,7 +361,7 @@ export class StartRunFormComponent implements OnInit {
         next: (response) => {
           this.fieldOptions[param.name] = response.options;
           this.fieldOptionsLoading[param.name] = false;
-          this.applyDefaultPopulateFirstElement(param, response.options);
+          this.applyLoadedOptionsSelection(param, response.options);
         },
         error: (err) => {
           this.fieldOptionsLoading[param.name] = false;
@@ -367,6 +369,120 @@ export class StartRunFormComponent implements OnInit {
             err?.error?.error || err?.message || 'Failed to load options';
         }
       });
+  }
+
+  private applyLoadedOptionsSelection(param: ParameterDef, options: FieldOption[]): void {
+    const control = this.form.get(param.name);
+    if (!control || !options.length) return;
+
+    const preferred = this.preferredValuesForParam(param, control.value);
+    const matched = this.matchOptionValues(options, preferred);
+    const previous = this.serializeValue(param, control.value);
+
+    if (param.type === 'multiselect') {
+      this.syncMultiselectValue(control as FormControl<string | boolean | string[]>, matched);
+      queueMicrotask(() => {
+        this.applyDefaultPopulateFirstElement(param, options);
+        this.finishLoadedOptionsSelection(param, previous);
+        this.cdr.markForCheck();
+      });
+      return;
+    }
+
+    if (matched[0]) {
+      control.setValue(matched[0], { emitEvent: false });
+    }
+
+    this.applyDefaultPopulateFirstElement(param, options);
+    this.finishLoadedOptionsSelection(param, previous);
+  }
+
+  private syncMultiselectValue(control: FormControl<string | boolean | string[]>, matched: string[]): void {
+    if (!matched.length) return;
+    control.setValue([], { emitEvent: false });
+    control.setValue([...matched], { emitEvent: false });
+  }
+
+  private finishLoadedOptionsSelection(param: ParameterDef, previousSerialized: string): void {
+    const control = this.form.get(param.name);
+    if (!control) return;
+
+    const next = this.serializeValue(param, control.value);
+    if (next !== previousSerialized && this.fieldHasDependents(param.name)) {
+      this.onDependencyChanged(param.name);
+    }
+  }
+
+  private preferredValuesForParam(
+    param: ParameterDef,
+    current: string | boolean | string[] | undefined
+  ): string[] {
+    const tokens: string[] = [];
+    for (const value of [
+      ...this.valuesFromControl(param, current),
+      ...this.parseJmxDefaultValues(param)
+    ]) {
+      if (!tokens.includes(value)) {
+        tokens.push(value);
+      }
+    }
+    return tokens;
+  }
+
+  private valuesFromControl(
+    param: ParameterDef,
+    current: string | boolean | string[] | undefined
+  ): string[] {
+    if (param.type === 'multiselect') {
+      return Array.isArray(current)
+        ? current.map((entry) => String(entry).trim()).filter(Boolean)
+        : [];
+    }
+    const value = String(current ?? '').trim();
+    return value ? [value] : [];
+  }
+
+  private parseJmxDefaultValues(param: ParameterDef): string[] {
+    const raw = param.defaultValue.trim();
+    if (!raw) return [];
+    if (param.type === 'multiselect') {
+      return raw
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean);
+    }
+    return [raw];
+  }
+
+  private matchOptionValues(options: FieldOption[], preferred: string[]): string[] {
+    const seen = new Set<string>();
+    const matched: string[] = [];
+
+    for (const token of preferred) {
+      const value = this.findOptionValue(options, token);
+      if (value && !seen.has(value)) {
+        seen.add(value);
+        matched.push(value);
+      }
+    }
+
+    return matched;
+  }
+
+  private findOptionValue(options: FieldOption[], token: string): string | undefined {
+    const needle = token.trim();
+    if (!needle) return undefined;
+
+    const normalized = needle.toLowerCase();
+    const hit = options.find(
+      (option) =>
+        option.value === needle ||
+        option.value.toLowerCase() === normalized ||
+        option.label.toLowerCase() === normalized ||
+        option.label.toLowerCase().replace(/\s+/g, '') === normalized.replace(/\s+/g, '')
+    );
+
+    return hit?.value;
   }
 
   private applyDefaultPopulateFirstElement(param: ParameterDef, options: FieldOption[]): void {

@@ -383,6 +383,11 @@ input.p-inputtext.surface-input {
   overflow: hidden;
 }
 
+.p-multiselect.surface-select.p-multiselect-display-chip .p-multiselect-label-container {
+  overflow: visible !important;
+  align-items: flex-start !important;
+}
+
 .p-multiselect.surface-select .p-multiselect-label {
   padding: 0.55rem 0.75rem !important;
   font-size: 0.875rem !important;
@@ -392,6 +397,22 @@ input.p-inputtext.surface-input {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.p-multiselect.surface-select.p-multiselect-display-chip .p-multiselect-label {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  align-content: flex-start !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  row-gap: 0.35rem !important;
+}
+
+.p-multiselect.surface-select .p-multiselect-chip-item {
+  flex: 0 0 auto;
+  max-width: 100%;
 }
 
 .p-multiselect.surface-select .p-multiselect-label.p-placeholder {

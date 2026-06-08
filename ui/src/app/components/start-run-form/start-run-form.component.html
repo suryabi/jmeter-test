@@ -173,20 +173,46 @@
                           (onChange)="onDropdownChange(param.name)"
                         />
                       } @else if (param.type === 'multiselect') {
-                        <p-multiselect
-                          [inputId]="param.name"
-                          class="surface-select w-full"
-                          panelStyleClass="surface-select-panel"
-                          appendTo="body"
-                          display="chip"
-                          [options]="dropdownOptions(param)"
-                          optionLabel="label"
-                          optionValue="value"
-                          [formControlName]="param.name"
-                          [loading]="fieldOptionsLoading[param.name]"
-                          [placeholder]="dropdownPlaceholder(param)"
-                          (onChange)="onDropdownChange(param.name)"
-                        />
+                        @if (!dependenciesReady(param)) {
+                          <input
+                            pInputText
+                            variant="outlined"
+                            class="surface-input w-full"
+                            disabled
+                            [placeholder]="dropdownPlaceholder(param)"
+                          />
+                        } @else if (fieldOptionsLoading[param.name]) {
+                          <input
+                            pInputText
+                            variant="outlined"
+                            class="surface-input w-full"
+                            disabled
+                            placeholder="Loading options…"
+                          />
+                        } @else if (dropdownOptions(param).length) {
+                          <p-multiselect
+                            [inputId]="param.name"
+                            class="surface-select w-full"
+                            panelStyleClass="surface-select-panel"
+                            appendTo="body"
+                            display="chip"
+                            [maxSelectedLabels]="null"
+                            [options]="dropdownOptions(param)"
+                            optionLabel="label"
+                            optionValue="value"
+                            [formControlName]="param.name"
+                            [placeholder]="dropdownPlaceholder(param)"
+                            (onChange)="onDropdownChange(param.name)"
+                          />
+                        } @else {
+                          <input
+                            pInputText
+                            variant="outlined"
+                            class="surface-input w-full"
+                            disabled
+                            placeholder="No options available"
+                          />
+                        }
                       } @else {
                         <input
                           pInputText
