@@ -89,14 +89,14 @@
             </elementProp>
             <elementProp name="maxIterationCount" elementType="Argument">
               <stringProp name="Argument.name">maxIterationCount</stringProp>
-              <stringProp name="Argument.value">3</stringProp>
-              <stringProp name="Argument.desc">HIDE. Max state action iterations per request (iteration 1 always SUBMIT). 0 = skip state actions</stringProp>
+              <stringProp name="Argument.value">2,3,4</stringProp>
+              <stringProp name="Argument.desc">HIDE. Times to iterate state actions (comma-separated, e.g. 2,3). First iteration always SUBMIT. Remaining pick randomly from targetActions. 0 or empty = skip</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="targetActions" elementType="Argument">
               <stringProp name="Argument.name">targetActions</stringProp>
               <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Pool to randomly pick one target state action before iterating; loop exits when the target state action is performed</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. State actions to pick from after SUBMIT (comma-separated). Empty = all available actions allowed</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -672,26 +672,26 @@ def _fn_moduleTypeMatches = { varsRef, udvKey, currentTypeId, currentTypeName = 
 }
 props.put(&quot;fn_moduleTypeMatches&quot;, _fn_moduleTypeMatches)
 
-def _fn_moduleBucketActive = { varsRef, bucketKey, udvKey -&gt;
-    if (varsRef.get(&quot;moduleHandled_${bucketKey}&quot;) == &quot;true&quot;) return false
-    def currentTypeId = varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;
-    def currentTypeName = varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;
-    return props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, udvKey, currentTypeId, currentTypeName)
+// Single-arg matchers for IfController (${__groovy(...)} allows only one top-level argument)
+def _fn_matchesJourneyType = { varsRef -&gt;
+    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;journeyModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
 }
-props.put(&quot;fn_moduleBucketActive&quot;, _fn_moduleBucketActive)
+props.put(&quot;fn_matchesJourneyType&quot;, _fn_matchesJourneyType)
 
-def _fn_markModuleBucketHandled = { varsRef, bucketKey -&gt;
-    varsRef.put(&quot;moduleHandled_${bucketKey}&quot;, &quot;true&quot;)
-    log.info(&quot;Module bucket handled: ${bucketKey} (module=${varsRef.get(&apos;currentModuleName&apos;) ?: &apos;Unknown&apos;})&quot;)
+def _fn_matchesLogisticsType = { varsRef -&gt;
+    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;logisticsModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
 }
-props.put(&quot;fn_markModuleBucketHandled&quot;, _fn_markModuleBucketHandled)
+props.put(&quot;fn_matchesLogisticsType&quot;, _fn_matchesLogisticsType)
 
-def _fn_resetModuleHandledFlags = { varsRef -&gt;
-    [&quot;journey&quot;, &quot;logistics&quot;, &quot;agenda&quot;, &quot;virtualConnection&quot;].each { bucket -&gt;
-        varsRef.remove(&quot;moduleHandled_${bucket}&quot;)
-    }
+def _fn_matchesAgendaType = { varsRef -&gt;
+    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;agendaModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
 }
-props.put(&quot;fn_resetModuleHandledFlags&quot;, _fn_resetModuleHandledFlags)
+props.put(&quot;fn_matchesAgendaType&quot;, _fn_matchesAgendaType)
+
+def _fn_matchesVirtualConnectionType = { varsRef -&gt;
+    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;virtualConnectionModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
+}
+props.put(&quot;fn_matchesVirtualConnectionType&quot;, _fn_matchesVirtualConnectionType)
 
 // Generates designation/job title values for event
 props.put(&quot;fn_businessTitles&quot;, [
@@ -2031,57 +2031,7 @@ def _fn_parseActionList = { String raw -&gt;
     raw?.toUpperCase()?.split(&quot;,&quot;)?.collect { it.trim() }?.findAll { it } ?: []
 }
 
-def _fn_pickTargetStateAction = { varsRef, logRef -&gt;
-    def targets = _fn_parseActionList(varsRef.get(&quot;targetActions&quot;))
-    if (targets.isEmpty()) {
-        logRef.warn(&quot;targetActions is empty - no target state action picked&quot;)
-        varsRef.remove(&quot;targetStateAction&quot;)
-        return null
-    }
-    def random = java.util.concurrent.ThreadLocalRandom.current()
-    def target = targets[random.nextInt(targets.size())]
-    varsRef.put(&quot;targetStateAction&quot;, target)
-    logRef.info(&quot;Picked target state action: ${target} from [${targets.join(&apos;, &apos;)}]&quot;)
-    return target
-}
-
-def _fn_resolveStateActionFromLinks = { links, actionKeys, targetStateAction, logRef -&gt;
-    def target = targetStateAction?.toUpperCase()?.trim()
-    if (target) {
-        def matchedKey = actionKeys.find { it.toUpperCase().trim() == target }
-        if (matchedKey) {
-            def href = links[matchedKey]?.href
-            if (href) {
-                logRef.info(&quot;Target action &apos;${target}&apos; present in _links - selecting it&quot;)
-                return [matchedKey, href, true]
-            }
-            logRef.warn(&quot;Target action &apos;${target}&apos; found in _links but has no href&quot;)
-        }
-    }
-    def keysList = (actionKeys as List)
-    if (keysList.isEmpty()) {
-        return [null, null, false]
-    }
-    def random = java.util.concurrent.ThreadLocalRandom.current()
-    def randomKey = keysList[random.nextInt(keysList.size())]
-    def randomHref = links[randomKey]?.href
-    if (!randomHref) {
-        logRef.warn(&quot;Random action &apos;${randomKey}&apos; has no href in _links&quot;)
-        return [null, null, false]
-    }
-    logRef.info(&quot;Target not in _links - random action: ${randomKey}&quot;)
-    return [randomKey, randomHref, false]
-}
-props.put(&quot;fn_parseActionList&quot;, _fn_parseActionList)
-props.put(&quot;fn_pickTargetStateAction&quot;, _fn_pickTargetStateAction)
-props.put(&quot;fn_resolveStateActionFromLinks&quot;, _fn_resolveStateActionFromLinks)
-
 def _fn_activityStateActionSelector = { varsRef, prevRef, logRef -&gt;
-
-    if (varsRef.get(&quot;skipActivityStateActionsRemaining&quot;) == &quot;true&quot;) {
-        varsRef.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
-        return
-    }
 
     def json = new groovy.json.JsonSlurper().parseText(prevRef.getResponseDataAsString())
     def links = json._links
@@ -2093,34 +2043,39 @@ def _fn_activityStateActionSelector = { varsRef, prevRef, logRef -&gt;
     }
 
     def actionKeys = links.keySet()
-    def target = varsRef.get(&quot;targetStateAction&quot;)
+    def includedActions = _fn_parseActionList(varsRef.get(&quot;targetActions&quot;))
+
     logRef.info(&quot;Available Actions: &quot; + actionKeys)
-    logRef.info(&quot;Target State Action: &quot; + target)
+    logRef.info(&quot;Included State Actions (targetActions): &quot; + includedActions)
 
-    def resolved = _fn_resolveStateActionFromLinks(links, actionKeys, target, logRef)
-    def selectedAction = resolved[0]
-    def selectedHref = resolved[1]
-    def hitTarget = resolved[2]
+    def allowedActions = actionKeys.findAll { key -&gt;
+        includedActions.isEmpty() || includedActions.contains(key.toUpperCase().trim())
+    }
 
-    if (selectedAction &amp;&amp; selectedHref) {
-        varsRef.put(&quot;selectedAction&quot;, selectedAction)
-        varsRef.put(&quot;selectedHref&quot;, selectedHref)
-        varsRef.put(&quot;skipActivityStateAction&quot;, &quot;false&quot;)
-        logRef.info(&quot;Selected Action: &quot; + selectedAction)
-        logRef.info(&quot;Selected Href: &quot; + selectedHref)
-        if (hitTarget) {
-            varsRef.put(&quot;skipActivityStateActionsRemaining&quot;, &quot;true&quot;)
-            logRef.info(&quot;Target state action reached - skipping remaining activity state actions&quot;)
+    if (!allowedActions.isEmpty()) {
+        def random = java.util.concurrent.ThreadLocalRandom.current()
+        def selectedAction = allowedActions[random.nextInt(allowedActions.size())]
+        def selectedHref = links[selectedAction]?.href
+
+        if (selectedHref) {
+            varsRef.put(&quot;selectedAction&quot;, selectedAction)
+            varsRef.put(&quot;selectedHref&quot;, selectedHref)
+            varsRef.put(&quot;skipActivityStateAction&quot;, &quot;false&quot;)
+            logRef.info(&quot;Selected Action: &quot; + selectedAction)
+            logRef.info(&quot;Selected Href: &quot; + selectedHref)
+        } else {
+            logRef.warn(&quot;Selected action has no href value!&quot;)
+            varsRef.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
         }
     } else {
-        logRef.warn(&quot;No valid action to execute for ${varsRef.get(&apos;activityType&apos;)}&quot;)
+        logRef.info(&quot;All actions excluded for ${varsRef.get(&apos;activityType&apos;)} - skipping state action execution&quot;)
         varsRef.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
         varsRef.put(&quot;selectedAction&quot;, &quot;&quot;)
-        varsRef.put(&quot;skipActivityStateActionsRemaining&quot;, &quot;true&quot;)
     }
 
     logRef.info(&quot;----- Terminated: Activity State Action Selector -----&quot;)
 }
+props.put(&quot;fn_parseActionList&quot;, _fn_parseActionList)
 props.put(&quot;fn_activityStateActionSelector&quot;, _fn_activityStateActionSelector)
 
 def _fn_dynamicPayloadBuilder = { varsRef, logRef -&gt;
@@ -2899,11 +2854,11 @@ def _fn_requestStateActionSelectorPostProcessor = { varsRef, prevRef, logRef -&g
     def actionKeys = links.keySet()
     logRef.info(&quot;Available Actions: &quot; + actionKeys)
 
-    def target = varsRef.get(&quot;targetStateAction&quot;)
-    logRef.info(&quot;Target State Action: &quot; + target)
+    def includedActions = props.get(&quot;fn_parseActionList&quot;)(varsRef.get(&quot;targetActions&quot;) ?: &quot;&quot;)
+    logRef.info(&quot;Included State Actions (targetActions): &quot; + includedActions)
     logRef.info(&quot;Current Iteration: ${stateActionIteration}&quot;)
 
-    // STEP 3: iteration 1 = SUBMIT; remaining = target in _links or random fallback
+    // STEP 3: iteration 1 = SUBMIT; remaining = random from targetActions filter
     def selectedAction = null
     def selectedHref = null
 
@@ -2926,21 +2881,28 @@ def _fn_requestStateActionSelectorPostProcessor = { varsRef, prevRef, logRef -&g
             return
         }
     } else {
-        def resolveFn = props.get(&quot;fn_resolveStateActionFromLinks&quot;)
-        def resolved = resolveFn(links, actionKeys, target, logRef)
-        selectedAction = resolved[0]
-        selectedHref = resolved[1]
-        def hitTarget = resolved[2]
+        def allowedActions = actionKeys.findAll { key -&gt;
+            includedActions.isEmpty() || includedActions.contains(key.toUpperCase().trim())
+        }
+        logRef.info(&quot;Allowed Actions from targetActions: &quot; + allowedActions)
 
-        if (!selectedAction || !selectedHref) {
-            logRef.warn(&quot;WARNING: No valid action in _links ${actionKeys} - stopping state action loop&quot;)
+        if (allowedActions.isEmpty()) {
+            logRef.warn(&quot;WARNING: No matching actions found in _links ${actionKeys} for targetActions ${includedActions} - skipping iteration. Check DB configuration or targetActions UDV.&quot;)
             varsRef.put(&quot;skipRequestStateAction&quot;, &quot;true&quot;)
             varsRef.put(&quot;selectedAction&quot;, &quot;&quot;)
             varsRef.put(&quot;exitStateActionLoop&quot;, &quot;true&quot;)
             return
         }
-        if (hitTarget) {
-            varsRef.put(&quot;exitStateActionLoop&quot;, &quot;true&quot;)
+
+        def random = java.util.concurrent.ThreadLocalRandom.current()
+        selectedAction = allowedActions[random.nextInt(allowedActions.size())]
+        selectedHref = links[selectedAction]?.href
+
+        if (!selectedHref) {
+            logRef.warn(&quot;WARNING: Selected action &apos;${selectedAction}&apos; has no href in _links - skipping iteration. Check DB configuration.&quot;)
+            varsRef.put(&quot;skipRequestStateAction&quot;, &quot;true&quot;)
+            varsRef.put(&quot;selectedAction&quot;, &quot;&quot;)
+            return
         }
     }
 
@@ -3640,7 +3602,7 @@ if (rawMultiSelectRange &amp;&amp; rawMultiSelectRange != &quot;0&quot;) {
 validateIntList(&quot;vacantSlotDurations&quot;,          &quot;positive integers in minutes, e.g. 30,60&quot;)
 validateIntList(&quot;blockedSlots&quot;,                 &quot;integers &gt;= 0, e.g. 0,1,2&quot;)
 validateIntList(&quot;blockedDurations&quot;,             &quot;positive integers in minutes, e.g. 30,60&quot;)
-validateIntList(&quot;maxIterationCount&quot;,            &quot;integer &gt;= 0, e.g. 3 (0 = skip state actions)&quot;)
+validatePositiveIntList(&quot;maxIterationCount&quot;,       &quot;positive integers, e.g. 2,3 (0 or empty = skip state actions)&quot;)
 
 // ===== Abort on validation errors =====
 if (errors.size() &gt; 0) {
@@ -3837,7 +3799,6 @@ if (isFirstUser == &quot;true&quot;) {
     vars.put(&quot;requestFailed&quot;, &quot;false&quot;)
     vars.remove(&quot;requestId&quot;)
     vars.put(&quot;stateActionIteration&quot;, &quot;0&quot;)
-    vars.remove(&quot;targetStateAction&quot;)
 
     def userDefinedCustomer = vars.get(&quot;userDefinedCustomerName&quot;)?.trim()
     if (!userDefinedCustomer) {
@@ -5452,8 +5413,6 @@ vars.remove(&quot;currentModuleName&quot;)
 vars.remove(&quot;currentModuleTypeId&quot;)
 vars.remove(&quot;currentModuleTypeName&quot;)
 vars.remove(&quot;lastLoggedNavModule&quot;)
-props.get(&quot;fn_resetModuleHandledFlags&quot;)(vars)
-
 
 // STEP 1: Parse the Get Role Module Access API response
 def response = prev.getResponseDataAsString()
@@ -5730,19 +5689,11 @@ log.info(&quot;Module: ${vars.get(&apos;currentModuleName&apos;)} | Handler: ${m
                   <hashTree/>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Journey ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;journey&quot;, &quot;journeyModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_matchesJourneyType&quot;)(vars))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
-                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Journey Module Bucket Handled" enabled="true">
-                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;journey&quot;)</stringProp>
-                    <stringProp name="scriptLanguage">groovy</stringProp>
-                    <stringProp name="parameters"></stringProp>
-                    <stringProp name="filename"></stringProp>
-                    <stringProp name="cacheKey">false</stringProp>
-                  </JSR223PreProcessor>
-                  <hashTree/>
                   <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="◉ ForEach (Module Config)" enabled="true">
                     <stringProp name="ForeachController.inputVal">formId</stringProp>
                     <stringProp name="ForeachController.returnVal">formId</stringProp>
@@ -7817,19 +7768,11 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                   </hashTree>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Virtual Connection ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;virtualConnection&quot;, &quot;virtualConnectionModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_matchesVirtualConnectionType&quot;)(vars))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
-                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Virtual Connection Module Bucket Handled" enabled="true">
-                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;virtualConnection&quot;)</stringProp>
-                    <stringProp name="scriptLanguage">groovy</stringProp>
-                    <stringProp name="parameters"></stringProp>
-                    <stringProp name="filename"></stringProp>
-                    <stringProp name="cacheKey">false</stringProp>
-                  </JSR223PreProcessor>
-                  <hashTree/>
                   <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="◉ ForEach (Module Config)" enabled="true">
                     <stringProp name="ForeachController.inputVal">formId</stringProp>
                     <stringProp name="ForeachController.returnVal">formId</stringProp>
@@ -8227,19 +8170,11 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                   </hashTree>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Logistics ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;logistics&quot;, &quot;logisticsModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_matchesLogisticsType&quot;)(vars))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
-                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Logistics Module Bucket Handled" enabled="true">
-                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;logistics&quot;)</stringProp>
-                    <stringProp name="scriptLanguage">groovy</stringProp>
-                    <stringProp name="parameters"></stringProp>
-                    <stringProp name="filename"></stringProp>
-                    <stringProp name="cacheKey">false</stringProp>
-                  </JSR223PreProcessor>
-                  <hashTree/>
                   <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="◉ ForEach (Module Config)" enabled="true">
                     <stringProp name="ForeachController.inputVal">formId</stringProp>
                     <stringProp name="ForeachController.returnVal">formId</stringProp>
@@ -9965,19 +9900,11 @@ vars.put(&quot;ActivityDayCount&quot;, (currentCount + 1).toString())</stringPro
                   </hashTree>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Calendar ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;agenda&quot;, &quot;agendaModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_matchesAgendaType&quot;)(vars))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
-                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Agenda Module Bucket Handled" enabled="true">
-                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;agenda&quot;)</stringProp>
-                    <stringProp name="scriptLanguage">groovy</stringProp>
-                    <stringProp name="parameters"></stringProp>
-                    <stringProp name="filename"></stringProp>
-                    <stringProp name="cacheKey">false</stringProp>
-                  </JSR223PreProcessor>
-                  <hashTree/>
                   <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get ResourceType - ${parentCategoryName}" enabled="true">
                     <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                       <collectionProp name="Arguments.arguments"/>
@@ -15522,32 +15449,24 @@ vars.put(&quot;participantLoopIdx&quot;, idx.toString())
                                         <stringProp name="cacheKey">false</stringProp>
                                       </JSR223PostProcessor>
                                       <hashTree/>
-                                      <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Init Activity State Actions" enabled="true">
-                                        <stringProp name="script">vars.remove(&quot;targetStateAction&quot;)
-vars.put(&quot;skipActivityStateActionsRemaining&quot;, &quot;false&quot;)
-props.get(&quot;fn_pickTargetStateAction&quot;)(vars, log)
-
-def maxRaw = vars.get(&quot;maxIterationCount&quot;)?.trim() ?: &quot;3&quot;
-def maxIterations = maxRaw.isInteger() ? maxRaw.toInteger() : 3
-if (maxIterations &lt;= 0) {
+                                      <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Pick Activity State Action Iterations" enabled="true">
+                                        <stringProp name="script">if (vars.get(&quot;skipActivityStateAction&quot;) == &quot;true&quot;) {
     vars.put(&quot;activityStateActionLoopCount&quot;, &quot;0&quot;)
-    vars.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
-    log.info(&quot;maxIterationCount is 0 - skipping activity state actions&quot;)
+    log.info(&quot;Activity State Action Iterations: 0 (no valid actions)&quot;)
     return
 }
-vars.put(&quot;activityStateActionLoopCount&quot;, Math.max(0, maxIterations - 1).toString())
-log.info(&quot;Activity State Actions: max ${maxIterations}, target=${vars.get(&apos;targetStateAction&apos;)}&quot;)</stringProp>
-                                        <stringProp name="scriptLanguage">groovy</stringProp>
-                                        <stringProp name="parameters"></stringProp>
-                                        <stringProp name="filename"></stringProp>
-                                        <stringProp name="cacheKey">false</stringProp>
-                                      </JSR223PreProcessor>
-                                      <hashTree/>
-                                      <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Pick Activity State Action Iterations" enabled="true">
-                                        <stringProp name="script">if (vars.get(&quot;skipActivityStateAction&quot;) == &quot;true&quot; || vars.get(&quot;skipActivityStateActionsRemaining&quot;) == &quot;true&quot;) {
-    vars.put(&quot;activityStateActionLoopCount&quot;, &quot;0&quot;)
-    log.info(&quot;Activity State Action Iterations: 0 (target reached or no valid actions)&quot;)
-}</stringProp>
+
+def iterationsConfig = vars.get(&quot;maxIterationCount&quot;)?.trim() ?: &quot;2&quot;
+def options = iterationsConfig.split(&quot;,&quot;)*.trim().findAll { it.isInteger() &amp;&amp; it.toInteger() &gt;= 0 }.collect { it.toInteger() }
+if (options.isEmpty()) {
+    log.info(&quot;maxIterationCount has no valid values (must be &gt;= 0) - defaulting to 2&quot;)
+    options = [2]
+}
+def randomIterations = options[java.util.concurrent.ThreadLocalRandom.current().nextInt(options.size())]
+
+def remainingIterations = Math.max(0, randomIterations - 1)
+vars.put(&quot;activityStateActionLoopCount&quot;, remainingIterations.toString())
+log.info(&quot;Activity State Action Iterations: ${randomIterations} total, ${remainingIterations} remaining for loop (picked from [${iterationsConfig}])&quot;)</stringProp>
                                         <stringProp name="scriptLanguage">groovy</stringProp>
                                         <stringProp name="parameters"></stringProp>
                                         <stringProp name="filename"></stringProp>
@@ -16014,19 +15933,20 @@ if (responseCode == &quot;200&quot;) {
               </HTTPSamplerProxy>
               <hashTree>
                 <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Pick Random State Action Iterations" enabled="true">
-                  <stringProp name="script">def maxRaw = vars.get(&quot;maxIterationCount&quot;)?.trim() ?: &quot;3&quot;
-def maxIterations = maxRaw.isInteger() ? maxRaw.toInteger() : 3
-if (maxIterations &lt;= 0) {
-    log.info(&quot;maxIterationCount is 0 - skipping state actions entirely&quot;)
+                  <stringProp name="script">// Pick random value from comma-separated maxIterationCount
+def iterationsConfig = vars.get(&quot;maxIterationCount&quot;)?.trim() ?: &quot;&quot;
+def options = iterationsConfig.split(&quot;,&quot;)*.trim().findAll { it.isInteger() &amp;&amp; it.toInteger() &gt; 0 }.collect { it.toInteger() }
+if (iterationsConfig.isEmpty() || options.isEmpty()) {
+    log.info(&quot;maxIterationCount is 0 or empty - skipping state actions entirely&quot;)
     vars.put(&quot;stateActionLoopCount&quot;, &quot;0&quot;)
     vars.put(&quot;stateActionIteration&quot;, &quot;0&quot;)
     return
 }
-props.get(&quot;fn_pickTargetStateAction&quot;)(vars, log)
-vars.put(&quot;stateActionLoopCount&quot;, maxIterations.toString())
+def randomIterations = options[java.util.concurrent.ThreadLocalRandom.current().nextInt(options.size())]
+vars.put(&quot;stateActionLoopCount&quot;, randomIterations.toString())
 vars.put(&quot;stateActionIteration&quot;, &quot;0&quot;)
 vars.put(&quot;exitStateActionLoop&quot;, &quot;false&quot;)
-log.info(&quot;State Action Iterations: max ${maxIterations}, target=${vars.get(&apos;targetStateAction&apos;)}&quot;)</stringProp>
+log.info(&quot;State Action Iterations: picked ${randomIterations} from options [${iterationsConfig}]&quot;)</stringProp>
                   <stringProp name="scriptLanguage">groovy</stringProp>
                   <stringProp name="parameters"></stringProp>
                   <stringProp name="filename"></stringProp>
@@ -16188,7 +16108,7 @@ def originalName = sampler.getName()
 // Get current iteration (set by State Action Selector PostProcessor)
 def currentIteration = vars.get(&quot;stateActionIteration&quot;)
 
-// Get total iterations (set from UDV: maxIterationCount)
+// Get total iterations (set from UDV: maxIterationCount comma-separated pool)
 def totalIterations = vars.get(&quot;stateActionLoopCount&quot;)
 
 // Set dynamic sampler label with iteration count
