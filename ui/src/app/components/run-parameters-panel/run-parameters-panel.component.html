@@ -1,0 +1,81 @@
+<section class="run-params" aria-label="Run parameters">
+  <header class="run-params-header">
+    <div class="run-params-heading">
+      <span class="run-params-heading-icon">
+        <i class="pi pi-sliders-h"></i>
+      </span>
+      <div>
+        <h2 class="run-params-title">Run parameters</h2>
+        @if (!loading() && groups().length) {
+          <p class="run-params-subtitle">
+            {{ totalParameterCount() }} values submitted for this run
+            @if (optionsLoading()) {
+              <span class="run-params-resolving"> · Resolving labels…</span>
+            }
+          </p>
+        }
+      </div>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="run-params-loading">
+      <p-progress-spinner styleClass="!h-5 !w-5" strokeWidth="6" />
+      <span>Loading parameter labels…</span>
+    </div>
+  } @else if (!groups().length) {
+    <p class="run-params-empty">No parameters were recorded for this run.</p>
+  } @else {
+    @if (error()) {
+      <p-message severity="warn" [text]="error()" styleClass="run-params-warn" />
+    }
+
+    <div class="run-params-layout">
+      <nav class="run-params-nav" aria-label="Parameter groups">
+        <p class="run-params-nav-title">Groups</p>
+        @for (group of groups(); track group.id) {
+          <button
+            type="button"
+            class="run-params-navitem"
+            [class.run-params-navitem-active]="activeGroupId() === group.id"
+            (click)="setActiveGroup(group.id)"
+          >
+            <span class="run-params-navitem-icon">
+              <i class="pi" [class]="group.iconClass"></i>
+            </span>
+            <span class="run-params-navitem-label">{{ group.title }}</span>
+            <span class="run-params-navitem-badge">{{ group.rows.length }}</span>
+          </button>
+        }
+      </nav>
+
+      @if (activeGroup(); as currentGroup) {
+        <div class="run-params-content" role="region" [attr.aria-label]="currentGroup.title">
+          <div class="run-params-content-header">
+            <span class="run-params-content-icon">
+              <i class="pi" [class]="currentGroup.iconClass"></i>
+            </span>
+            <span class="run-params-content-title">{{ currentGroup.title }}</span>
+            <span class="run-params-content-count">{{ currentGroup.rows.length }} params</span>
+          </div>
+
+          <dl class="run-params-grid">
+            @for (row of currentGroup.rows; track row.name) {
+              <div class="run-param-cell">
+                <dt class="run-param-label" [title]="row.name">{{ row.label }}</dt>
+                <dd
+                  class="run-param-value"
+                  [class.run-param-value-empty]="row.isEmpty"
+                  [class.run-param-value-mono]="!row.isEmpty && isTechnicalValue(row.displayValue)"
+                  [title]="row.description || row.name"
+                >
+                  {{ row.displayValue }}
+                </dd>
+              </div>
+            }
+          </dl>
+        </div>
+      }
+    </div>
+  }
+</section>

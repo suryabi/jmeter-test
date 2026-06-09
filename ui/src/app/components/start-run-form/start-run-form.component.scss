@@ -146,6 +146,50 @@
   display: block;
 }
 
+.hidden-fields-toggle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.75rem;
+  padding: 0.7rem 0.9rem;
+  background: rgba(15, 19, 38, 0.45);
+  border: 1px dashed rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+}
+
+.hidden-fields-toggle-label {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.hidden-fields-toggle-hint {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.field-hidden-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #cbd5e1;
+  background: rgba(100, 116, 139, 0.22);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.field-cell-revealed-hidden {
+  padding: 0.65rem;
+  border-radius: 12px;
+  border: 1px dashed rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.35);
+}
+
 /* Side nav + fields two-card layout */
 .params-layout {
   display: grid;

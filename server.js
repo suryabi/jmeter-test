@@ -32,12 +32,46 @@ if (!fs.existsSync(PLANS_DIR)) {
 // Plans helpers
 // ----------------------------
 
+const MAX_PLAN_UPLOAD_BYTES = 25 * 1024 * 1024;
+
 function listPlans() {
   if (!fs.existsSync(PLANS_DIR)) return [];
   return fs
     .readdirSync(PLANS_DIR)
     .filter((f) => f.toLowerCase().endsWith(".jmx"))
     .sort();
+}
+
+function getPlanMeta(file) {
+  const planPath = path.join(PLANS_DIR, file);
+  const stat = fs.statSync(planPath);
+  return {
+    file,
+    name: file.replace(/\.jmx$/i, ""),
+    sizeBytes: stat.size,
+    updatedAt: stat.mtime.toISOString()
+  };
+}
+
+function listPlanDetails() {
+  return listPlans().map((file) => getPlanMeta(file));
+}
+
+function sanitizePlanFilename(name) {
+  const base = path.basename(String(name || "").trim());
+  if (!base || base === "." || base === "..") {
+    throw new Error("Invalid plan filename.");
+  }
+  if (base.includes("/") || base.includes("\\")) {
+    throw new Error("Invalid plan filename.");
+  }
+  return base.toLowerCase().endsWith(".jmx") ? base : `${base}.jmx`;
+}
+
+function planIsInUse(planFile) {
+  return Array.from(runs.values()).some(
+    (run) => run.status === "running" && run.planFile === planFile
+  );
 }
 
 function resolvePlanPath(planFile) {
@@ -170,6 +204,85 @@ function readBody(req) {
     req.on("end", () => resolve(data));
     req.on("error", reject);
   });
+}
+
+function readBodyBuffer(req, maxBytes = MAX_PLAN_UPLOAD_BYTES) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    req.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > maxBytes) {
+        reject(new Error("Request body too large"));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
+
+function sendPlanDownload(res, planPath, fileName) {
+  setCors(res);
+  res.writeHead(200, {
+    "Content-Type": "application/xml; charset=utf-8",
+    "Content-Disposition": `attachment; filename="${fileName}"`
+  });
+  res.end(fs.readFileSync(planPath));
+}
+
+async function handlePlanUpload(req, url, res) {
+  let fileName;
+  try {
+    fileName = sanitizePlanFilename(url.searchParams.get("filename") || "");
+  } catch (err) {
+    return sendJson(res, 400, { error: err.message || "Invalid plan filename" });
+  }
+
+  let buffer;
+  try {
+    buffer = await readBodyBuffer(req);
+  } catch (err) {
+    return sendJson(res, 413, { error: err.message || "Upload too large" });
+  }
+
+  if (!buffer.length) {
+    return sendJson(res, 400, { error: "Empty file" });
+  }
+
+  const dest = path.join(PLANS_DIR, fileName);
+  const existed = fs.existsSync(dest);
+  fs.writeFileSync(dest, buffer);
+
+  return sendJson(res, existed ? 200 : 201, {
+    plan: getPlanMeta(fileName),
+    replaced: existed
+  });
+}
+
+function handlePlanDelete(planFile, res) {
+  let fileName;
+  try {
+    fileName = sanitizePlanFilename(planFile);
+  } catch (err) {
+    return sendJson(res, 400, { error: err.message || "Invalid plan filename" });
+  }
+
+  if (planIsInUse(fileName)) {
+    return sendJson(res, 409, {
+      error: `Plan "${fileName}" is used by a running test and cannot be deleted.`
+    });
+  }
+
+  const planPath = path.join(PLANS_DIR, fileName);
+  if (!fs.existsSync(planPath)) {
+    return sendJson(res, 404, { error: `Plan not found: ${fileName}` });
+  }
+
+  fs.unlinkSync(planPath);
+  return sendJson(res, 200, { deleted: true, file: fileName });
 }
 
 // ----------------------------
@@ -376,17 +489,77 @@ function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200, con
 const INSIGHTS_UUID =
   "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}";
 
-function setInsightRequestId(insights, value) {
-  const id = String(value || "").trim();
-  if (!id || id === "unknown" || id === "default") return;
-  if (!insights.requestId) insights.requestId = id;
-}
-
 function parseJmeterLogTimestamp(line) {
   const m = String(line).match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}),(\d{3})/);
   if (!m) return null;
   const ms = Date.parse(`${m[1]}T${m[2]}.${m[3]}`);
   return Number.isFinite(ms) ? ms : null;
+}
+
+function createRequestInsight(index, total, atMs) {
+  return {
+    index,
+    total,
+    customerName: null,
+    requestId: null,
+    eventDate: null,
+    startTime: null,
+    endTime: null,
+    durationDays: null,
+    durationMinutes: null,
+    status: "started",
+    stateActions: [],
+    at: atMs != null ? new Date(atMs).toISOString() : null
+  };
+}
+
+function setRequestInsightId(request, value) {
+  const id = String(value || "").trim();
+  if (!id || id === "unknown" || id === "default") return;
+  if (!request.requestId) request.requestId = id;
+}
+
+function finalizeRequestInsight(request, insights) {
+  if (!request) return;
+  insights.requests.push(request);
+}
+
+function applyLegacyInsightSummary(insights) {
+  const { requests } = insights;
+  const created = requests.filter((r) => r.status === "created");
+  const skipped = requests.filter((r) => r.status === "skipped");
+  const failed = requests.filter((r) => r.status === "failed");
+
+  insights.requestSummary = {
+    planned: requests[0]?.total ?? requests.length,
+    created: created.length,
+    skipped: skipped.length,
+    failed: failed.length
+  };
+
+  const primary = created[created.length - 1] || created[0] || requests[requests.length - 1];
+  if (primary) {
+    insights.requestId = primary.requestId;
+    insights.eventDate = primary.eventDate;
+    insights.startTime = primary.startTime;
+    insights.endTime = primary.endTime;
+    insights.durationDays = primary.durationDays;
+    insights.durationMinutes = primary.durationMinutes;
+  }
+
+  const uniqueCustomers = [...new Set(requests.map((r) => r.customerName).filter(Boolean))];
+  if (uniqueCustomers.length === 0) {
+    insights.customerName = null;
+  } else if (uniqueCustomers.length === 1) {
+    insights.customerName = uniqueCustomers[0];
+  } else {
+    const createdNames = [...new Set(created.map((r) => r.customerName).filter(Boolean))];
+    const names = createdNames.length ? createdNames : uniqueCustomers;
+    insights.customerName =
+      names.length <= 2 ? names.join(", ") : `${names[0]} +${names.length - 1} more`;
+  }
+
+  insights.stateActions = [...new Set(requests.flatMap((r) => r.stateActions))];
 }
 
 function parseLogInsights(logText) {
@@ -400,115 +573,150 @@ function parseLogInsights(logText) {
     durationMinutes: null,
     durationDays: null,
     stateActions: [],
-    steps: []
+    steps: [],
+    requests: [],
+    requestSummary: {
+      planned: 0,
+      created: 0,
+      skipped: 0,
+      failed: 0
+    }
   };
 
   if (!logText) return insights;
 
+  let currentRequest = null;
   let startTimeIso = null;
   let endTimeIso = null;
 
-  const patterns = [
-    { key: "customer", re: /SUCCESS - Selected unique customer:\s*(.+)/, set: (m) => (insights.customerName = m[1].trim()) },
-    { key: "customerUsing", re: /Using customer:\s*(.+)/, set: (m) => { if (!insights.customerName) insights.customerName = m[1].trim(); } },
-    {
-      key: "requestIdReuse",
-      re: new RegExp(`(?:SUBSEQUENT USER:\\s*)?Reusing requestId:\\s*(${INSIGHTS_UUID})`, "i"),
-      set: (m) => setInsightRequestId(insights, m[1])
-    },
-    {
-      key: "requestIdSnapshot",
-      re: new RegExp(`existingFormData_snapshot_(${INSIGHTS_UUID})_`, "i"),
-      set: (m) => setInsightRequestId(insights, m[1])
-    },
-    {
-      key: "requestIdFormData",
-      re: new RegExp(`/data/(${INSIGHTS_UUID})/actions/`, "i"),
-      set: (m) => setInsightRequestId(insights, m[1])
-    },
-    {
-      key: "requestIdEventsApi",
-      re: new RegExp(`/api/events/(${INSIGHTS_UUID})(?:/|$)`, "i"),
-      set: (m) => setInsightRequestId(insights, m[1])
-    },
-    {
-      key: "requestIdProcessedFields",
-      re: new RegExp(`processedFields_(${INSIGHTS_UUID})_`, "i"),
-      set: (m) => setInsightRequestId(insights, m[1])
-    },
-    {
-      key: "dateRange",
-      re: /Date Range:\s*(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/,
-      set: (m) => (insights.dateRange = `${m[1]} to ${m[2]}`)
-    },
-    { key: "eventDay", re: /Day:\s*\d+\/\d+\s*\((\d{4}-\d{2}-\d{2})/, set: (m) => (insights.eventDate = m[1]) },
-    { key: "genDate", re: /\((\d{4}-\d{2}-\d{2}).*Time:\s*(\d{2}:\d{2})/, set: (m) => {
-      insights.eventDate = insights.eventDate || m[1];
-      insights.startTime = m[2];
-    }},
-    { key: "startDate", re: /Start Date:\s*(\d{4}-\d{2}-\d{2})/, set: (m) => (insights.eventDate = insights.eventDate || m[1]) },
-    { key: "startTime", re: /Start Time:\s*\d{4}-\d{2}-\d{2}T(\d{2}:\d{2})/, set: (m) => (insights.startTime = m[1]) },
-    { key: "endTime", re: /End Time:\s*\d{4}-\d{2}-\d{2}T(\d{2}:\d{2})/, set: (m) => (insights.endTime = m[1]) },
-    {
-      key: "durationMinutes",
-      re: /Duration: (\d+)min\b/,
-      set: (m) => {
-        if (insights.durationMinutes == null) insights.durationMinutes = Number(m[1]);
-      }
-    },
-    {
-      key: "durationDays",
-      re: /(?:New Request|New Event) PreProcessor: Duration: (\d+)/,
-      set: (m) => {
-        if (insights.durationDays == null) insights.durationDays = Number(m[1]);
-      }
-    },
-    {
-      key: "startTimeIso",
-      re: /Start Time:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/,
-      set: (m) => {
-        startTimeIso = m[1];
-      }
-    },
-    {
-      key: "endTimeIso",
-      re: /End Time:\s*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/,
-      set: (m) => {
-        endTimeIso = m[1];
-      }
-    },
-  ];
+  const requestIdSnapshotRe = new RegExp(`existingFormData_snapshot_(${INSIGHTS_UUID})_`, "i");
+  const requestIdProcessedRe = new RegExp(`processedFields_(${INSIGHTS_UUID})_`, "i");
+  const requestIdActionsRe = new RegExp(`/data/(${INSIGHTS_UUID})/actions/`, "i");
 
   const lines = logText.split(/\r?\n/);
   for (const line of lines) {
     const lineAtMs = parseJmeterLogTimestamp(line);
 
-    for (const p of patterns) {
-      const m = line.match(p.re);
-      if (m) p.set(m);
+    let match = line.match(/Request (\d+)\/(\d+) Creation Started/);
+    if (match) {
+      finalizeRequestInsight(currentRequest, insights);
+      currentRequest = createRequestInsight(Number(match[1]), Number(match[2]), lineAtMs);
+      pushStep(insights, `Request ${match[1]}/${match[2]} creation started`, "info", lineAtMs);
+      continue;
     }
 
-    if (/Create Request Status PostProcessor: Status:\s*SUCCESS/.test(line)) {
-      pushStep(insights, "Request created", "success", lineAtMs);
+    match = line.match(/Date Range:\s*(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/);
+    if (match) {
+      insights.dateRange = `${match[1]} to ${match[2]}`;
     }
-    if (/Selected Action:\s*SUBMIT/.test(line)) {
-      pushStep(insights, "SUBMIT", "success", lineAtMs);
-      addStateAction(insights, "SUBMIT", lineAtMs);
-    }
-    if (/Selected Action:\s*CONFIRM/.test(line)) {
-      addStateAction(insights, "CONFIRM", lineAtMs);
-    }
-    if (/Selected Action:\s*HOLD/.test(line)) {
-      addStateAction(insights, "HOLD", lineAtMs);
-    }
-    if (/Selected Action:\s*WAITLIST/.test(line)) {
-      addStateAction(insights, "WAITLIST", lineAtMs);
-    }
-    if (/Request \d+\/\d+ Creation Started/.test(line)) {
-      pushStep(insights, "Request creation started", "info", lineAtMs);
-    }
+
     if (/REQUEST CALCULATION/.test(line)) {
       pushStep(insights, "Calculated request schedule", "info", lineAtMs);
+    }
+
+    if (currentRequest) {
+      match = line.match(/Day:\s*\d+\/\d+\s*\((\d{4}-\d{2}-\d{2})/);
+      if (match) currentRequest.eventDate = match[1];
+
+      match = line.match(/SUCCESS - Selected unique customer:\s*(.+)/);
+      if (match) currentRequest.customerName = match[1].trim();
+
+      match = line.match(/Using customer:\s*(.+)/);
+      if (match && !currentRequest.customerName) currentRequest.customerName = match[1].trim();
+
+      match = line.match(/Customer Name:\s*(.+)/);
+      if (match) currentRequest.customerName = match[1].trim();
+
+      match = line.match(/user-defined customer mode: customerName=(.+)/i);
+      if (match && !currentRequest.customerName) currentRequest.customerName = match[1].trim();
+
+      match = line.match(/Customer '([^']+)'.+Request creation SKIPPED/);
+      if (match) {
+        if (!currentRequest.customerName) currentRequest.customerName = match[1].trim();
+        currentRequest.status = "skipped";
+        pushStep(
+          insights,
+          `Request ${currentRequest.index}/${currentRequest.total}: creation skipped (duplicate customer)`,
+          "warn",
+          lineAtMs
+        );
+      }
+
+      if (/Create Request Status PostProcessor: Status:\s*SUCCESS/.test(line)) {
+        currentRequest.status = "created";
+        const label = currentRequest.customerName
+          ? `Request ${currentRequest.index}/${currentRequest.total}: ${currentRequest.customerName} created`
+          : `Request ${currentRequest.index}/${currentRequest.total} created`;
+        pushStep(insights, label, "success", lineAtMs);
+      }
+
+      if (/Create Request Status PostProcessor: Status:\s*FAILED/.test(line)) {
+        currentRequest.status = "failed";
+        pushStep(
+          insights,
+          `Request ${currentRequest.index}/${currentRequest.total}: creation failed`,
+          "failed",
+          lineAtMs
+        );
+      }
+
+      match = line.match(/Start Time:\s*(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+      if (match) {
+        currentRequest.eventDate = currentRequest.eventDate || match[1];
+        currentRequest.startTime = match[2];
+        startTimeIso = `${match[1]}T${match[2]}:00`;
+      }
+
+      match = line.match(/End Time:\s*(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+      if (match) {
+        currentRequest.endTime = match[2];
+        endTimeIso = `${match[1]}T${match[2]}:00`;
+      }
+
+      match = line.match(/(?:New Request|New Event) PreProcessor: Duration:\s*(\d+)/);
+      if (match) currentRequest.durationDays = Number(match[1]);
+
+      match = line.match(/Duration:\s*(\d+)min\b/);
+      if (match && currentRequest.durationMinutes == null) {
+        currentRequest.durationMinutes = Number(match[1]);
+      }
+
+      match = line.match(requestIdSnapshotRe);
+      if (match) setRequestInsightId(currentRequest, match[1]);
+
+      if (!currentRequest.requestId) {
+        match = line.match(requestIdProcessedRe);
+        if (match) setRequestInsightId(currentRequest, match[1]);
+      }
+
+      if (!currentRequest.requestId) {
+        match = line.match(requestIdActionsRe);
+        if (match) setRequestInsightId(currentRequest, match[1]);
+      }
+
+      match = line.match(/Selected Action:\s*(\w+)/);
+      if (match) {
+        const action = match[1];
+        if (!currentRequest.stateActions.includes(action)) {
+          currentRequest.stateActions.push(action);
+        }
+        if (action === "SUBMIT") {
+          pushStep(insights, `Request ${currentRequest.index}/${currentRequest.total}: SUBMIT`, "success", lineAtMs);
+        } else {
+          pushStep(
+            insights,
+            `Request ${currentRequest.index}/${currentRequest.total}: ${action}`,
+            "success",
+            lineAtMs
+          );
+        }
+      }
+    } else {
+      match = line.match(/SUCCESS - Selected unique customer:\s*(.+)/);
+      if (match && !insights.customerName) insights.customerName = match[1].trim();
+
+      match = line.match(requestIdSnapshotRe);
+      if (match && !insights.requestId) insights.requestId = match[1];
     }
 
     const moduleMatch = line.match(/Module:\s*([^|]+)$/);
@@ -516,6 +724,9 @@ function parseLogInsights(logText) {
       pushStep(insights, `Module: ${moduleMatch[1].trim()}`, "info", lineAtMs);
     }
   }
+
+  finalizeRequestInsight(currentRequest, insights);
+  applyLegacyInsightSummary(insights);
 
   if (insights.durationMinutes == null && startTimeIso && endTimeIso) {
     const startMs = Date.parse(startTimeIso);
@@ -525,7 +736,6 @@ function parseLogInsights(logText) {
     }
   }
 
-  insights.stateActions = [...new Set(insights.stateActions)];
   return insights;
 }
 
@@ -539,12 +749,6 @@ function pushStep(insights, label, status, atMs = null) {
   });
 }
 
-function addStateAction(insights, action, atMs = null) {
-  if (!insights.stateActions.includes(action)) {
-    insights.stateActions.push(action);
-  }
-  pushStep(insights, `State action: ${action}`, "success", atMs);
-}
 
 // ----------------------------
 // Artifact + report file serving
@@ -1002,6 +1206,9 @@ const server = http.createServer(async (req, res) => {
         plansDir: PLANS_DIR,
         endpoints: {
           plans: "GET /plans",
+          uploadPlan: "POST /plans?filename=<name.jmx>",
+          downloadPlan: "GET /plans/:filename/download",
+          deletePlan: "DELETE /plans/:filename",
           parameters: "GET /parameters?plan=<filename>",
           fieldOptions: "POST /field-options",
           runs: "GET /runs",
@@ -1018,12 +1225,28 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
+    const planDownloadMatch = pathname.match(/^\/plans\/([^/]+)\/download$/i);
+    if (req.method === "GET" && planDownloadMatch) {
+      const fileName = decodeURIComponent(planDownloadMatch[1]);
+      try {
+        const planPath = resolvePlanPath(fileName);
+        return sendPlanDownload(res, planPath, path.basename(planPath));
+      } catch (err) {
+        return sendJson(res, 404, { error: err.message || "Plan not found" });
+      }
+    }
+
+    const planFileMatch = pathname.match(/^\/plans\/([^/]+)$/i);
+    if (req.method === "DELETE" && planFileMatch) {
+      return handlePlanDelete(decodeURIComponent(planFileMatch[1]), res);
+    }
+
+    if (req.method === "POST" && pathname === "/plans") {
+      return handlePlanUpload(req, url, res);
+    }
+
     if (req.method === "GET" && pathname === "/plans") {
-      const plans = listPlans().map((file) => ({
-        file,
-        name: file.replace(/\.jmx$/i, "")
-      }));
-      return sendJson(res, 200, { plans });
+      return sendJson(res, 200, { plans: listPlanDetails() });
     }
 
     if (req.method === "GET" && pathname === "/parameters") {
@@ -1046,6 +1269,7 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, result);
       } catch (err) {
         const status = err.statusCode || 500;
+        console.error(`[field-options] ${field} failed: ${err.message || err}`);
         return sendJson(res, status, {
           error: err.message || "Failed to load field options",
           field,

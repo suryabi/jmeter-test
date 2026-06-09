@@ -21,7 +21,7 @@
       </div>
       @if (!loading && !loadError) {
         <div class="form-header-actions">
-          @if (parameterGroups.length) {
+          @if (visibleParameterGroups().length) {
             <p-button
               type="button"
               severity="secondary"
@@ -87,13 +87,30 @@
       </div>
 
       <!-- Side nav + fields -->
-      @if (parameterGroups.length) {
+      @if (visibleParameterGroups().length) {
+        @if (hasHiddenParameters()) {
+          <div class="hidden-fields-toggle">
+            <p-checkbox
+              inputId="showHiddenFields"
+              [ngModel]="showHiddenFields"
+              [ngModelOptions]="{ standalone: true }"
+              [binary]="true"
+              (ngModelChange)="onShowHiddenFieldsChange($event)"
+            />
+            <label for="showHiddenFields" class="hidden-fields-toggle-label">
+              Show hidden fields
+            </label>
+            @if (showHiddenFields) {
+              <span class="hidden-fields-toggle-hint">Hidden parameters and HTTP headers are visible in the form below</span>
+            }
+          </div>
+        }
         <div class="params-layout">
 
           <!-- Left card: group nav -->
           <nav class="group-sidenav-card">
             <p class="sidenav-title">Parameter Groups</p>
-            @for (group of parameterGroups; track group.id) {
+            @for (group of visibleParameterGroups(); track group.id) {
               <button
                 type="button"
                 class="group-navitem"
@@ -104,7 +121,7 @@
                   <i class="pi" [ngClass]="groupIconClass(group)"></i>
                 </span>
                 <span class="group-navitem-label">{{ group.title }}</span>
-                <span class="group-navitem-badge">{{ group.parameters.length }}</span>
+                <span class="group-navitem-badge">{{ visibleParameterCount(group) }}</span>
               </button>
             }
           </nav>
@@ -117,14 +134,15 @@
                   <i class="pi" [ngClass]="groupIconClass(currentGroup)"></i>
                 </span>
                 <span class="fields-card-title">{{ currentGroup.title }}</span>
-                <span class="fields-card-count">{{ currentGroup.parameters.length }} params</span>
+                <span class="fields-card-count">{{ visibleParameterCount(currentGroup) }} params</span>
               </div>
               <div class="field-grid">
-                @for (param of currentGroup.parameters; track param.name) {
-                  <div class="field-cell">
+                @for (param of visibleParameters(currentGroup); track param.name) {
+                  <div class="field-cell" [class.field-cell-revealed-hidden]="isUiHiddenParam(param)">
                     @if (param.type === 'boolean') {
                       <span class="field-label-row">
                         {{ fieldLabel(param) }}
+                        @if (isUiHiddenParam(param)) { <span class="field-hidden-badge">Hidden</span> }
                         @if (param.required) { <span class="required">*</span> }
                       </span>
                       <div class="bool-row">
@@ -143,6 +161,7 @@
                     } @else {
                       <label [for]="param.name" class="field-label-row">
                         {{ fieldLabel(param) }}
+                        @if (isUiHiddenParam(param)) { <span class="field-hidden-badge">Hidden</span> }
                         @if (param.required) { <span class="required">*</span> }
                       </label>
                       @if (param.type === 'date') {

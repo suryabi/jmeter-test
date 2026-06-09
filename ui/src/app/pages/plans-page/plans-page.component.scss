@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.page-hero {
+  border-radius: 24px;
+  padding: 1.5rem 1.75rem;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(79, 140, 255, 0.14) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(16, 27, 48, 0.9) 0%, rgba(9, 17, 33, 0.9) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.page-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #c7d2fe;
+}
+
+.page-hero-title {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+}
+
+.page-hero-sub {
+  margin: 0.55rem 0 0;
+  color: #94a3b8;
+  font-size: 0.92rem;
+  max-width: 42rem;
+}

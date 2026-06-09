@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
@@ -9,6 +10,8 @@ import { confirmDeleteRun } from '../../core/utils/confirm-delete-run';
 import {
   RunDetail,
   RunInsights,
+  RunRequestInsight,
+  RunRequestInsightStatus,
   RunSampleRow,
   RunStatus,
   RunStep,
@@ -17,6 +20,7 @@ import {
 } from '../../core/models/runner.models';
 import { formatDurationMs } from '../../core/utils/format-duration';
 import { LogConsoleComponent } from '../../components/log-console/log-console.component';
+import { RunParametersPanelComponent } from '../../components/run-parameters-panel/run-parameters-panel.component';
 import { TopbarComponent } from '../../components/topbar/topbar.component';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
@@ -24,21 +28,25 @@ import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
 import { TableModule } from 'primeng/table';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-run-detail-page',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     LogConsoleComponent,
+    RunParametersPanelComponent,
     TopbarComponent,
     CardModule,
     TagModule,
     ButtonModule,
     MessageModule,
     DividerModule,
-    TableModule
+    TableModule,
+    SelectModule
   ],
   templateUrl: './run-detail-page.component.html',
   styleUrl: './run-detail-page.component.scss'
@@ -57,11 +65,14 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   deleting = false;
   streaming = false;
   showReportEmbed = false;
+  showRunParameters = false;
   reportEmbedUrl: SafeResourceUrl | null = null;
   activeSampleStatus: 'passed' | 'failed' | null = null;
   sampleRows: RunSampleRow[] = [];
   sampleRowsTotal = 0;
   sampleRowsLoading = false;
+  activeInsightRequestIndex = 1;
+  insightRequestOptions: { index: number; label: string }[] = [];
 
   @ViewChild('samplesTableWrap') samplesTableWrap?: ElementRef<HTMLElement>;
 
@@ -241,20 +252,92 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  toggleRunParameters(): void {
+    this.showRunParameters = !this.showRunParameters;
+  }
+
   openReportInNewTab(): void {
     if (!this.hasHtmlReport()) return;
     window.open(this.runner.htmlReportUrl(this.runId), '_blank', 'noopener,noreferrer');
   }
 
   formatInsightsDuration(insights: RunInsights): string {
+    return this.formatRequestDuration(insights.durationDays, insights.durationMinutes);
+  }
+
+  formatRequestDuration(durationDays: number | null, durationMinutes: number | null): string {
     const parts: string[] = [];
-    if (insights.durationDays != null) {
-      parts.push(`${insights.durationDays} day${insights.durationDays === 1 ? '' : 's'}`);
+    if (durationDays != null) {
+      parts.push(`${durationDays} day${durationDays === 1 ? '' : 's'}`);
     }
-    if (insights.durationMinutes != null) {
-      parts.push(`${insights.durationMinutes} min`);
+    if (durationMinutes != null) {
+      parts.push(`${durationMinutes} min`);
     }
     return parts.length ? parts.join(' · ') : '—';
+  }
+
+  formatRequestTime(request: RunRequestInsight): string {
+    if (!request.startTime) return '—';
+    return `${request.startTime} – ${request.endTime || '?'}`;
+  }
+
+  requestStatusLabel(status: RunRequestInsightStatus): string {
+    switch (status) {
+      case 'created':
+        return 'Created';
+      case 'skipped':
+        return 'Skipped';
+      case 'failed':
+        return 'Failed';
+      default:
+        return 'Started';
+    }
+  }
+
+  requestStatusSeverity(
+    status: RunRequestInsightStatus
+  ): 'success' | 'danger' | 'warn' | 'info' | 'secondary' {
+    switch (status) {
+      case 'created':
+        return 'success';
+      case 'failed':
+        return 'danger';
+      case 'skipped':
+        return 'warn';
+      default:
+        return 'secondary';
+    }
+  }
+
+  get selectedInsightRequest(): RunRequestInsight | null {
+    if (!this.run) return null;
+    return (
+      this.run.insights.requests.find((request) => request.index === this.activeInsightRequestIndex) ??
+      null
+    );
+  }
+
+  insightRequestOptionLabel(request: RunRequestInsight): string {
+    const parts = [`Request ${request.index}/${request.total}`];
+    const name = request.customerName?.trim();
+    if (name) parts.push(name);
+    parts.push(this.requestStatusLabel(request.status));
+    return parts.join(' · ');
+  }
+
+  stepStatusSeverity(status: string): 'success' | 'danger' | 'warn' | 'info' | 'secondary' {
+    switch (status) {
+      case 'success':
+        return 'success';
+      case 'failed':
+        return 'danger';
+      case 'warn':
+        return 'warn';
+      case 'info':
+        return 'info';
+      default:
+        return 'secondary';
+    }
   }
 
   /** Wall-clock time for the JMeter process (startedAt → endedAt or now while running). */
@@ -328,6 +411,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
 
   private applyRunUpdate(run: RunDetail): void {
     this.run = run;
+    this.syncActiveInsightRequest(run.insights.requests);
     if (this.hasHtmlReport()) {
       this.ensureReportEmbedUrl();
     } else {
@@ -341,6 +425,27 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
         this.loadSampleRows(this.activeSampleStatus, { silent: this.sampleRows.length > 0 });
       }
     }
+  }
+
+  private syncActiveInsightRequest(requests: RunRequestInsight[]): void {
+    this.insightRequestOptions = requests.map((request) => ({
+      index: request.index,
+      label: this.insightRequestOptionLabel(request)
+    }));
+
+    if (!requests.length) {
+      this.activeInsightRequestIndex = 1;
+      return;
+    }
+
+    const stillValid = requests.some((request) => request.index === this.activeInsightRequestIndex);
+    if (stillValid) return;
+
+    const preferred =
+      requests.find((request) => request.status === 'created') ??
+      requests.find((request) => request.status === 'failed') ??
+      requests[0];
+    this.activeInsightRequestIndex = preferred.index;
   }
 
   private sampleSummaryKey(run: RunDetail): string {

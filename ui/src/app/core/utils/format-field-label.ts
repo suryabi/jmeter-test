@@ -23,6 +23,21 @@ function isSingleLowercaseWord(name: string): boolean {
  * Single lowercase word → capitalize first letter only (e.g. protocol → Protocol).
  * Anything else is returned unchanged.
  */
+export function parameterFieldLabel(param: {
+  name: string;
+  label?: string;
+  kind?: string;
+  headerName?: string;
+}): string {
+  if (param.kind === 'header' && param.headerName) {
+    return param.headerName;
+  }
+  if (param.label) {
+    return formatFieldLabel(param.label);
+  }
+  return formatFieldLabel(param.name);
+}
+
 export function formatFieldLabel(name: string): string {
   if (!name) return '';
 

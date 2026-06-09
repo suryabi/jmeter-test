@@ -46,8 +46,22 @@ function inferType(description) {
  * Strip type/required markers from the description so they don't show in the UI.
  * e.g. "DATE, REQUIRED. Start date for the run" → "Start date for the run"
  */
+function isHiddenParameter(description) {
+  return /\bHIDE\b/i.test(String(description || ""));
+}
+
+function parseParameterLabel(description) {
+  const match = String(description || "").match(/\bLABEL=([a-zA-Z][a-zA-Z0-9]*)\b/);
+  return match ? match[1] : null;
+}
+
 function cleanDescription(description) {
   return String(description || "")
+    .replace(/\bLABEL=[a-zA-Z][a-zA-Z0-9]*\s*[,.]?\s*/gi, "")
+    .replace(/\bHIDE\b\s*[,.]?\s*/gi, "")
+    .replace(/,\s*,/g, ",")
+    .replace(/^,\s*/, "")
+    .replace(/^[,.]+\s*/, "")
     .replace(/^(DROPDOWN,\s*API)(,\s*MULTI)?(,\s*REQUIRED)?[,.]\s*/i, "")
     .replace(/^(DATE|BOOLEAN)(,\s*REQUIRED|,\s*)?[,.]\s*/i, "")
     .replace(/^REQUIRED[,.]\s*/i, "")
@@ -200,6 +214,14 @@ function getByPath(obj, path) {
     .reduce((acc, key) => (acc == null ? acc : acc[key]), obj);
 }
 
+function fieldFromItem(item, fieldPath) {
+  if (!fieldPath) return "";
+  const value = fieldPath.includes(".")
+    ? getByPath(item, fieldPath)
+    : item?.[fieldPath];
+  return value == null ? "" : String(value);
+}
+
 function enrichParameter(param, apiFieldMap) {
   if (param.type !== "dropdown" && param.type !== "multiselect") return param;
   const apiConfig = apiFieldMap[param.name];
@@ -250,12 +272,15 @@ function parseArgumentsBlock(blockXml) {
     const description = decodeXml(
       inner.match(/<stringProp name="Argument.desc">([^<]*)<\/stringProp>/)?.[1] || ""
     );
+    const label = parseParameterLabel(description);
     params.push({
       name,
       defaultValue,
       description: cleanDescription(description),
       type: inferType(description),
       required: /REQUIRED/i.test(description),
+      hidden: isHiddenParameter(description),
+      ...(label ? { label } : {}),
       kind: "argument"
     });
   }
@@ -404,6 +429,61 @@ function dependenciesSatisfied(apiConfig, props = {}) {
   return apiConfig.depends.every((dep) => String(props[dep] ?? "").trim());
 }
 
+function isApiFieldDebugEnabled() {
+  return String(process.env.BIQ_DEBUG_API_FIELDS || "").toLowerCase() === "true";
+}
+
+function sanitizeHeadersForLog(headers) {
+  const out = { ...headers };
+  for (const key of Object.keys(out)) {
+    if (key.toLowerCase() === "authorization") {
+      const value = String(out[key] || "");
+      out[key] = value ? `Bearer …(${value.length} chars)` : "[empty]";
+    }
+  }
+  return out;
+}
+
+function summarizeApiFieldResponse(json, itemsPath) {
+  const atPath = getByPath(json, itemsPath);
+  const embedded = getByPath(json, "_embedded");
+  return {
+    itemsPath,
+    itemsType: atPath == null ? "null" : Array.isArray(atPath) ? "array" : typeof atPath,
+    itemsLength: Array.isArray(atPath) ? atPath.length : undefined,
+    embeddedKeys:
+      embedded && typeof embedded === "object" && !Array.isArray(embedded)
+        ? Object.keys(embedded)
+        : [],
+    topLevelKeys: json && typeof json === "object" && !Array.isArray(json) ? Object.keys(json) : []
+  };
+}
+
+function buildApiFieldRequestLog(fieldName, apiConfig, resolvedProps, url, headers) {
+  const depends = apiConfig.depends || [];
+  return {
+    field: fieldName,
+    method: "GET",
+    url,
+    itemsPath: apiConfig.itemsPath,
+    depends,
+    resolvedDepends: Object.fromEntries(depends.map((dep) => [dep, resolvedProps[dep] ?? ""])),
+    headers: sanitizeHeadersForLog(headers)
+  };
+}
+
+function logApiFieldRequest(fieldName, requestLog) {
+  console.log(
+    `[field-options:${fieldName}] upstream request\n${JSON.stringify(requestLog, null, 2)}`
+  );
+}
+
+function logApiFieldFailure(fieldName, requestLog, details) {
+  console.error(
+    `[field-options:${fieldName}] upstream failure\n${JSON.stringify({ ...requestLog, ...details }, null, 2)}`
+  );
+}
+
 async function fetchApiFieldOptions(planPath, fieldName, props = {}) {
   const xml = fs.readFileSync(planPath, "utf-8");
   const apiFields = parseApiFieldVariables(xml);
@@ -415,42 +495,83 @@ async function fetchApiFieldOptions(planPath, fieldName, props = {}) {
   const resolvedProps = await enrichPropsForApiField(xml, props, apiConfig, fieldName);
 
   if (!dependenciesSatisfied(apiConfig, resolvedProps)) {
+    if (isApiFieldDebugEnabled()) {
+      console.log(
+        `[field-options:${fieldName}] skipped — dependencies not satisfied`,
+        Object.fromEntries((apiConfig.depends || []).map((dep) => [dep, resolvedProps[dep] ?? ""]))
+      );
+    }
     return { field: fieldName, options: [] };
   }
 
   const url = buildApiUrl(apiConfig.endpoint, resolvedProps);
   const headers = buildRequestHeaders(xml, resolvedProps);
   applyApiFieldHeaders(headers, apiConfig, resolvedProps);
-  const response = await fetch(url, { headers });
-  if (!response.ok) {
-    const body = await response.text();
-    throw formatUpstreamApiError(fieldName, response.status, body);
+  const requestLog = buildApiFieldRequestLog(fieldName, apiConfig, resolvedProps, url, headers);
+
+  if (isApiFieldDebugEnabled()) {
+    logApiFieldRequest(fieldName, requestLog);
   }
 
-  const json = await response.json();
+  const response = await fetch(url, { headers });
+  const bodyText = await response.text();
+
+  if (!response.ok) {
+    logApiFieldFailure(fieldName, requestLog, {
+      responseStatus: response.status,
+      bodyPreview: bodyText.slice(0, 1200)
+    });
+    throw formatUpstreamApiError(fieldName, response.status, bodyText);
+  }
+
+  let json;
+  try {
+    json = JSON.parse(bodyText);
+  } catch (parseErr) {
+    logApiFieldFailure(fieldName, requestLog, {
+      responseStatus: response.status,
+      parseError: parseErr.message,
+      bodyPreview: bodyText.slice(0, 1200)
+    });
+    throw new Error(`Invalid JSON from BriefingIQ API for ${fieldName} (${url})`);
+  }
+
   const items = getByPath(json, apiConfig.itemsPath);
   if (!Array.isArray(items)) {
-    const embedded = getByPath(json, "_embedded");
-    const embeddedKeys =
-      embedded && typeof embedded === "object" && !Array.isArray(embedded)
-        ? Object.keys(embedded).join(", ")
-        : "";
-    const hint = embeddedKeys ? ` (_embedded keys: ${embeddedKeys})` : "";
-    throw new Error(`Expected array at ${apiConfig.itemsPath} for ${fieldName}${hint}`);
+    const summary = summarizeApiFieldResponse(json, apiConfig.itemsPath);
+    logApiFieldFailure(fieldName, requestLog, {
+      responseStatus: response.status,
+      ...summary,
+      bodyPreview: bodyText.slice(0, 1200)
+    });
+    const embeddedHint = summary.embeddedKeys.length
+      ? ` _embedded keys: ${summary.embeddedKeys.join(", ")}`
+      : "";
+    throw new Error(
+      `Expected array at ${apiConfig.itemsPath} for ${fieldName}. URL: ${url}.${embeddedHint}`
+    );
   }
 
   const ignoreValues = new Set(
     (apiConfig.ignore || []).map((entry) => String(entry).trim().toLowerCase()).filter(Boolean)
   );
   const options = items
-    .map((item) => ({
-      label: String(item?.[apiConfig.displayField] ?? item?.[apiConfig.valueField] ?? ""),
-      value: String(item?.[apiConfig.valueField] ?? "")
-    }))
+    .map((item) => {
+      const value = fieldFromItem(item, apiConfig.valueField);
+      const label = fieldFromItem(item, apiConfig.displayField) || value;
+      return { label: String(label), value: String(value) };
+    })
     .filter(
       (option) =>
         option.value && !ignoreValues.has(String(option.value).trim().toLowerCase())
     );
+
+  if (isApiFieldDebugEnabled()) {
+    console.log(
+      `[field-options:${fieldName}] ok — ${options.length} option(s)`,
+      summarizeApiFieldResponse(json, apiConfig.itemsPath)
+    );
+  }
 
   return { field: fieldName, options };
 }

@@ -31,72 +31,72 @@
               <stringProp name="Argument.name">requestStartDate</stringProp>
               <stringProp name="Argument.value">2026-12-10</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE, REQUIRED. Start date for request creation (format: yyyy-MM-dd, e.g. 2026-12-02)</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Start date for request creation (format: yyyy-MM-dd, e.g. 2026-12-02)</stringProp>
             </elementProp>
             <elementProp name="requestEndDate" elementType="Argument">
               <stringProp name="Argument.name">requestEndDate</stringProp>
               <stringProp name="Argument.value">2026-12-10</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE, REQUIRED. End date for request creation (format: yyyy-MM-dd, e.g. 2026-12-31). Must be same as or after start date</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. End date for request creation (format: yyyy-MM-dd, e.g. 2026-12-31). Must be same as or after start date</stringProp>
             </elementProp>
             <elementProp name="requestsPerDay" elementType="Argument">
               <stringProp name="Argument.name">requestsPerDay</stringProp>
               <stringProp name="Argument.value">1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Requests to create per day (positive integers, comma-separated, e.g. 1,2,3). Empty = defaults to 1</stringProp>
+              <stringProp name="Argument.desc">LABEL=requestsPerDay. Requests to create per day (positive integers, comma-separated, e.g. 1,2,3). Empty = defaults to 1</stringProp>
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
               <stringProp name="Argument.value">1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Days a request should span (positive integers, comma-separated, e.g. 1,2,3). Empty = defaults to 1</stringProp>
+              <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. Days a request should span (positive integers, comma-separated, e.g. 1,2,3). Empty = defaults to 1</stringProp>
             </elementProp>
             <elementProp name="allowWeekends" elementType="Argument">
               <stringProp name="Argument.name">allowWeekends</stringProp>
               <stringProp name="Argument.value">false</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">BOOLEAN. Flag to allow/disallow request creation on weekends. (Default = false)</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN, HIDE. Flag to allow/disallow request creation on weekends. (Default = false)</stringProp>
             </elementProp>
             <elementProp name="requestStartTimes" elementType="Argument">
               <stringProp name="Argument.name">requestStartTimes</stringProp>
               <stringProp name="Argument.value">07:00, 07:30, 08:00, 08:30, 09:00</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Random start time of a request (HH:mm, comma-separated, e.g. 07:00,08:00,09:00)</stringProp>
+              <stringProp name="Argument.desc">REQUIRED, LABEL=requestDayStartTime. Random start time of a request (HH:mm, comma-separated, e.g. 07:00,08:00,09:00)</stringProp>
             </elementProp>
             <elementProp name="requestDurations" elementType="Argument">
               <stringProp name="Argument.name">requestDurations</stringProp>
               <stringProp name="Argument.value">420, 480, 540, 600</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Random duration in minutes, min 30 (comma-separated, e.g. 420,480,540,600)</stringProp>
+              <stringProp name="Argument.desc">REQUIRED, LABEL=requestDayDuration. Random duration in minutes, min 30 (comma-separated, e.g. 420,480,540,600)</stringProp>
             </elementProp>
             <elementProp name="categoryType" elementType="Argument">
               <stringProp name="Argument.name">categoryType</stringProp>
               <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Category type for request creation</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, HIDE. Category type for request creation</stringProp>
             </elementProp>
             <elementProp name="parentCategory" elementType="Argument">
               <stringProp name="Argument.name">parentCategory</stringProp>
               <stringProp name="Argument.value">72DCAF42-C7C0-4006-8F31-7952185E5D61</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Parent category (location)</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=location. Parent category (location)</stringProp>
             </elementProp>
             <elementProp name="category" elementType="Argument">
               <stringProp name="Argument.name">category</stringProp>
               <stringProp name="Argument.value">D06189A1-69AF-4D17-AC5B-480F7589D427</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Request category</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=requestType. Request category</stringProp>
             </elementProp>
-            <elementProp name="stateActionIterations" elementType="Argument">
-              <stringProp name="Argument.name">stateActionIterations</stringProp>
-              <stringProp name="Argument.value">2,3,4</stringProp>
-              <stringProp name="Argument.desc">Times to iterate state actions for request (comma-separated, e.g. 2,3). First iteration always executes SUBMIT. Remaining iterations pick randomly from includedStateActions. 0 or empty = skip state actions entirely</stringProp>
+            <elementProp name="maxIterationCount" elementType="Argument">
+              <stringProp name="Argument.name">maxIterationCount</stringProp>
+              <stringProp name="Argument.value">3</stringProp>
+              <stringProp name="Argument.desc">HIDE. Max state action iterations per request (iteration 1 always SUBMIT). 0 = skip state actions</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
-            <elementProp name="includedStateActions" elementType="Argument">
-              <stringProp name="Argument.name">includedStateActions</stringProp>
+            <elementProp name="targetActions" elementType="Argument">
+              <stringProp name="Argument.name">targetActions</stringProp>
               <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. State actions to pick from after SUBMIT. Empty = all available actions allowed</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Pool to randomly pick one target state action before iterating; loop exits when the target state action is performed</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -157,11 +157,23 @@
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Rooms to create per activity day (positive integers, comma-separated, e.g. 1,2,3). 0 or empty = no rooms. Ignored if allowedRooms variable value is set.</stringProp>
             </elementProp>
+            <elementProp name="locationResourceType" elementType="Argument">
+              <stringProp name="Argument.name">locationResourceType</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, LABEL=locationResourceType. Resource type used to load location resources</stringProp>
+            </elementProp>
+            <elementProp name="locationResourceUniqueId" elementType="Argument">
+              <stringProp name="Argument.name">locationResourceUniqueId</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, LABEL=locationResource. Location resource used as parent when loading allowed rooms. Requires Location Resource Type.</stringProp>
+            </elementProp>
             <elementProp name="allowedRooms" elementType="Argument">
               <stringProp name="Argument.name">allowedRooms</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Restrict room creation to specific rooms only (comma-separated room names, UUIDs, or a mix of both, e.g. Boardroom A, EAC8F953-99D0-43DF-8E15-CA03F21EA92D). Empty = picks from all vacant rooms based on the rooms variable count. When set, only matching rooms are used and the rooms variable is ignored.</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Restrict room creation to specific rooms only. Empty = picks from all vacant rooms based on the rooms variable count. When set, only matching rooms are used. Requires Location Resource.</stringProp>
             </elementProp>
             <elementProp name="roomTimeOffset" elementType="Argument">
               <stringProp name="Argument.name">roomTimeOffset</stringProp>
@@ -233,72 +245,72 @@
               <stringProp name="Argument.name">journeyModuleType</stringProp>
               <stringProp name="Argument.value">JOURNEY</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Journey</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Journey</stringProp>
             </elementProp>
             <elementProp name="logisticsModuleType" elementType="Argument">
               <stringProp name="Argument.name">logisticsModuleType</stringProp>
               <stringProp name="Argument.value">LOGISTICS</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Logistics</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Logistics</stringProp>
             </elementProp>
             <elementProp name="agendaModuleType" elementType="Argument">
               <stringProp name="Argument.name">agendaModuleType</stringProp>
-              <stringProp name="Argument.value">CALENDAR_LISTING</stringProp>
+              <stringProp name="Argument.value">CALENDAR_LISTING, CALENDER, LISTING</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Agenda</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE. Module types treated as Agenda (first match per module pass)</stringProp>
             </elementProp>
             <elementProp name="virtualConnectionModuleType" elementType="Argument">
               <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
               <stringProp name="Argument.value">VIRTUAL_CONNECTION</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API. Module type of Virtual Connection</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Virtual Connection</stringProp>
             </elementProp>
             <elementProp name="blockedSlots" elementType="Argument">
               <stringProp name="Argument.name">blockedSlots</stringProp>
               <stringProp name="Argument.value">0</stringProp>
-              <stringProp name="Argument.desc">Slots to keep empty per room (integers &gt;= 0, comma-separated, e.g. 0,1,2). 0 or empty = no blocked slots</stringProp>
+              <stringProp name="Argument.desc">HIDE. Slots to keep empty per room (integers &gt;= 0, comma-separated, e.g. 0,1,2). 0 or empty = no blocked slots</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="blockedDurations" elementType="Argument">
               <stringProp name="Argument.name">blockedDurations</stringProp>
               <stringProp name="Argument.value">30,60</stringProp>
-              <stringProp name="Argument.desc">Blocked slot durations in minutes (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
+              <stringProp name="Argument.desc">HIDE. Blocked slot durations in minutes (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="activityTypesPriority" elementType="Argument">
               <stringProp name="Argument.name">activityTypesPriority</stringProp>
               <stringProp name="Argument.value">catering</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Order of the Activity Type priority</stringProp>
+              <stringProp name="Argument.desc">HIDE. Order of the Activity Type priority</stringProp>
             </elementProp>
             <elementProp name="skipActivityTypes" elementType="Argument">
               <stringProp name="Argument.name">skipActivityTypes</stringProp>
               <stringProp name="Argument.value">blocked</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Activity types to exclude from creation (comma-separated). Leave empty to create all</stringProp>
+              <stringProp name="Argument.desc">HIDE. Activity types to exclude from creation (comma-separated). Leave empty to create all</stringProp>
             </elementProp>
             <elementProp name="zoomAllowedActions" elementType="Argument">
               <stringProp name="Argument.name">zoomAllowedActions</stringProp>
               <stringProp name="Argument.value">CONFIRM</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Actions that allow adding Zoom link to topic (comma-separated)</stringProp>
+              <stringProp name="Argument.desc">HIDE. Actions that allow adding Zoom link to topic (comma-separated)</stringProp>
             </elementProp>
             <elementProp name="roomResourceTypeId" elementType="Argument">
               <stringProp name="Argument.name">roomResourceTypeId</stringProp>
               <stringProp name="Argument.value">EAC8F953-99D0-43DF-8E15-CA03F21EA92D</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API. Resource type for Room</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE, LABEL=roomResourceType. Resource Type to be used for Room</stringProp>
             </elementProp>
             <elementProp name="activityFormId" elementType="Argument">
               <stringProp name="Argument.name">activityFormId</stringProp>
               <stringProp name="Argument.value">5622B58C-55BA-4473-9B3A-38D732DDD04B</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API. Topic activity form</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE, LABEL=activityForm. Topic Activity Form used to populate agenda</stringProp>
             </elementProp>
             <elementProp name="excludedModuleIds" elementType="Argument">
               <stringProp name="Argument.name">excludedModuleIds</stringProp>
               <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Module IDs to exclude</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE, LABEL=excludedModules. Modules to exclude from data population</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -310,25 +322,25 @@
               <stringProp name="Argument.name">protocol</stringProp>
               <stringProp name="Argument.value">https</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">HTTP protocol</stringProp>
+              <stringProp name="Argument.desc">HIDE. HTTP protocol</stringProp>
             </elementProp>
             <elementProp name="host" elementType="Argument">
               <stringProp name="Argument.name">host</stringProp>
               <stringProp name="Argument.value">briefings.briefingiq.com</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Server hostname</stringProp>
+              <stringProp name="Argument.desc">HIDE. Server hostname</stringProp>
             </elementProp>
             <elementProp name="port" elementType="Argument">
               <stringProp name="Argument.name">port</stringProp>
               <stringProp name="Argument.value">443</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Server port number</stringProp>
+              <stringProp name="Argument.desc">HIDE. Server port number</stringProp>
             </elementProp>
             <elementProp name="contextname" elementType="Argument">
               <stringProp name="Argument.name">contextname</stringProp>
               <stringProp name="Argument.value">events</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Application context/root path </stringProp>
+              <stringProp name="Argument.desc">HIDE. Application context/root path</stringProp>
             </elementProp>
           </collectionProp>
         </Arguments>
@@ -369,7 +381,7 @@
               <stringProp name="Argument.name">agendaModuleType</stringProp>
               <stringProp name="Argument.value">/${contextname}/api/moduletypes?isActive=true</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.moduleTypes display=moduleTypeName value=uniqueId</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.moduleTypes display=moduleTypeName value=uniqueId multi=true</stringProp>
             </elementProp>
             <elementProp name="virtualConnectionModuleType" elementType="Argument">
               <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
@@ -395,11 +407,29 @@
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
             </elementProp>
-            <elementProp name="includedStateActions" elementType="Argument">
-              <stringProp name="Argument.name">includedStateActions</stringProp>
+            <elementProp name="targetActions" elementType="Argument">
+              <stringProp name="Argument.name">targetActions</stringProp>
               <stringProp name="Argument.value">/${contextname}/api/admin/actions</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">items=_embedded.actions display=displayText value=uniqueId multi=true</stringProp>
+            </elementProp>
+            <elementProp name="locationResourceType" elementType="Argument">
+              <stringProp name="Argument.name">locationResourceType</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/resourcetypes</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.resourceTypes display=name value=uniqueId header.x-cloud-customerid=field:customerId</stringProp>
+            </elementProp>
+            <elementProp name="locationResourceUniqueId" elementType="Argument">
+              <stringProp name="Argument.name">locationResourceUniqueId</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/resourcetypes/${locationResourceType}/resources</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.resources display=metaData.searchDisplayText value=uniqueId depends=locationResourceType,parentCategory,categoryType header.x-cloud-customerid=field:customerId header.x-cloud-categoryid=field:parentCategory header.x-cloud-categorytypeid=field:categoryType</stringProp>
+            </elementProp>
+            <elementProp name="allowedRooms" elementType="Argument">
+              <stringProp name="Argument.name">allowedRooms</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/resourcetypes/${roomResourceTypeId}/resources</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.resources display=metaData.searchDisplayText value=uniqueId depends=roomResourceTypeId,locationResourceUniqueId,category,categoryType header.x-cloud-customerid=field:customerId header.x-cloud-categorytypeid=field:categoryType header.x-cloud-categoryid=field:category header.x-cloud-parentid=field:locationResourceUniqueId multi=true</stringProp>
             </elementProp>
           </collectionProp>
         </Arguments>
@@ -623,6 +653,45 @@ def _fn_getIndexedValue = { String csv, int entryIdx -&gt;
     return csv.trim()
 }
 props.put(&quot;fn_getIndexedValue&quot;, _fn_getIndexedValue)
+
+// Module-type bucket helpers (journey / logistics / agenda / virtualConnection)
+def _fn_parseModuleTypeTokens = { String raw -&gt;
+    if (!raw?.trim()) return [] as List
+    raw.split(/,/).collect { it.trim() }.findAll { it }
+}
+props.put(&quot;fn_parseModuleTypeTokens&quot;, _fn_parseModuleTypeTokens)
+
+def _fn_moduleTypeMatches = { varsRef, udvKey, currentTypeId, currentTypeName = null -&gt;
+    def configured = props.get(&quot;fn_parseModuleTypeTokens&quot;)(varsRef.get(udvKey) ?: &quot;&quot;)
+    if (!configured) return false
+    def typeId = (currentTypeId ?: &quot;&quot;).trim()
+    def typeName = (currentTypeName ?: &quot;&quot;).trim()
+    configured.any { token -&gt;
+        token.equalsIgnoreCase(typeId) || (typeName &amp;&amp; token.equalsIgnoreCase(typeName))
+    }
+}
+props.put(&quot;fn_moduleTypeMatches&quot;, _fn_moduleTypeMatches)
+
+def _fn_moduleBucketActive = { varsRef, bucketKey, udvKey -&gt;
+    if (varsRef.get(&quot;moduleHandled_${bucketKey}&quot;) == &quot;true&quot;) return false
+    def currentTypeId = varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;
+    def currentTypeName = varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;
+    return props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, udvKey, currentTypeId, currentTypeName)
+}
+props.put(&quot;fn_moduleBucketActive&quot;, _fn_moduleBucketActive)
+
+def _fn_markModuleBucketHandled = { varsRef, bucketKey -&gt;
+    varsRef.put(&quot;moduleHandled_${bucketKey}&quot;, &quot;true&quot;)
+    log.info(&quot;Module bucket handled: ${bucketKey} (module=${varsRef.get(&apos;currentModuleName&apos;) ?: &apos;Unknown&apos;})&quot;)
+}
+props.put(&quot;fn_markModuleBucketHandled&quot;, _fn_markModuleBucketHandled)
+
+def _fn_resetModuleHandledFlags = { varsRef -&gt;
+    [&quot;journey&quot;, &quot;logistics&quot;, &quot;agenda&quot;, &quot;virtualConnection&quot;].each { bucket -&gt;
+        varsRef.remove(&quot;moduleHandled_${bucket}&quot;)
+    }
+}
+props.put(&quot;fn_resetModuleHandledFlags&quot;, _fn_resetModuleHandledFlags)
 
 // Generates designation/job title values for event
 props.put(&quot;fn_businessTitles&quot;, [
@@ -1958,7 +2027,61 @@ props.put(&quot;fn_activityDayCounterExtractor&quot;, _fn_activityDayCounterExtr
 // Field Diff Check - skips a module form if all accessible fields are already filled
 // Sets vars &quot;skipCurrentForm&quot; = &quot;true&quot;/&quot;false&quot;
 
+def _fn_parseActionList = { String raw -&gt;
+    raw?.toUpperCase()?.split(&quot;,&quot;)?.collect { it.trim() }?.findAll { it } ?: []
+}
+
+def _fn_pickTargetStateAction = { varsRef, logRef -&gt;
+    def targets = _fn_parseActionList(varsRef.get(&quot;targetActions&quot;))
+    if (targets.isEmpty()) {
+        logRef.warn(&quot;targetActions is empty - no target state action picked&quot;)
+        varsRef.remove(&quot;targetStateAction&quot;)
+        return null
+    }
+    def random = java.util.concurrent.ThreadLocalRandom.current()
+    def target = targets[random.nextInt(targets.size())]
+    varsRef.put(&quot;targetStateAction&quot;, target)
+    logRef.info(&quot;Picked target state action: ${target} from [${targets.join(&apos;, &apos;)}]&quot;)
+    return target
+}
+
+def _fn_resolveStateActionFromLinks = { links, actionKeys, targetStateAction, logRef -&gt;
+    def target = targetStateAction?.toUpperCase()?.trim()
+    if (target) {
+        def matchedKey = actionKeys.find { it.toUpperCase().trim() == target }
+        if (matchedKey) {
+            def href = links[matchedKey]?.href
+            if (href) {
+                logRef.info(&quot;Target action &apos;${target}&apos; present in _links - selecting it&quot;)
+                return [matchedKey, href, true]
+            }
+            logRef.warn(&quot;Target action &apos;${target}&apos; found in _links but has no href&quot;)
+        }
+    }
+    def keysList = (actionKeys as List)
+    if (keysList.isEmpty()) {
+        return [null, null, false]
+    }
+    def random = java.util.concurrent.ThreadLocalRandom.current()
+    def randomKey = keysList[random.nextInt(keysList.size())]
+    def randomHref = links[randomKey]?.href
+    if (!randomHref) {
+        logRef.warn(&quot;Random action &apos;${randomKey}&apos; has no href in _links&quot;)
+        return [null, null, false]
+    }
+    logRef.info(&quot;Target not in _links - random action: ${randomKey}&quot;)
+    return [randomKey, randomHref, false]
+}
+props.put(&quot;fn_parseActionList&quot;, _fn_parseActionList)
+props.put(&quot;fn_pickTargetStateAction&quot;, _fn_pickTargetStateAction)
+props.put(&quot;fn_resolveStateActionFromLinks&quot;, _fn_resolveStateActionFromLinks)
+
 def _fn_activityStateActionSelector = { varsRef, prevRef, logRef -&gt;
+
+    if (varsRef.get(&quot;skipActivityStateActionsRemaining&quot;) == &quot;true&quot;) {
+        varsRef.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
+        return
+    }
 
     def json = new groovy.json.JsonSlurper().parseText(prevRef.getResponseDataAsString())
     def links = json._links
@@ -1969,40 +2092,31 @@ def _fn_activityStateActionSelector = { varsRef, prevRef, logRef -&gt;
         return
     }
 
-    // Get all available actions
     def actionKeys = links.keySet()
-
-    // Read included actions (comma-separated), uppercase &amp; trim spaces
-    def includedStateActions = varsRef.get(&quot;includedStateActions&quot;)?.toUpperCase()?.split(&quot;,&quot;)?.collect { it.trim() } as List ?: []
-
+    def target = varsRef.get(&quot;targetStateAction&quot;)
     logRef.info(&quot;Available Actions: &quot; + actionKeys)
-    logRef.info(&quot;Included State Actions: &quot; + includedStateActions)
+    logRef.info(&quot;Target State Action: &quot; + target)
 
-    // Filter allowed actions ignoring case - only allow actions in the included list (if list is empty, allow all)
-    def allowedActions = actionKeys.findAll { key -&gt;
-        includedStateActions.isEmpty() || includedStateActions.contains(key.toUpperCase().trim())
-    }
+    def resolved = _fn_resolveStateActionFromLinks(links, actionKeys, target, logRef)
+    def selectedAction = resolved[0]
+    def selectedHref = resolved[1]
+    def hitTarget = resolved[2]
 
-    // Pick a random allowed action
-    if (!allowedActions.isEmpty()) {
-        def random = java.util.concurrent.ThreadLocalRandom.current()
-        def selectedAction = allowedActions[random.nextInt(allowedActions.size())]
-        def selectedHref = links[selectedAction]?.href
-
-        if (selectedHref) {
-            varsRef.put(&quot;selectedAction&quot;, selectedAction)
-            varsRef.put(&quot;selectedHref&quot;, selectedHref)
-            varsRef.put(&quot;skipActivityStateAction&quot;, &quot;false&quot;)
-            logRef.info(&quot;Selected Action: &quot; + selectedAction)
-            logRef.info(&quot;Selected Href: &quot; + selectedHref)
-        } else {
-            logRef.warn(&quot;Selected action has no href value!&quot;)
-            varsRef.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
+    if (selectedAction &amp;&amp; selectedHref) {
+        varsRef.put(&quot;selectedAction&quot;, selectedAction)
+        varsRef.put(&quot;selectedHref&quot;, selectedHref)
+        varsRef.put(&quot;skipActivityStateAction&quot;, &quot;false&quot;)
+        logRef.info(&quot;Selected Action: &quot; + selectedAction)
+        logRef.info(&quot;Selected Href: &quot; + selectedHref)
+        if (hitTarget) {
+            varsRef.put(&quot;skipActivityStateActionsRemaining&quot;, &quot;true&quot;)
+            logRef.info(&quot;Target state action reached - skipping remaining activity state actions&quot;)
         }
     } else {
-        logRef.info(&quot;All actions excluded for ${varsRef.get(&apos;activityType&apos;)} - skipping state action execution&quot;)
+        logRef.warn(&quot;No valid action to execute for ${varsRef.get(&apos;activityType&apos;)}&quot;)
         varsRef.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
         varsRef.put(&quot;selectedAction&quot;, &quot;&quot;)
+        varsRef.put(&quot;skipActivityStateActionsRemaining&quot;, &quot;true&quot;)
     }
 
     logRef.info(&quot;----- Terminated: Activity State Action Selector -----&quot;)
@@ -2785,17 +2899,15 @@ def _fn_requestStateActionSelectorPostProcessor = { varsRef, prevRef, logRef -&g
     def actionKeys = links.keySet()
     logRef.info(&quot;Available Actions: &quot; + actionKeys)
 
-    // STEP 3: Read includedStateActions from User Defined Variables
-    def includedStateActions = varsRef.get(&quot;includedStateActions&quot;)?.toUpperCase()?.split(&quot;,&quot;)?.collect { it.trim() } as List ?: []
-    logRef.info(&quot;Included State Actions: &quot; + includedStateActions)
+    def target = varsRef.get(&quot;targetStateAction&quot;)
+    logRef.info(&quot;Target State Action: &quot; + target)
     logRef.info(&quot;Current Iteration: ${stateActionIteration}&quot;)
 
-    // STEP 4: iteration 1 = hardcoded SUBMIT, remaining = includedStateActions
+    // STEP 3: iteration 1 = SUBMIT; remaining = target in _links or random fallback
     def selectedAction = null
     def selectedHref = null
 
     if (stateActionIteration == 1) {
-        // First iteration - always try SUBMIT
         logRef.info(&quot;Iteration 1 - looking for hardcoded action: SUBMIT&quot;)
         def matchedKey = actionKeys.find { it.toUpperCase().trim() == &quot;SUBMIT&quot; }
         if (matchedKey) {
@@ -2814,29 +2926,21 @@ def _fn_requestStateActionSelectorPostProcessor = { varsRef, prevRef, logRef -&g
             return
         }
     } else {
-        // Remaining iterations - use includedStateActions
-        def allowedActions = actionKeys.findAll { key -&gt;
-            includedStateActions.isEmpty() || includedStateActions.contains(key.toUpperCase().trim())
-        }
-        logRef.info(&quot;Allowed Actions from includedStateActions: &quot; + allowedActions)
+        def resolveFn = props.get(&quot;fn_resolveStateActionFromLinks&quot;)
+        def resolved = resolveFn(links, actionKeys, target, logRef)
+        selectedAction = resolved[0]
+        selectedHref = resolved[1]
+        def hitTarget = resolved[2]
 
-        if (allowedActions.isEmpty()) {
-            logRef.warn(&quot;WARNING: No matching actions found in _links ${actionKeys} for includedStateActions ${includedStateActions} - skipping iteration. Check DB configuration or includedStateActions UDV.&quot;)
+        if (!selectedAction || !selectedHref) {
+            logRef.warn(&quot;WARNING: No valid action in _links ${actionKeys} - stopping state action loop&quot;)
             varsRef.put(&quot;skipRequestStateAction&quot;, &quot;true&quot;)
             varsRef.put(&quot;selectedAction&quot;, &quot;&quot;)
             varsRef.put(&quot;exitStateActionLoop&quot;, &quot;true&quot;)
             return
         }
-
-        def random = java.util.concurrent.ThreadLocalRandom.current()
-        selectedAction = allowedActions[random.nextInt(allowedActions.size())]
-        selectedHref = links[selectedAction]?.href
-
-        if (!selectedHref) {
-            logRef.warn(&quot;WARNING: Selected action &apos;${selectedAction}&apos; has no href in _links - skipping iteration. Check DB configuration.&quot;)
-            varsRef.put(&quot;skipRequestStateAction&quot;, &quot;true&quot;)
-            varsRef.put(&quot;selectedAction&quot;, &quot;&quot;)
-            return
+        if (hitTarget) {
+            varsRef.put(&quot;exitStateActionLoop&quot;, &quot;true&quot;)
         }
     }
 
@@ -3376,6 +3480,18 @@ def parentCategory    = vars.get(&quot;parentCategory&quot;)?.trim()
 def category          = vars.get(&quot;category&quot;)?.trim()
 def defaultUser       = vars.get(&quot;defaultUser&quot;)?.trim()
 
+// Capture user-provided customerName once (-J props take precedence; vars may be overwritten per iteration)
+if (vars.get(&quot;_userDefinedCustomerNameCaptured&quot;) != &quot;true&quot;) {
+    def udnCustomer = (props.get(&quot;customerName&quot;) ?: vars.get(&quot;customerName&quot;) ?: &quot;&quot;).trim()
+    vars.put(&quot;userDefinedCustomerName&quot;, udnCustomer)
+    vars.put(&quot;_userDefinedCustomerNameCaptured&quot;, &quot;true&quot;)
+    if (udnCustomer) {
+        log.info(&quot;User-defined customerName (fixed for all iterations): ${udnCustomer}&quot;)
+    } else {
+        log.info(&quot;customerName not set — a unique random customer will be picked per request iteration&quot;)
+    }
+}
+
 // ===== Abort helper =====
 def abort = { String msg, String responseMsg = &quot;&quot; -&gt;
     log.error(&quot;========================================&quot;)
@@ -3524,7 +3640,7 @@ if (rawMultiSelectRange &amp;&amp; rawMultiSelectRange != &quot;0&quot;) {
 validateIntList(&quot;vacantSlotDurations&quot;,          &quot;positive integers in minutes, e.g. 30,60&quot;)
 validateIntList(&quot;blockedSlots&quot;,                 &quot;integers &gt;= 0, e.g. 0,1,2&quot;)
 validateIntList(&quot;blockedDurations&quot;,             &quot;positive integers in minutes, e.g. 30,60&quot;)
-validateIntList(&quot;stateActionIterations&quot;,        &quot;positive integers, e.g. 2,3&quot;)
+validateIntList(&quot;maxIterationCount&quot;,            &quot;integer &gt;= 0, e.g. 3 (0 = skip state actions)&quot;)
 
 // ===== Abort on validation errors =====
 if (errors.size() &gt; 0) {
@@ -3714,6 +3830,23 @@ log.info(&quot;═════════════════════�
 // Only reset room counts for the first user
 if (isFirstUser == &quot;true&quot;) {
     log.info(&quot;First user - resetting room counters and processedFields tracking&quot;)
+
+    // New request iteration must not reuse prior event/customer from a previous loop
+    vars.put(&quot;skipEventCreation&quot;, &quot;false&quot;)
+    vars.put(&quot;requestCreated&quot;, &quot;false&quot;)
+    vars.put(&quot;requestFailed&quot;, &quot;false&quot;)
+    vars.remove(&quot;requestId&quot;)
+    vars.put(&quot;stateActionIteration&quot;, &quot;0&quot;)
+    vars.remove(&quot;targetStateAction&quot;)
+
+    def userDefinedCustomer = vars.get(&quot;userDefinedCustomerName&quot;)?.trim()
+    if (!userDefinedCustomer) {
+        vars.remove(&quot;customerName&quot;)
+        log.info(&quot;Auto-pick mode: cleared runtime customerName for new iteration&quot;)
+    } else {
+        vars.put(&quot;customerName&quot;, userDefinedCustomer)
+        log.info(&quot;User-defined customer mode: customerName=${userDefinedCustomer}&quot;)
+    }
 
 	def roomsRaw = vars.get(&quot;rooms&quot;) ?: &quot;0&quot;
 	def roomOptions = roomsRaw.split(&quot;,&quot;).findAll { it.trim().isInteger() &amp;&amp; it.trim().toInteger() &gt;= 0 }.collect { it.trim().toInteger() }
@@ -4087,8 +4220,20 @@ vars.put(&quot;baseTimezone&quot;, baseTimezone)
 vars.put(&quot;locationResourceTypeId&quot;, locationResourceTypeId)
 vars.put(&quot;locationResourceTypeName&quot;, locationResourceTypeName)
 
+def userLocationResourceTypeId = vars.get(&quot;locationResourceType&quot;)?.trim()
+if (userLocationResourceTypeId) {
+    vars.put(&quot;locationResourceTypeId&quot;, userLocationResourceTypeId)
+    log.info(&quot;Using user-selected locationResourceType: &quot; + userLocationResourceTypeId)
+}
+
 // Store Location Resource uniqueId
 vars.put(&quot;locationResourceId&quot;, locationResourceId)
+
+def userLocationResource = vars.get(&quot;locationResourceUniqueId&quot;)?.trim()
+if (userLocationResource) {
+    vars.put(&quot;locationResourceId&quot;, userLocationResource)
+    log.info(&quot;Using user-selected locationResourceUniqueId: &quot; + userLocationResource)
+}
 
 // Update sampler label with selected parent category
 def parentCatName = vars.get(&quot;parentCategoryName&quot;) ?: &quot;&quot;
@@ -4527,12 +4672,17 @@ log.info(&quot;Loaded ${users.size()} random users [${source}]&quot;)</stringPro
 
 def rand = java.util.concurrent.ThreadLocalRandom.current()
 
-// ===== CUSTOMER SELECTION =====
-// If customerName is set by the user, check if it already exists in the API response.
-// If it exists → skip request creation. If it does not exist → use it directly.
-// If customerName is empty → pick a unique random customer from the built-in list.
+def markCreationSkipped = {
+    vars.put(&quot;skipEventCreation&quot;, &quot;true&quot;)
+    vars.put(&quot;requestCreated&quot;, &quot;false&quot;)
+    vars.remove(&quot;requestId&quot;)
+}
 
-def userCustomer = vars.get(&quot;customerName&quot;)?.trim()
+// ===== CUSTOMER SELECTION =====
+// userDefinedCustomerName = value from UDV/-J only (never the auto-picked runtime customerName).
+// If set by the user, check duplicate against API. If empty, pick a unique random customer per iteration.
+
+def userCustomer = vars.get(&quot;userDefinedCustomerName&quot;)?.trim()
 
 // STEP 1: Always extract existing customers from API response
 def existingCustomers = []
@@ -4573,7 +4723,7 @@ if (userCustomer) {
 
         if (!isValidSector) {
             // Invalid sector name given (e.g. &quot;technology1&quot;) - SKIP immediately
-            vars.put(&quot;skipEventCreation&quot;, &quot;true&quot;)
+            markCreationSkipped()
             vars.put(&quot;availableCustomerCount&quot;, &quot;0&quot;)
             log.warn(&quot;Invalid customerSector &apos;${customerSector}&apos; - Request creation SKIPPED&quot;)
             log.warn(&quot;Valid options: ${validSectors.sort().join(&apos;, &apos;)}&quot;)
@@ -4587,7 +4737,7 @@ if (userCustomer) {
             def isInSector = sectorPool.any { it.equalsIgnoreCase(userCustomer) }
             if (!isInSector) {
                 // Customer is in master list but NOT in the given sector - SKIP
-                vars.put(&quot;skipEventCreation&quot;, &quot;true&quot;)
+                markCreationSkipped()
                 vars.put(&quot;availableCustomerCount&quot;, &quot;0&quot;)
                 log.warn(&quot;Customer &apos;${userCustomer}&apos; is not in sector &apos;${customerSector}&apos; - Request creation SKIPPED&quot;)
                 log.info(&quot;----- Terminated: Customer Name PostProcessor (sector mismatch) -----&quot;)
@@ -4596,7 +4746,7 @@ if (userCustomer) {
             log.info(&quot;Sector validation passed: &apos;${userCustomer}&apos; is in sector &apos;${customerSector}&apos;&quot;)
         } else {
             // Not in master list and sector is set - SKIP since customer doesn&apos;t belong to sector
-            vars.put(&quot;skipEventCreation&quot;, &quot;true&quot;)
+            markCreationSkipped()
             vars.put(&quot;availableCustomerCount&quot;, &quot;0&quot;)
             log.warn(&quot;Customer &apos;${userCustomer}&apos; not in master list for sector &apos;${customerSector}&apos; - Request creation SKIPPED&quot;)
             log.info(&quot;----- Terminated: Customer Name PostProcessor (customer not in sector) -----&quot;)
@@ -4610,7 +4760,7 @@ if (userCustomer) {
     // Duplicate check against existing customers in API response
     def checkDup = vars.get(&quot;checkDuplicateCustomer&quot;) ?: &quot;true&quot;
     if (checkDup == &quot;true&quot; &amp;&amp; existingCustomers.contains(userCustomer)) {
-        vars.put(&quot;skipEventCreation&quot;, &quot;true&quot;)
+        markCreationSkipped()
         vars.put(&quot;availableCustomerCount&quot;, &quot;0&quot;)
         log.warn(&quot;Customer &apos;${userCustomer}&apos; already exists - Request creation SKIPPED&quot;)
     } else {
@@ -4667,7 +4817,7 @@ if (availableCustomers.size() &gt; 0) {
     log.info(&quot;Remaining available customers: ${availableCustomers.size() - 1}&quot;)
 } else {
     vars.put(&quot;customerName&quot;, &quot;&quot;)
-    vars.put(&quot;skipEventCreation&quot;, &quot;true&quot;)
+    markCreationSkipped()
     log.warn(&quot;NO AVAILABLE CUSTOMERS - All ${allCustomers.length} customers already exist!&quot;)
     log.warn(&quot;Date range checked: ${duplicateFromDate} to ${duplicateToDate}&quot;)
     log.warn(&quot;Action: Request creation SKIPPED&quot;)
@@ -5125,7 +5275,7 @@ log.info(&quot;----- Terminated: New Request PreProcessor -----&quot;)</stringPr
               </hashTree>
             </hashTree>
             <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Request Created - Iterate Modules)" enabled="true">
-              <stringProp name="IfController.condition">${__groovy(vars.get(&quot;requestCreated&quot;) == &quot;true&quot; &amp;&amp; vars.get(&quot;requestId&quot;) != null &amp;&amp; vars.get(&quot;requestId&quot;).trim() != &quot;&quot;)}</stringProp>
+              <stringProp name="IfController.condition">${__groovy(vars.get(&quot;requestCreated&quot;) == &quot;true&quot; &amp;&amp; vars.get(&quot;skipEventCreation&quot;) != &quot;true&quot; &amp;&amp; vars.get(&quot;requestId&quot;) != null &amp;&amp; vars.get(&quot;requestId&quot;).trim() != &quot;&quot;)}</stringProp>
               <boolProp name="IfController.useExpression">true</boolProp>
               <boolProp name="IfController.evaluateAll">false</boolProp>
             </IfController>
@@ -5300,7 +5450,9 @@ for (int i = 1; i &lt;= previousCount; i++) {
 vars.remove(&quot;navModules_count&quot;)
 vars.remove(&quot;currentModuleName&quot;)
 vars.remove(&quot;currentModuleTypeId&quot;)
+vars.remove(&quot;currentModuleTypeName&quot;)
 vars.remove(&quot;lastLoggedNavModule&quot;)
+props.get(&quot;fn_resetModuleHandledFlags&quot;)(vars)
 
 
 // STEP 1: Parse the Get Role Module Access API response
@@ -5422,6 +5574,7 @@ for (int i = 1; i &lt;= moduleCount; i++) {
     if (vars.get(&quot;moduleUniqueId_&quot; + i) == currentModuleId) {
         vars.put(&quot;currentModuleName&quot;, vars.get(&quot;moduleName_&quot; + i) ?: &quot;Unknown&quot;)
         vars.put(&quot;currentModuleTypeId&quot;, vars.get(&quot;moduleTypeId_&quot; + i) ?: &quot;&quot;)
+        vars.put(&quot;currentModuleTypeName&quot;, vars.get(&quot;moduleTypeName_&quot; + i) ?: &quot;&quot;)
         break
     }
 }
@@ -5577,11 +5730,19 @@ log.info(&quot;Module: ${vars.get(&apos;currentModuleName&apos;)} | Handler: ${m
                   <hashTree/>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Journey ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(vars.get(&quot;currentModuleTypeId&quot;) == vars.get(&quot;journeyModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;journey&quot;, &quot;journeyModuleType&quot;))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
+                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Journey Module Bucket Handled" enabled="true">
+                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;journey&quot;)</stringProp>
+                    <stringProp name="scriptLanguage">groovy</stringProp>
+                    <stringProp name="parameters"></stringProp>
+                    <stringProp name="filename"></stringProp>
+                    <stringProp name="cacheKey">false</stringProp>
+                  </JSR223PreProcessor>
+                  <hashTree/>
                   <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="◉ ForEach (Module Config)" enabled="true">
                     <stringProp name="ForeachController.inputVal">formId</stringProp>
                     <stringProp name="ForeachController.returnVal">formId</stringProp>
@@ -7656,11 +7817,19 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                   </hashTree>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Virtual Connection ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(vars.get(&quot;currentModuleTypeId&quot;) == vars.get(&quot;virtualConnectionModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;virtualConnection&quot;, &quot;virtualConnectionModuleType&quot;))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
+                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Virtual Connection Module Bucket Handled" enabled="true">
+                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;virtualConnection&quot;)</stringProp>
+                    <stringProp name="scriptLanguage">groovy</stringProp>
+                    <stringProp name="parameters"></stringProp>
+                    <stringProp name="filename"></stringProp>
+                    <stringProp name="cacheKey">false</stringProp>
+                  </JSR223PreProcessor>
+                  <hashTree/>
                   <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="◉ ForEach (Module Config)" enabled="true">
                     <stringProp name="ForeachController.inputVal">formId</stringProp>
                     <stringProp name="ForeachController.returnVal">formId</stringProp>
@@ -8058,11 +8227,19 @@ log.info(&quot;Entry Index: &quot; + currentEntryIndex + &quot; / &quot; + total
                   </hashTree>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Logistics ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(vars.get(&quot;currentModuleTypeId&quot;) == vars.get(&quot;logisticsModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;logistics&quot;, &quot;logisticsModuleType&quot;))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
+                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Logistics Module Bucket Handled" enabled="true">
+                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;logistics&quot;)</stringProp>
+                    <stringProp name="scriptLanguage">groovy</stringProp>
+                    <stringProp name="parameters"></stringProp>
+                    <stringProp name="filename"></stringProp>
+                    <stringProp name="cacheKey">false</stringProp>
+                  </JSR223PreProcessor>
+                  <hashTree/>
                   <ForeachController guiclass="ForeachControlPanel" testclass="ForeachController" testname="◉ ForEach (Module Config)" enabled="true">
                     <stringProp name="ForeachController.inputVal">formId</stringProp>
                     <stringProp name="ForeachController.returnVal">formId</stringProp>
@@ -9788,11 +9965,19 @@ vars.put(&quot;ActivityDayCount&quot;, (currentCount + 1).toString())</stringPro
                   </hashTree>
                 </hashTree>
                 <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Calendar ModuleType Exists)" enabled="true">
-                  <stringProp name="IfController.condition">${__groovy(vars.get(&quot;currentModuleTypeId&quot;) == vars.get(&quot;agendaModuleType&quot;))}</stringProp>
+                  <stringProp name="IfController.condition">${__groovy(props.get(&quot;fn_moduleBucketActive&quot;)(vars, &quot;agenda&quot;, &quot;agendaModuleType&quot;))}</stringProp>
                   <boolProp name="IfController.useExpression">true</boolProp>
                   <boolProp name="IfController.evaluateAll">false</boolProp>
                 </IfController>
                 <hashTree>
+                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Mark Agenda Module Bucket Handled" enabled="true">
+                    <stringProp name="script">props.get(&quot;fn_markModuleBucketHandled&quot;)(vars, &quot;agenda&quot;)</stringProp>
+                    <stringProp name="scriptLanguage">groovy</stringProp>
+                    <stringProp name="parameters"></stringProp>
+                    <stringProp name="filename"></stringProp>
+                    <stringProp name="cacheKey">false</stringProp>
+                  </JSR223PreProcessor>
+                  <hashTree/>
                   <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get ResourceType - ${parentCategoryName}" enabled="true">
                     <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                       <collectionProp name="Arguments.arguments"/>
@@ -15337,24 +15522,32 @@ vars.put(&quot;participantLoopIdx&quot;, idx.toString())
                                         <stringProp name="cacheKey">false</stringProp>
                                       </JSR223PostProcessor>
                                       <hashTree/>
-                                      <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Pick Activity State Action Iterations" enabled="true">
-                                        <stringProp name="script">if (vars.get(&quot;skipActivityStateAction&quot;) == &quot;true&quot;) {
+                                      <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Init Activity State Actions" enabled="true">
+                                        <stringProp name="script">vars.remove(&quot;targetStateAction&quot;)
+vars.put(&quot;skipActivityStateActionsRemaining&quot;, &quot;false&quot;)
+props.get(&quot;fn_pickTargetStateAction&quot;)(vars, log)
+
+def maxRaw = vars.get(&quot;maxIterationCount&quot;)?.trim() ?: &quot;3&quot;
+def maxIterations = maxRaw.isInteger() ? maxRaw.toInteger() : 3
+if (maxIterations &lt;= 0) {
     vars.put(&quot;activityStateActionLoopCount&quot;, &quot;0&quot;)
-    log.info(&quot;Activity State Action Iterations: 0 (no valid actions)&quot;)
+    vars.put(&quot;skipActivityStateAction&quot;, &quot;true&quot;)
+    log.info(&quot;maxIterationCount is 0 - skipping activity state actions&quot;)
     return
 }
-
-def iterationsConfig = vars.get(&quot;stateActionIterations&quot;)?.trim() ?: &quot;2&quot;
-def options = iterationsConfig.split(&quot;,&quot;)*.trim().findAll { it.isInteger() &amp;&amp; it.toInteger() &gt;= 0 }.collect { it.toInteger() }
-if (options.isEmpty()) {
-    log.info(&quot;stateActionIterations has no valid values (must be &gt;= 0) - defaulting to 2&quot;)
-    options = [2]
-}
-def randomIterations = options[java.util.concurrent.ThreadLocalRandom.current().nextInt(options.size())]
-
-def remainingIterations = Math.max(0, randomIterations - 1)
-vars.put(&quot;activityStateActionLoopCount&quot;, remainingIterations.toString())
-log.info(&quot;Activity State Action Iterations: ${randomIterations} total, ${remainingIterations} remaining for loop&quot;)</stringProp>
+vars.put(&quot;activityStateActionLoopCount&quot;, Math.max(0, maxIterations - 1).toString())
+log.info(&quot;Activity State Actions: max ${maxIterations}, target=${vars.get(&apos;targetStateAction&apos;)}&quot;)</stringProp>
+                                        <stringProp name="scriptLanguage">groovy</stringProp>
+                                        <stringProp name="parameters"></stringProp>
+                                        <stringProp name="filename"></stringProp>
+                                        <stringProp name="cacheKey">false</stringProp>
+                                      </JSR223PreProcessor>
+                                      <hashTree/>
+                                      <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Pick Activity State Action Iterations" enabled="true">
+                                        <stringProp name="script">if (vars.get(&quot;skipActivityStateAction&quot;) == &quot;true&quot; || vars.get(&quot;skipActivityStateActionsRemaining&quot;) == &quot;true&quot;) {
+    vars.put(&quot;activityStateActionLoopCount&quot;, &quot;0&quot;)
+    log.info(&quot;Activity State Action Iterations: 0 (target reached or no valid actions)&quot;)
+}</stringProp>
                                         <stringProp name="scriptLanguage">groovy</stringProp>
                                         <stringProp name="parameters"></stringProp>
                                         <stringProp name="filename"></stringProp>
@@ -15796,7 +15989,7 @@ if (responseCode == &quot;200&quot;) {
               </hashTree>
             </hashTree>
             <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Request Created - Iterate Request State Actions)" enabled="true">
-              <stringProp name="IfController.condition">${__groovy(vars.get(&quot;requestCreated&quot;) == &quot;true&quot; &amp;&amp; vars.get(&quot;requestId&quot;) != null)}</stringProp>
+              <stringProp name="IfController.condition">${__groovy(vars.get(&quot;requestCreated&quot;) == &quot;true&quot; &amp;&amp; vars.get(&quot;skipEventCreation&quot;) != &quot;true&quot; &amp;&amp; vars.get(&quot;requestId&quot;) != null &amp;&amp; vars.get(&quot;requestId&quot;).trim() != &quot;&quot;)}</stringProp>
               <boolProp name="IfController.useExpression">true</boolProp>
               <boolProp name="IfController.evaluateAll">false</boolProp>
             </IfController>
@@ -15821,20 +16014,19 @@ if (responseCode == &quot;200&quot;) {
               </HTTPSamplerProxy>
               <hashTree>
                 <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Pick Random State Action Iterations" enabled="true">
-                  <stringProp name="script">// Pick random value from comma-separated stateActionIterations
-def iterationsConfig = vars.get(&quot;stateActionIterations&quot;)?.trim() ?: &quot;&quot;
-def options = iterationsConfig.split(&quot;,&quot;)*.trim().findAll { it.isInteger() &amp;&amp; it.toInteger() &gt; 0 }.collect { it.toInteger() }
-if (iterationsConfig.isEmpty() || options.isEmpty()) {
-    log.info(&quot;stateActionIterations is 0 or empty - skipping state actions entirely&quot;)
+                  <stringProp name="script">def maxRaw = vars.get(&quot;maxIterationCount&quot;)?.trim() ?: &quot;3&quot;
+def maxIterations = maxRaw.isInteger() ? maxRaw.toInteger() : 3
+if (maxIterations &lt;= 0) {
+    log.info(&quot;maxIterationCount is 0 - skipping state actions entirely&quot;)
     vars.put(&quot;stateActionLoopCount&quot;, &quot;0&quot;)
     vars.put(&quot;stateActionIteration&quot;, &quot;0&quot;)
     return
 }
-def randomIterations = options[java.util.concurrent.ThreadLocalRandom.current().nextInt(options.size())]
-vars.put(&quot;stateActionLoopCount&quot;, randomIterations.toString())
+props.get(&quot;fn_pickTargetStateAction&quot;)(vars, log)
+vars.put(&quot;stateActionLoopCount&quot;, maxIterations.toString())
 vars.put(&quot;stateActionIteration&quot;, &quot;0&quot;)
 vars.put(&quot;exitStateActionLoop&quot;, &quot;false&quot;)
-log.info(&quot;State Action Iterations: picked ${randomIterations} from options [${iterationsConfig}]&quot;)</stringProp>
+log.info(&quot;State Action Iterations: max ${maxIterations}, target=${vars.get(&apos;targetStateAction&apos;)}&quot;)</stringProp>
                   <stringProp name="scriptLanguage">groovy</stringProp>
                   <stringProp name="parameters"></stringProp>
                   <stringProp name="filename"></stringProp>
@@ -15996,7 +16188,7 @@ def originalName = sampler.getName()
 // Get current iteration (set by State Action Selector PostProcessor)
 def currentIteration = vars.get(&quot;stateActionIteration&quot;)
 
-// Get total iterations (set from UDV: stateActionIterations)
+// Get total iterations (set from UDV: maxIterationCount)
 def totalIterations = vars.get(&quot;stateActionLoopCount&quot;)
 
 // Set dynamic sampler label with iteration count

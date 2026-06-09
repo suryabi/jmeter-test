@@ -37,6 +37,12 @@
         <a [href]="runner.logDownloadUrl(run.id)" target="_blank" rel="noopener">
           <p-button icon="pi pi-download" label="Download log" severity="secondary" />
         </a>
+        <p-button
+          icon="pi pi-sliders-h"
+          [label]="showRunParameters ? 'Hide parameters' : 'Show parameters'"
+          severity="secondary"
+          (onClick)="toggleRunParameters()"
+        />
         @if (hasHtmlReport()) {
           <p-button
             icon="pi pi-chart-line"
@@ -184,30 +190,92 @@
       </section>
     }
 
+    @if (showRunParameters) {
+      <app-run-parameters-panel
+        class="run-params-section"
+        [planFile]="run.planFile"
+        [props]="run.props"
+      />
+    }
+
     <!-- Insight grid -->
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-4">
-      <section class="flat-panel panel">
-        <header class="panel-header">
+      <section class="flat-panel panel insights-panel">
+        <header class="panel-header insights-panel-header">
           <span class="panel-title"><i class="pi pi-chart-bar"></i> Insights</span>
+          @if (run.insights.requests.length > 1) {
+            <p-select
+              inputId="insightRequestSelect"
+              class="surface-select insights-request-select"
+              panelStyleClass="surface-select-panel"
+              [options]="insightRequestOptions"
+              [(ngModel)]="activeInsightRequestIndex"
+              [ngModelOptions]="{ standalone: true }"
+              optionLabel="label"
+              optionValue="index"
+              appendTo="body"
+            />
+          }
         </header>
-        <dl class="info-grid">
-          <dt>Customer</dt>
-          <dd>{{ run.insights.customerName || '—' }}</dd>
-          <dt>Request ID</dt>
-          <dd class="mono">{{ run.insights.requestId || '—' }}</dd>
-          <dt>Event date</dt>
-          <dd>{{ run.insights.eventDate || '—' }}</dd>
-          <dt>Time</dt>
-          <dd>
-            {{ run.insights.startTime ? run.insights.startTime + ' – ' + (run.insights.endTime || '?') : '—' }}
-          </dd>
-          <dt>Duration</dt>
-          <dd>{{ formatInsightsDuration(run.insights) }}</dd>
-          <dt>Date range</dt>
-          <dd>{{ run.insights.dateRange || '—' }}</dd>
-          <dt>State actions</dt>
-          <dd>{{ run.insights.stateActions.length ? run.insights.stateActions.join(', ') : '—' }}</dd>
-        </dl>
+
+        @if (run.insights.requests.length > 0) {
+          <div class="insights-summary">
+            <span>{{ run.insights.requestSummary.planned }} planned</span>
+            <span class="insights-summary-dot">·</span>
+            <span class="insights-summary-created">{{ run.insights.requestSummary.created }} created</span>
+            @if (run.insights.requestSummary.skipped) {
+              <span class="insights-summary-dot">·</span>
+              <span>{{ run.insights.requestSummary.skipped }} skipped</span>
+            }
+            @if (run.insights.requestSummary.failed) {
+              <span class="insights-summary-dot">·</span>
+              <span>{{ run.insights.requestSummary.failed }} failed</span>
+            }
+          </div>
+
+          @if (selectedInsightRequest; as request) {
+            <dl class="info-grid insight-request-details">
+              <dt>Customer</dt>
+              <dd>{{ request.customerName || '—' }}</dd>
+              <dt>Request ID</dt>
+              <dd class="mono">{{ request.requestId || '—' }}</dd>
+              <dt>Event date</dt>
+              <dd>{{ request.eventDate || '—' }}</dd>
+              <dt>Time</dt>
+              <dd>{{ formatRequestTime(request) }}</dd>
+              <dt>Duration</dt>
+              <dd>{{ formatRequestDuration(request.durationDays, request.durationMinutes) }}</dd>
+              <dt>State actions</dt>
+              <dd>{{ request.stateActions.length ? request.stateActions.join(', ') : '—' }}</dd>
+            </dl>
+          }
+
+          @if (run.insights.dateRange) {
+            <dl class="info-grid insights-run-meta">
+              <dt>Creation window</dt>
+              <dd>{{ run.insights.dateRange }}</dd>
+            </dl>
+          }
+        } @else {
+          <dl class="info-grid">
+            <dt>Customer</dt>
+            <dd>{{ run.insights.customerName || '—' }}</dd>
+            <dt>Request ID</dt>
+            <dd class="mono">{{ run.insights.requestId || '—' }}</dd>
+            <dt>Event date</dt>
+            <dd>{{ run.insights.eventDate || '—' }}</dd>
+            <dt>Time</dt>
+            <dd>
+              {{ run.insights.startTime ? run.insights.startTime + ' – ' + (run.insights.endTime || '?') : '—' }}
+            </dd>
+            <dt>Duration</dt>
+            <dd>{{ formatInsightsDuration(run.insights) }}</dd>
+            <dt>Date range</dt>
+            <dd>{{ run.insights.dateRange || '—' }}</dd>
+            <dt>State actions</dt>
+            <dd>{{ run.insights.stateActions.length ? run.insights.stateActions.join(', ') : '—' }}</dd>
+          </dl>
+        }
       </section>
 
       <section class="flat-panel panel">
@@ -274,7 +342,7 @@
                   <div class="step-row">
                     <p-tag
                       [value]="step.label"
-                      [severity]="step.status === 'success' ? 'success' : step.status === 'failed' ? 'danger' : 'secondary'"
+                      [severity]="stepStatusSeverity(step.status)"
                     />
                     <span class="step-duration" [title]="step.at ? (step.at | date: 'medium') : ''">
                       {{ formatStepDuration(run.insights.steps, $index) }}

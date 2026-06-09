@@ -7,8 +7,10 @@ import {
   FieldOptionsResponse,
   LogPollResponse,
   ParametersSchema,
+  DeletePlanResponse,
   PlansResponse,
   RunDetail,
+  UploadPlanResponse,
   RunSamplesResponse,
   RunSummary,
   StartRunRequest
@@ -25,6 +27,25 @@ export class RunnerService {
 
   getPlans(): Observable<PlansResponse> {
     return this.http.get<PlansResponse>(`${this.baseUrl}/plans`);
+  }
+
+  planDownloadUrl(file: string): string {
+    return `${this.baseUrl}/plans/${encodeURIComponent(file)}/download`;
+  }
+
+  uploadPlan(file: File): Observable<UploadPlanResponse> {
+    const filename = file.name.toLowerCase().endsWith('.jmx') ? file.name : `${file.name}.jmx`;
+    const params = new HttpParams().set('filename', filename);
+    return this.http.post<UploadPlanResponse>(`${this.baseUrl}/plans`, file, {
+      params,
+      headers: { 'Content-Type': 'application/octet-stream' }
+    });
+  }
+
+  deletePlan(file: string): Observable<DeletePlanResponse> {
+    return this.http.delete<DeletePlanResponse>(
+      `${this.baseUrl}/plans/${encodeURIComponent(file)}`
+    );
   }
 
   getParameters(planFile?: string | null): Observable<ParametersSchema> {

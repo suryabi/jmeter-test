@@ -1,0 +1,104 @@
+<div class="plans-panel flat-panel">
+  <header class="plans-header">
+    <div>
+      <h2 class="m-0 text-base font-semibold text-slate-100">JMeter Plans</h2>
+      <p class="m-0 mt-0.5 text-xs text-slate-500">
+        Manage .jmx test plans used when creating runs
+      </p>
+    </div>
+    <div class="plans-header-actions">
+      <input
+        #planFileInput
+        type="file"
+        accept=".jmx,application/xml,text/xml"
+        class="sr-only"
+        (change)="onFileSelected($event)"
+      />
+      <p-button
+        type="button"
+        icon="pi pi-upload"
+        label="Upload plan"
+        size="small"
+        [loading]="uploading()"
+        [disabled]="uploading()"
+        (onClick)="onUploadClick(planFileInput)"
+      />
+    </div>
+  </header>
+
+  @if (error()) {
+    <div class="plans-error">
+      <p-message severity="error" [text]="error()" />
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="plans-loading">
+      <p-progressSpinner strokeWidth="4" ariaLabel="Loading plans" />
+    </div>
+  } @else if (plans().length === 0) {
+    <div class="plans-empty">
+      <i class="pi pi-file text-4xl text-slate-600"></i>
+      <p class="mt-3 text-sm text-slate-400">No plans found</p>
+      <p class="m-0 text-xs text-slate-500">Upload a .jmx file to get started.</p>
+    </div>
+  } @else {
+    <div class="plans-table-wrap">
+      <p-table [value]="plans()" [tableStyle]="{ 'min-width': '40rem' }" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Plan</th>
+            <th>Size</th>
+            <th>Updated</th>
+            <th class="w-52 text-right">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-plan>
+          <tr>
+            <td>
+              <div class="plan-row">
+                <div class="plan-row-icon">
+                  <i class="pi pi-file"></i>
+                </div>
+                <div>
+                  <div class="plan-row-name">{{ plan.name }}</div>
+                  <div class="plan-row-file">{{ plan.file }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="text-sm text-slate-300">{{ formatSize(plan.sizeBytes) }}</span>
+            </td>
+            <td>
+              <span class="text-sm text-slate-300">
+                {{ plan.updatedAt ? (plan.updatedAt | date: 'MMM d, y, h:mm a') : '—' }}
+              </span>
+            </td>
+            <td class="text-right">
+              <div class="inline-flex items-center justify-end gap-2">
+                <p-button
+                  type="button"
+                  severity="secondary"
+                  size="small"
+                  icon="pi pi-download"
+                  label="Download"
+                  (onClick)="downloadPlan(plan)"
+                />
+                <p-button
+                  type="button"
+                  severity="danger"
+                  size="small"
+                  icon="pi pi-trash"
+                  [disabled]="deletingFile() === plan.file"
+                  [loading]="deletingFile() === plan.file"
+                  (onClick)="deletePlan(plan, $event)"
+                  [attr.aria-label]="'Delete plan ' + plan.file"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
+</div>

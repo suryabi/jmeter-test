@@ -26,6 +26,10 @@ export interface ParameterDef {
   description: string;
   type: ParameterType;
   required: boolean;
+  /** When true, field is omitted from the start-run UI but its value is still sent to JMeter. */
+  hidden?: boolean;
+  /** camelCase UI label from JMX `LABEL=...` in Argument.desc; formatted for display. */
+  label?: string;
   kind?: ParameterKind;
   headerName?: string;
   apiConfig?: ApiFieldConfig;
@@ -46,6 +50,18 @@ export interface ParametersSchema {
 export interface PlanInfo {
   file: string;
   name: string;
+  sizeBytes?: number;
+  updatedAt?: string;
+}
+
+export interface UploadPlanResponse {
+  plan: PlanInfo;
+  replaced: boolean;
+}
+
+export interface DeletePlanResponse {
+  deleted: boolean;
+  file: string;
 }
 
 export interface PlansResponse {
@@ -72,6 +88,31 @@ export interface RunSummary {
   props: RunProps;
 }
 
+export type RunRequestInsightStatus = 'created' | 'skipped' | 'started' | 'failed';
+
+export interface RunRequestInsight {
+  index: number;
+  total: number;
+  customerName: string | null;
+  requestId: string | null;
+  eventDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  durationDays: number | null;
+  durationMinutes: number | null;
+  status: RunRequestInsightStatus;
+  stateActions: string[];
+  /** ISO timestamp when this request iteration started. */
+  at: string | null;
+}
+
+export interface RunRequestSummary {
+  planned: number;
+  created: number;
+  skipped: number;
+  failed: number;
+}
+
 export interface RunStep {
   label: string;
   status: string;
@@ -80,6 +121,7 @@ export interface RunStep {
 }
 
 export interface RunInsights {
+  /** Primary / summary fields (backward compatible with single-request runs). */
   customerName: string | null;
   requestId: string | null;
   eventDate: string | null;
@@ -90,6 +132,9 @@ export interface RunInsights {
   durationDays: number | null;
   stateActions: string[];
   steps: RunStep[];
+  /** One entry per request-creation loop iteration. */
+  requests: RunRequestInsight[];
+  requestSummary: RunRequestSummary;
 }
 
 export interface RunSampleSummary {

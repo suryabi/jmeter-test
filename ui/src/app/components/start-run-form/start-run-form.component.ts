@@ -16,7 +16,7 @@ import {
   RunProps
 } from '../../core/models/runner.models';
 import { RunnerService } from '../../core/services/runner.service';
-import { formatFieldLabel } from '../../core/utils/format-field-label';
+import { formatFieldLabel, parameterFieldLabel } from '../../core/utils/format-field-label';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
@@ -63,6 +63,7 @@ export class StartRunFormComponent implements OnInit {
   loadError = '';
   submitting = false;
   activeGroupId = 'global';
+  showHiddenFields = false;
   fieldOptions: Record<string, FieldOption[]> = {};
   fieldOptionsLoading: Record<string, boolean> = {};
   fieldOptionsError: Record<string, string> = {};
@@ -84,9 +85,28 @@ export class StartRunFormComponent implements OnInit {
   onPlanChange(plan: PlanInfo | null): void {
     this.selectedPlan = plan;
     this.parameterGroups = [];
+    this.showHiddenFields = false;
     this.loadError = '';
     this.loading = true;
     this.fetchParameters(plan?.file ?? null);
+  }
+
+  reloadPlans(): void {
+    const previousFile = this.selectedPlan?.file ?? null;
+    this.runner.getPlans().subscribe({
+      next: ({ plans }) => {
+        this.plans = plans;
+        const next = plans.find((plan) => plan.file === previousFile) ?? plans[0] ?? null;
+        if (next?.file !== this.selectedPlan?.file) {
+          this.onPlanChange(next);
+        } else {
+          this.selectedPlan = next;
+        }
+      },
+      error: (err) => {
+        this.loadError = err?.error?.error || err?.message || 'Failed to load plans';
+      }
+    });
   }
 
   private fetchParameters(planFile: string | null): void {
@@ -101,6 +121,7 @@ export class StartRunFormComponent implements OnInit {
         if (schema.groups.length > 0) {
           this.activeGroupId = schema.groups[0].id;
         }
+        this.ensureActiveGroupVisible();
         this.loading = false;
       },
       error: (err) => {
@@ -115,7 +136,10 @@ export class StartRunFormComponent implements OnInit {
   }
 
   activeGroup(): ParameterGroup | undefined {
-    return this.parameterGroups.find((group) => group.id === this.activeGroupId);
+    const visibleGroups = this.visibleParameterGroups();
+    return (
+      visibleGroups.find((group) => group.id === this.activeGroupId) ?? visibleGroups[0]
+    );
   }
 
   resetToDefaults(): void {
@@ -187,10 +211,55 @@ export class StartRunFormComponent implements OnInit {
   }
 
   fieldLabel(param: ParameterDef): string {
-    if (param.kind === 'header' && param.headerName) {
-      return param.headerName;
+    return parameterFieldLabel(param);
+  }
+
+  isUiHiddenParam(param: ParameterDef): boolean {
+    return !!param.hidden || param.kind === 'header';
+  }
+
+  isVisibleParam(param: ParameterDef): boolean {
+    return this.showHiddenFields || !this.isUiHiddenParam(param);
+  }
+
+  visibleParameters(group: ParameterGroup): ParameterDef[] {
+    return group.parameters.filter((param) => this.isVisibleParam(param));
+  }
+
+  visibleParameterCount(group: ParameterGroup): number {
+    return this.visibleParameters(group).length;
+  }
+
+  isVisibleGroup(group: ParameterGroup): boolean {
+    return this.visibleParameterCount(group) > 0;
+  }
+
+  visibleParameterGroups(): ParameterGroup[] {
+    return this.parameterGroups.filter((group) => this.isVisibleGroup(group));
+  }
+
+  hasHiddenParameters(): boolean {
+    return this.parameterGroups.some((group) =>
+      group.parameters.some((param) => this.isUiHiddenParam(param))
+    );
+  }
+
+  onShowHiddenFieldsChange(enabled: boolean): void {
+    this.showHiddenFields = enabled;
+    this.ensureActiveGroupVisible();
+    if (enabled) {
+      this.loadDropdownOptions();
     }
-    return formatFieldLabel(param.name);
+  }
+
+  private ensureActiveGroupVisible(): void {
+    const visibleGroups = this.visibleParameterGroups();
+    if (!visibleGroups.length) {
+      return;
+    }
+    if (!visibleGroups.some((group) => group.id === this.activeGroupId)) {
+      this.activeGroupId = visibleGroups[0].id;
+    }
   }
 
   groupIconClass(group: ParameterGroup): string {
@@ -217,7 +286,7 @@ export class StartRunFormComponent implements OnInit {
   }
 
   private createControl(param: ParameterDef): FormControl<string | boolean | string[]> {
-    const validators = param.required ? [Validators.required] : [];
+    const validators = param.required && !param.hidden ? [Validators.required] : [];
     return this.fb.nonNullable.control(this.defaultControlValue(param), validators);
   }
 

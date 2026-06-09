@@ -1,0 +1,24 @@
+<app-topbar [apiOnline]="apiOnline" />
+
+<div class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+  <section class="page-hero">
+    <div class="page-hero-content">
+      <span class="page-hero-eyebrow">
+        <i class="pi pi-folder-open"></i>
+        Test plans
+      </span>
+      <h1 class="page-hero-title">JMeter plans</h1>
+      <p class="page-hero-sub">
+        Upload, download, and manage the .jmx files available in the Create Run workbench.
+      </p>
+    </div>
+  </section>
+
+  @if (error) {
+    <div class="my-4">
+      <p-message severity="error" [text]="error" />
+    </div>
+  }
+
+  <app-plans-panel class="mt-6 block" />
+</div>
