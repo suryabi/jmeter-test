@@ -1,9 +1,9 @@
 # BriefingIQ JMeter Runner
 
-End-to-end local runner for `BIQ.jmx` with:
+End-to-end local runner for BriefingIQ JMeter test plans with:
 
-- Node.js API (`server.js`) to execute runs and expose artifacts
-- Angular UI (`ui/`) to configure inputs, launch runs, monitor logs, inspect sample outcomes, and open JMeter HTML report
+- **Node.js API** (`server.js`, `jmx-parameters.js`) — plan management, parameter parsing, API-backed dropdowns, JMeter execution, artifacts
+- **Angular UI** (`ui/`) — configure runs per plan, launch population workflows, monitor logs, inspect samples, open HTML reports, manage plans
 
 This tool is primarily used for **data population / workflow automation**, not classic load testing.
 
@@ -11,63 +11,116 @@ This tool is primarily used for **data population / workflow automation**, not c
 
 ## 1) Architecture
 
-### Components
+### Repository layout
 
-- **JMeter Plan**: `BIQ.jmx`
-- **Runner API**: `server.js` (default `http://localhost:5050`)
-- **Web UI**: Angular app in `ui/` (default `http://localhost:4200`)
-- **Run Artifacts**: stored under `runs/`
+| Path | Role |
+|------|------|
+| `plans/` | JMeter test plans (`.jmx`) used by the runner — **primary location for plan files** |
+| `plans/BIQ.jmx` | Main BriefingIQ population plan (active development target) |
+| `BIQ.jmx` | Legacy root copy; prefer `plans/BIQ.jmx` for new work |
+| `server.js` | HTTP API, run lifecycle, static report hosting |
+| `jmx-parameters.js` | JMX parsing, parameter patching, BriefingIQ API field-option proxy |
+| `ui/` | Angular 21 SPA (PrimeNG + Tailwind) |
+| `runs/` | Per-run artifacts (gitignored) |
+| `scripts/init.js` | First-time dependency install + prerequisite checks |
 
 ### High-level flow
 
-1. UI calls `GET /parameters` to read parameter groups from `BIQ.jmx`
-2. User starts a run via `POST /runs`
-3. API creates run folder + run-specific JMX copy, starts JMeter non-GUI
-4. UI streams logs via SSE and polls run status
-5. API exposes artifacts:
-   - `jmeter.log`
-   - `result.jtl`
-   - `html-report/` (JMeter dashboard)
+1. UI loads available plans via `GET /plans` and parameters via `GET /parameters?plan=<file>`
+2. API-driven dropdown fields resolve options via `POST /field-options` (calls BriefingIQ using plan env + form props)
+3. User starts a run via `POST /runs` with `planFile` + `props`
+4. API patches a run-specific JMX copy, starts JMeter non-GUI, streams logs via SSE
+5. UI shows JTL samples, parsed insights, and JMeter HTML dashboard
 
 ---
 
 ## 2) Prerequisites
 
-Install:
+Install and verify everything below **before** running `npm run init` or `npm run dev`.
 
-- **Node.js** (18+ recommended)
-- **npm**
-- **JMeter** (must be available as `jmeter` in PATH, or set `JMETER_BIN`)
-- Required JMeter plugins for your plan (notably `jpgc-json` if your plan uses JSON plugin elements)
+### Required software
 
-Confirm JMeter:
+| Requirement | Version / notes |
+|-------------|-----------------|
+| **Node.js** | **20.19+** or **22.12+** (required by Angular 21 CLI). Node 18 is not supported for the UI build. |
+| **npm** | **10+** (ships with Node 20/22) |
+| **Java (JRE/JDK)** | **8+** minimum; **11 or 17** recommended for JMeter 5.4.x |
+| **Apache JMeter** | **5.4+** (plans are saved for JMeter 5.4.1). Must be on `PATH` as `jmeter`, or set `JMETER_BIN`. |
+
+### JMeter plugins
+
+`plans/BIQ.jmx` uses elements from the **JMeter Plugins** ecosystem. Install via [Plugins Manager](https://jmeter-plugins.org/install/Install/):
+
+- **jpgc-json** (JSON Plugins) — `jp@gc - JSON Format Post Processor` and related JSON utilities used throughout the plan
+
+If a run fails at compile time with unknown element classes under `com.atlantbh.jmeter.plugins...`, install the JSON plugins pack and retry.
+
+### Network access
+
+- The runner machine needs outbound HTTPS to your BriefingIQ host (`host` / `protocol` / `port` in the plan) when:
+  - Executing JMeter runs
+  - Resolving API dropdown options in the UI (`/field-options`)
+- A valid **Bearer token** (and related headers) must be present in the plan or run props — typically `header__Authorization` and environment fields in the JMX.
+
+### Quick verification
 
 ```bash
-jmeter --version
+node --version    # expect v20.19+ or v22.12+
+npm --version
+java -version     # JMeter prerequisite
+jmeter --version  # expect 5.4.x
 ```
 
----
+If `jmeter` is not on PATH:
 
-## 3) Initial Setup
+```bash
+export JMETER_BIN=/path/to/apache-jmeter/bin/jmeter
+```
 
-From repository root, run the setup script once after cloning:
+### First-time project setup
+
+From the repository root:
 
 ```bash
 npm run init
 ```
 
-This installs dependencies for both the API and UI, then checks that Node.js, npm, and JMeter are available on PATH.
+This installs API + UI dependencies and runs the prerequisite checks above.
 
-To install manually instead:
+Manual alternative:
 
 ```bash
 npm install
 cd ui && npm install
 ```
 
-Optional: configure UI API endpoint in:
+---
 
-`ui/src/environments/environment.ts`
+## 3) Run locally (development)
+
+Start API and UI together (recommended):
+
+```bash
+npm run dev
+```
+
+| Service | URL |
+|---------|-----|
+| UI | http://localhost:4200 |
+| API health | http://localhost:5050/health |
+
+Stop both with `Ctrl+C`.
+
+### Run API and UI separately
+
+```bash
+npm run start:api   # API only → http://localhost:5050
+npm run start:ui    # UI only  → http://localhost:4200
+```
+
+### UI API endpoint (dev)
+
+`ui/src/environments/environment.ts`:
 
 ```ts
 export const environment = {
@@ -78,279 +131,254 @@ export const environment = {
 
 ---
 
-## 4) Run Locally (Development)
+## 4) Using the UI
 
-Start both servers from the repository root (recommended):
-
-```bash
-npm run dev
-```
-
-This runs the API and UI in one terminal with labeled output. Stop both with `Ctrl+C`.
-
-Open:
-
-- UI: `http://localhost:4200`
-- API health: `http://localhost:5050/health`
-
-### Run API and UI separately
-
-Start API (terminal 1):
-
-```bash
-cd /path/to/Jmeter
-npm start
-```
-
-Start UI (terminal 2):
-
-```bash
-cd /path/to/Jmeter/ui
-npm start
-```
-
-Individual scripts from the repo root:
-
-```bash
-npm run start:api   # API only
-npm run start:ui    # UI only
-```
-
----
-
-## 5) How to Use (UI)
+### Runs (home)
 
 1. Open **Create Run**
-2. Set **Run Label**
-3. Configure fields by group chip
-4. Click **Start population run**
-5. In **Run Detail**:
-   - Follow live log
-   - Track steps panel
-   - Click `Passed` / `Failed` metrics for sample table
-   - Open or embed HTML report
-6. In **History**:
-   - Open run details
-   - Delete run artifacts to save space
+2. Choose a **plan** (e.g. `BIQ.jmx`)
+3. Set **Run label**
+4. Configure parameters by group; API dropdowns load when dependencies are satisfied
+5. Optional: enable **Show hidden fields** to reveal `HIDE` parameters and HTTP header fields
+6. Click **Start population run**
+7. Open the run from **History** for live logs, step insights, Passed/Failed samples, HTML report
 
-Notes:
+### Plans
 
-- `Passed/Failed` sample table comes from JTL (`/runs/:id/samples`)
-- `Open report` uses static route `/runs/:id/report/`
+Use the **Plans** tab (`/plans`) to:
+
+- List `.jmx` files in `plans/`
+- Upload a new or replacement plan
+- Download a plan
+- Delete a plan (blocked while a run using it is active)
+
+### Run detail
+
+- **Live log** — SSE stream + poll fallback
+- **Insights** — customer, request ID, dates, state actions, steps (parsed from `jmeter.log`)
+- **Samples** — JTL rows with API URL and failure message
+- **HTML report** — JMeter dashboard at `/runs/:id/report/`
 
 ---
 
-## 6) API Reference
+## 5) Backend (API)
+
+### Core modules
+
+- **`server.js`** — HTTP server, run orchestration, plan CRUD, log/SSE, JTL parsing, HTML report static hosting
+- **`jmx-parameters.js`** — Reads JMX `Arguments` / `HeaderManager` sections, infers field types, patches values for each run, proxies BriefingIQ APIs for dropdown options
+
+### Plan resolution
+
+- Plans live in `plans/` (`PLANS_DIR`, default `./plans`)
+- `GET /parameters?plan=BIQ.jmx` and `POST /runs` accept `planFile`
+- Legacy `JMETER_TEST_PLAN` env var still works as a single-plan fallback when `planFile` is omitted
+
+### Run lifecycle
+
+Each run creates `runs/<uuid>__<label-slug>/` containing:
+
+- `BIQ-run.jmx` — patched copy for that run
+- `jmeter.log`, `launcher.log`, `result.jtl`, `html-report/`
+- `run.meta.json` — label, `planFile`, props, `startedAt`
+
+---
+
+## 6) API reference
 
 Base URL: `http://localhost:5050`
 
 | Method | Path | Purpose |
-|---|---|---|
+|--------|------|---------|
 | `GET` | `/health` | Service status + endpoint list |
-| `GET` | `/parameters` | Parsed parameter groups from `BIQ.jmx` |
+| `GET` | `/plans` | List plans in `plans/` |
+| `POST` | `/plans?filename=<name.jmx>` | Upload plan (raw `.jmx` body) |
+| `GET` | `/plans/:filename/download` | Download plan file |
+| `DELETE` | `/plans/:filename` | Delete plan |
+| `GET` | `/parameters?plan=<file>` | Parsed parameter groups for a plan |
+| `POST` | `/field-options` | Resolve API dropdown/multiselect options |
 | `POST` | `/runs` | Start run |
-| `GET` | `/runs` | List runs (memory + hydrated from disk) |
-| `GET` | `/runs/:id` | Run detail (summary, insights, log tail, artifacts) |
-| `GET` | `/runs/:id/samples?status=passed\|failed&offset=0&limit=300` | JTL sample rows |
-| `GET` | `/runs/:id/log?offset=0` | Incremental log polling |
+| `GET` | `/runs` | List runs (memory + disk) |
+| `GET` | `/runs/:id` | Run detail, log tail, insights, summary |
+| `GET` | `/runs/:id/samples?status=passed\|failed` | JTL sample rows |
+| `GET` | `/runs/:id/log?offset=0` | Incremental log poll |
 | `GET` | `/runs/:id/log/stream` | SSE live logs |
-| `GET` | `/runs/:id/log?download=1` | Download full JMeter log |
+| `GET` | `/runs/:id/log?download=1` | Download full log |
 | `POST` | `/runs/:id/stop` | Stop active run |
-| `DELETE` | `/runs/:id` | Delete run folder/artifacts |
-| `GET` | `/runs/:id/report/` | JMeter HTML report (static) |
+| `DELETE` | `/runs/:id` | Delete run folder |
+| `GET` | `/runs/:id/report/` | JMeter HTML report |
 
 ### Start run payload
 
 ```json
 {
-  "label": "nightly-smoke",
+  "label": "sample-run",
+  "planFile": "BIQ.jmx",
   "props": {
     "requestStartDate": "2026-12-10",
     "requestEndDate": "2026-12-10",
-    "requestsPerDay": "1"
+    "requestsPerDay": "1",
+    "targetActions": "CONFIRM,HOLD,WAITLIST",
+    "maxIterationCount": "2,3,4"
+  }
+}
+```
+
+`props` keys match JMX `Argument.name` values and `header__<Header-Name>` for HTTP headers.
+
+### Field options payload
+
+```json
+{
+  "planFile": "BIQ.jmx",
+  "field": "parentCategory",
+  "props": {
+    "protocol": "https",
+    "host": "briefings.briefingiq.com",
+    "port": "443",
+    "contextname": "events",
+    "categoryType": "CATEGORY_TYPE_BRIEFINGS",
+    "header__Authorization": "Bearer …"
   }
 }
 ```
 
 ---
 
-## 7) Data & Artifact Layout
+## 7) Frontend (UI)
 
-Each run folder under `runs/`:
+### Stack
 
-- Newer format: `runs/<uuid>__<label-slug>/`
-- Older format (still supported): `runs/<uuid>/`
+- **Angular 21** (standalone components, signals)
+- **PrimeNG 21** + **PrimeIcons**
+- **Tailwind CSS 4**
 
-Typical contents:
+### Key areas
 
-- `BIQ-run.jmx` (run-specific patched copy)
-- `jmeter.log`
-- `launcher.log`
-- `result.jtl`
-- `html-report/`
-- `run.meta.json` (label + props + startedAt)
+| Path | Purpose |
+|------|---------|
+| `ui/src/app/pages/runs-page/` | Home — create run + history |
+| `ui/src/app/pages/plans-page/` | Plan upload / download / delete |
+| `ui/src/app/pages/run-detail-page/` | Live run monitoring |
+| `ui/src/app/components/start-run-form/` | Plan picker, parameter form, hidden-field toggle |
+| `ui/src/app/components/run-parameters-panel/` | Reusable parameter editor with API option loading |
+| `ui/src/app/core/services/runner.service.ts` | API client |
+| `ui/src/app/core/models/runner.models.ts` | Shared types |
 
-Run labels persist across restart via folder naming + `run.meta.json`.
+### Form behaviour
 
----
+- Parameters are grouped by JMX `Arguments` `testname` (e.g. Scheduling Variables, Customer Variables)
+- **Hidden fields** (`HIDE` in `Argument.desc`) and **HTTP headers** are hidden by default; toggle **Show hidden fields** to edit them
+- Empty parameter groups are omitted from the form
+- **Dropdown / multiselect** fields marked `DROPDOWN, API` in the JMX load options from BriefingIQ via the API
+- Dependent dropdowns re-fetch when parent fields change (`depends=` in API Field Variables mapping)
 
-## 8) Parameter Parsing Contract (Important)
+### Production build
 
-The app parses **directly** from JMX `Arguments` elements by `testname`.
+```bash
+cd ui
+npm run build
+# Output: ui/dist/biq-runner-ui/browser/
+```
 
-That means JMeter developers can add/rename groups and arguments in `BIQ.jmx` without backend code changes.
-
-### What must remain true
-
-- Parameters must be in standard JMeter `Arguments.arguments` entries (`Argument.name`, `Argument.value`, `Argument.desc`)
-- JMeter save settings should include columns used by samples table:
-  - `label`, `success`, `responseCode`, `responseMessage`, `failureMessage`, `URL`, `elapsed`, `timeStamp`
-
-### Type inference currently
-
-- `required` — `REQUIRED` in `Argument.desc`
-- `date` — description starts with `DATE,` or `DATE.`
-- `boolean` — description starts with `BOOLEAN,` or `BOOLEAN.`
-- Otherwise defaults to `text`
-
-If JMeter adds new boolean/date variables, add the tag to the field description (no backend code change).
+Set `ui/src/environments/environment.prod.ts` → `runnerApiUrl` before building.
 
 ---
 
-## 9) Environment Variables (API)
+## 8) JMX parameter contract
 
-- `PORT` (default `5050`)
-- `JMETER_BIN` (default `jmeter`)
-- `JMETER_TEST_PLAN` (default `./BIQ.jmx`)
-- `RUNS_DIR` (default `./runs`)
-- `ALLOW_CONCURRENT_RUNS` (`true|false`, default `false`)
-- `DEFAULT_LOG_TAIL_LINES` (default `100`)
-- `MAX_LOG_CHUNK_BYTES` (default `262144`)
-- `SSE_POLL_MS` (default `500`)
+Parameters are parsed from JMX — no backend code change needed when adding fields to existing `Arguments` groups.
+
+### `Argument.desc` tags
+
+| Tag / pattern | Effect |
+|---------------|--------|
+| `REQUIRED` | Required in UI validation |
+| `DATE,` / `DATE.` | Date input |
+| `BOOLEAN,` / `BOOLEAN.` | Checkbox |
+| `DROPDOWN, API` | API-backed dropdown |
+| `DROPDOWN, API, MULTI` | API-backed multiselect |
+| `HIDE` | Hidden from UI by default (value still sent to JMeter) |
+| `LABEL=camelCase` | UI display label (e.g. `LABEL=requestType`) |
+
+### API Field Variables group
+
+Dropdown API wiring lives in the **`API Field Variables`** `Arguments` block:
+
+```
+items=_embedded.categories display=name value=uniqueId depends=categoryType header.x-cloud-customerid=field:customerId
+```
+
+The runner substitutes `${contextname}`, `${fieldName}`, etc., and forwards request headers to BriefingIQ.
+
+### HTTP headers
+
+Headers from the plan's pre-thread-group `HeaderManager` appear as `header__<Name>` parameters (e.g. `header__Authorization`).
+
+### JTL columns required by UI
+
+Ensure JMeter saves: `label`, `success`, `responseCode`, `responseMessage`, `failureMessage`, `URL`, `elapsed`, `timeStamp`.
+
+---
+
+## 9) Environment variables (API)
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `PORT` | `5050` | API listen port |
+| `JMETER_BIN` | `jmeter` | JMeter executable |
+| `PLANS_DIR` | `./plans` | Directory containing `.jmx` plans |
+| `JMETER_TEST_PLAN` | — | Legacy single-plan path override |
+| `RUNS_DIR` | `./runs` | Run artifacts directory |
+| `ALLOW_CONCURRENT_RUNS` | `false` | Allow overlapping JMeter processes |
+| `DEFAULT_LOG_TAIL_LINES` | `100` | Default log tail in run detail |
+| `MAX_LOG_CHUNK_BYTES` | `262144` | Max log chunk per poll |
+| `SSE_POLL_MS` | `500` | SSE log poll interval |
+| `BIQ_AUTHORIZATION` | — | Optional Bearer override for `/field-options` calls |
+| `BIQ_DEBUG_API_FIELDS` | `false` | Verbose logging for API field-option resolution |
 
 Example:
 
 ```bash
-PORT=5051 JMETER_BIN=/opt/jmeter/bin/jmeter npm start
+PORT=5051 \
+JMETER_BIN=/opt/jmeter/bin/jmeter \
+PLANS_DIR=/srv/biq/plans \
+BIQ_DEBUG_API_FIELDS=true \
+npm start
 ```
 
 ---
 
-## 10) Build & Deploy
+## 10) Build & deploy
 
-The application has two deployable artifacts:
+Two deployable artifacts:
 
-- **API** — Node.js process that runs JMeter (`server.js`)
-- **UI** — Angular static bundle (`ui/dist/biq-runner-ui/browser/`)
+- **API** — Node process (`server.js`) + `plans/` + JMeter on the same host
+- **UI** — static files from `ui/dist/biq-runner-ui/browser/`
 
-Both must be reachable for the app to work. The UI talks to the API over HTTP/SSE.
+Both must be reachable; the UI calls the API over HTTP/SSE.
 
-### 10.1 Pick a deployment topology
+### Same-domain reverse proxy (recommended)
 
-Choose one before deploying:
+Proxy `/api/` → `http://127.0.0.1:5050/` with `proxy_buffering off` for SSE.
 
-| Topology | UI URL | API URL | When to use |
-|---|---|---|---|
-| Same domain via reverse proxy (recommended) | `https://runner.yourcompany.com/` | `https://runner.yourcompany.com/api/` | Simpler CORS, single TLS cert, easiest auth gateway |
-| Separate subdomain | `https://runner.yourcompany.com/` | `https://runner-api.yourcompany.com/` | When API and UI live on different hosts/teams |
-| Containerized | UI container | API container | Cloud / Kubernetes / Docker Compose |
-
-### 10.2 Configure UI environment for production
-
-The UI uses Angular file replacements. Two files exist:
-
-- `ui/src/environments/environment.ts` (dev — default)
-- `ui/src/environments/environment.prod.ts` (production)
-
-For production, **edit only `environment.prod.ts`**:
-
-```ts
-export const environment = {
-  production: true,
-  runnerApiUrl: 'https://runner.yourcompany.com/api'
-};
-```
-
-Then build:
-
-```bash
-cd ui
-npm install
-npm run build      # uses environment.prod.ts automatically
-```
-
-Output: `ui/dist/biq-runner-ui/browser/` — serve this folder via nginx/CDN/static host.
-
-### 10.3 Deploy the API
-
-On the target server:
-
-```bash
-# 1. Install Node 18+, JMeter, required plugins
-# 2. Copy the repo (excluding ui/node_modules and runs/)
-# 3. Install API deps
-npm install
-
-# 4. Set environment variables (see Section 9)
-export PORT=5050
-export JMETER_BIN=/opt/jmeter/bin/jmeter
-export JMETER_TEST_PLAN=/srv/biq/BIQ.jmx
-export RUNS_DIR=/srv/biq/runs
-
-# 5. Start with a process manager
-#    pm2 example:
-pm2 start server.js --name biq-runner-api
-pm2 save
-```
-
-Health check from the server:
-
-```bash
-curl http://127.0.0.1:5050/health
-```
-
-### 10.4 Sample nginx config (same domain, recommended)
-
-```nginx
-server {
-  listen 443 ssl http2;
-  server_name runner.yourcompany.com;
-
-  # TLS certs go here
-  # ssl_certificate / ssl_certificate_key ...
-
-  root /srv/biq/ui;
-  index index.html;
-
-  # Static UI files
-  location / {
-    try_files $uri $uri/ /index.html;
-  }
-
-  # API + SSE proxied under /api/
-  location /api/ {
-    proxy_pass http://127.0.0.1:5050/;
-    proxy_http_version 1.1;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-
-    # Required for live log SSE streaming
-    proxy_buffering off;
-    proxy_read_timeout 1h;
-    proxy_set_header Connection '';
-  }
-}
-```
-
-With this nginx setup, set:
+Set production UI:
 
 ```ts
 runnerApiUrl: 'https://runner.yourcompany.com/api'
 ```
 
-### 10.5 Sample nginx config (separate subdomain)
+### API deployment checklist
 
-UI host:
+1. Node **20.19+** or **22.12+**, Java, JMeter 5.4+ with **jpgc-json** plugins
+2. Copy repo (exclude `ui/node_modules`, `runs/`)
+3. `npm install` at root
+4. Place plans in `PLANS_DIR`
+5. Set env vars (Section 9)
+6. Process manager, e.g. `pm2 start server.js --name biq-runner-api`
+7. Mount persistent volume at `RUNS_DIR`
+
+### Sample nginx (UI + API)
 
 ```nginx
 server {
@@ -358,18 +386,12 @@ server {
   server_name runner.yourcompany.com;
   root /srv/biq/ui;
   index index.html;
-  location / { try_files $uri $uri/ /index.html; }
-}
-```
-
-API host:
-
-```nginx
-server {
-  listen 443 ssl http2;
-  server_name runner-api.yourcompany.com;
 
   location / {
+    try_files $uri $uri/ /index.html;
+  }
+
+  location /api/ {
     proxy_pass http://127.0.0.1:5050/;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
@@ -380,225 +402,103 @@ server {
 }
 ```
 
-In this mode, the API must allow CORS from the UI origin (currently `*` for dev — restrict in production).
-
-### 10.6 Containerized deployment (optional)
-
-- Build an API image with: Node, JMeter, plugins, `BIQ.jmx`, `server.js`, `jmx-parameters.js`
-- Build a UI image with: nginx serving `ui/dist/biq-runner-ui/browser/`
-- Mount a persistent volume at `RUNS_DIR` so runs survive container restarts
-- Use the same nginx routing patterns above between containers
-
 ---
 
-## 11) Production Considerations
+## 11) Production considerations
 
-- **CORS**: currently open (`*`). Restrict to UI origin in production (edit `setCors` in `server.js`).
-- **Auth**: app has no built-in auth. Put it behind SSO/reverse-proxy auth (OIDC, OAuth2 proxy, nginx basic auth, VPN, etc.).
-- **TLS**: terminate TLS at nginx/load balancer.
-- **Disk usage**: `runs/` grows over time. Set a retention/cleanup policy or use UI’s delete-run feature.
-- **Secrets**: JMeter Bearer tokens / env config live in `BIQ.jmx` — manage that file carefully (treat like a secret).
-- **Backups**: back up `runs/` if you need historical audit.
-- **Concurrency**: `ALLOW_CONCURRENT_RUNS=false` by default — enable only if your JMeter host can handle parallel runs.
+- **CORS** — open in dev (`*`); restrict to UI origin in production (`setCors` in `server.js`)
+- **Auth** — no built-in auth; protect with SSO, VPN, or reverse-proxy auth
+- **Secrets** — Bearer tokens in JMX / run props; use `BIQ_AUTHORIZATION` only on trusted servers
+- **Disk** — `runs/` grows; delete old runs from UI or automate cleanup
+- **Concurrency** — keep `ALLOW_CONCURRENT_RUNS=false` unless the host can run parallel JMeter processes
 
 ---
 
 ## 12) Troubleshooting
 
-### API shows offline in UI
+### API offline in UI
 
-- Ensure API process is running on `PORT`
 - Check `http://localhost:5050/health`
-- Verify `ui/src/environments/environment.ts`
+- Verify `ui/src/environments/environment.ts` → `runnerApiUrl`
 
-### JMeter run fails immediately
+### JMeter fails immediately
 
-- Verify `JMETER_BIN`
-- Verify plan path (`JMETER_TEST_PLAN`)
-- Check plugin availability (`jpgc-json` etc.)
-- Inspect `launcher.log` and `jmeter.log`
+- Verify `JMETER_BIN` and `jmeter --version`
+- Install **jpgc-json** plugins if compile errors mention `com.atlantbh.jmeter.plugins`
+- Inspect `runs/<id>/launcher.log` and `jmeter.log`
+
+### API dropdowns empty or 401
+
+- Ensure `header__Authorization` (or `BIQ_AUTHORIZATION`) is valid
+- Fill parent fields listed in `depends=` first
+- Run API with `BIQ_DEBUG_API_FIELDS=true` for upstream request logging
+
+### Module forms skipped / no data populated
+
+- Check `jmeter.log` for IfController / compile errors
+- Confirm plan file is the updated `plans/BIQ.jmx`
 
 ### No HTML report button
 
-- Report exists only after run completion
+- Report appears only after run completion
 - Check `runs/<id>/html-report/index.html`
-
-### Passed/Failed table missing API/error details
-
-- Ensure JTL contains `URL` and `failureMessage` columns
-
-### Labels show unnamed for old runs
-
-- Older run folders may predate `run.meta.json`
-- New runs persist labels automatically
 
 ---
 
-## 13) Common Commands
-
-First-time setup:
+## 13) Common commands
 
 ```bash
-npm run init
-```
+npm run init              # first-time setup
+npm run dev               # API + UI (dev)
+npm start                 # API only
+cd ui && npm start        # UI only
+cd ui && npm run build    # production UI build
 
-Start both servers (development):
-
-```bash
-npm run dev
-```
-
-Start API only:
-
-```bash
-npm start
-```
-
-Start UI only:
-
-```bash
-cd ui && npm start
-```
-
-Build UI:
-
-```bash
-cd ui && npm run build
-```
-
-Health check:
-
-```bash
 curl http://localhost:5050/health
-```
-
-List runs:
-
-```bash
+curl http://localhost:5050/plans
+curl "http://localhost:5050/parameters?plan=BIQ.jmx"
 curl http://localhost:5050/runs
-```
-
-Delete a run:
-
-```bash
 curl -X DELETE http://localhost:5050/runs/<run-id>
 ```
 
 ---
 
-## 14) Team Workflows
+## 14) Team workflows
 
-### 14.1 UI developer workflow
+### UI developer
 
-Owns: `ui/` (Angular app).
+- Owns `ui/`
+- Local: `npm run dev`
+- Production: `npm run build` → deploy `ui/dist/biq-runner-ui/browser/`
+- Edit `environment.prod.ts` for API URL
 
-**Local development**
+### JMeter developer
 
-From repo root (recommended):
+- Owns `plans/*.jmx` — **primary: `plans/BIQ.jmx`**
+- Add parameters under existing `Arguments` groups with `Argument.name`, `Argument.value`, `Argument.desc`
+- Use `LABEL=`, `HIDE`, `DROPDOWN, API` tags as needed
+- API dropdown mappings go in **API Field Variables**
+- Smoke test: upload or replace plan → refresh UI → launch run → verify logs + samples
 
-```bash
-npm run init   # first time only
-npm run dev    # API + UI together
-```
+No API/UI code change is required for new plain text/boolean/date parameters.
 
-Or UI only:
+### API / ops
 
-```bash
-cd ui
-npm install        # first time
-npm start          # http://localhost:4200, expects API on http://localhost:5050
-```
-
-**Files to edit**
-
-- Components/pages: `ui/src/app/...`
-- Styles: `ui/src/styles.scss` or per-component `.scss`
-- Models: `ui/src/app/core/models/`
-- Services (API calls): `ui/src/app/core/services/runner.service.ts`
-
-**API URL config**
-
-- Dev: `ui/src/environments/environment.ts` (already set to `http://localhost:5050`)
-- Prod: `ui/src/environments/environment.prod.ts` (set this once, used by `npm run build`)
-
-**Build for production**
-
-```bash
-cd ui
-npm run build
-# Output: ui/dist/biq-runner-ui/browser/   -> deploy as static files
-```
-
-**Release flow**
-
-1. Open PR against the UI files
-2. Reviewer runs `npm run build` to validate
-3. Merge → CI builds + uploads `ui/dist/biq-runner-ui/browser/` to UI host (nginx/CDN)
-4. No restart needed for the API
-
-### 14.2 JMeter developer workflow
-
-Owns: `BIQ.jmx` (and only `BIQ.jmx` in most cases).
-
-**Where edits go**
-
-- Add or update parameters under existing `Arguments` blocks (e.g. `Global Variables`, `Configuration Variables`, `Environment Variables`).
-- Use standard JMeter `Argument.name`, `Argument.value`, `Argument.desc`.
-- Group names (testname on `Arguments`) become section titles in UI automatically.
-- Tokens / secrets in JMX: treat as sensitive — rotate before deploy.
-
-**JTL columns required by UI**
-
-Make sure JMeter saves at least:
-
-- `label`, `success`, `responseCode`, `responseMessage`, `failureMessage`, `URL`, `elapsed`, `timeStamp`
-
-If these are turned off, the Passed/Failed sample table will lose columns.
-
-**Local smoke test before pushing**
-
-1. Place updated `BIQ.jmx` at repo root (replacing the old one).
-2. Start both servers: `npm run dev` (or `npm start` for API only).
-3. Open UI: `http://localhost:4200`
-4. Verify:
-   - All parameter groups + fields appear
-   - Defaults look correct
-   - Launch a run, watch logs
-   - Passed/Failed table opens with API + error columns
-   - HTML report opens
-5. Commit `BIQ.jmx`, open PR.
-
-**Release flow**
-
-1. JMeter dev opens PR with only `BIQ.jmx` changed.
-2. App owner merges → deploy script copies new `BIQ.jmx` to server location used by `JMETER_TEST_PLAN`.
-3. **No API/UI code change required** — parameters are parsed dynamically.
-4. Optional restart of API if you want to drop in-memory state. Disk runs are unaffected.
-
-### 14.3 API / Ops workflow
-
-Owns: `server.js`, `jmx-parameters.js`, infra.
-
-- Deploy = restart Node process (`pm2 restart biq-runner-api`)
-- Plan path: keep `BIQ.jmx` at a known location and point `JMETER_TEST_PLAN` to it
-- Keep `RUNS_DIR` on persistent storage
-- Monitor:
-  - process up/down
-  - disk usage of `RUNS_DIR`
-  - JMeter binary presence (`JMETER_BIN`)
+- Owns `server.js`, `jmx-parameters.js`, infrastructure
+- Deploy = restart Node; keep `plans/` and `RUNS_DIR` on persistent storage
+- Monitor disk usage under `runs/`
 
 ---
 
-## 15) Current Limitations / Known Warnings
+## 15) Known limitations
 
-- Angular build budget warnings are currently present but non-blocking
-- Sass `@import` deprecation warning exists in styles
-- Request/response headers are not currently captured in sample table (requires JMeter save/config changes)
+- Angular build may emit non-blocking budget / Sass deprecation warnings
+- Request/response headers are not shown in the samples table (JTL limitation)
+- Activity-level state actions in the agenda flow use the same `targetActions` list as request state actions but only actions present in each activity's `_links` are executable
 
 ---
 
-## 16) Related Docs
+## 16) Related docs
 
-- Backend/API quick notes: `README.local-runner.md`
+- API quick reference: `README.local-runner.md`
 - UI notes: `ui/README.md`
-

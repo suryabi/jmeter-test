@@ -15,7 +15,12 @@ Server starts on `http://localhost:5050` (override with `PORT`).
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/health` | Service health + endpoint list |
-| `GET` | `/parameters` | JMX user-defined variable schema (defaults + descriptions) |
+| `GET` | `/plans` | List `.jmx` plans in `plans/` |
+| `POST` | `/plans?filename=<name.jmx>` | Upload plan (raw body) |
+| `GET` | `/plans/:filename/download` | Download plan |
+| `DELETE` | `/plans/:filename` | Delete plan |
+| `GET` | `/parameters?plan=<file>` | JMX parameter schema for a plan |
+| `POST` | `/field-options` | Resolve API dropdown options |
 | `POST` | `/runs` | Start a run |
 | `GET` | `/runs` | List runs (includes past runs on disk) |
 | `GET` | `/runs/:id` | Run detail + log tail + insights + JTL summary |
@@ -34,6 +39,7 @@ curl -X POST http://localhost:5050/runs \
   -H "Content-Type: application/json" \
   -d '{
     "label": "quick-local-test",
+    "planFile": "BIQ.jmx",
     "props": {
       "requestStartDate": "2026-12-10",
       "requestEndDate": "2026-12-10",
@@ -42,12 +48,12 @@ curl -X POST http://localhost:5050/runs \
   }'
 ```
 
-`props` may include any JMX user-defined variable. The runner writes a per-run copy at `runs/<id>/BIQ-run.jmx` with your values applied before starting JMeter.
+`props` may include any JMX user-defined variable or `header__*` override. The runner writes a per-run copy at `runs/<id>/BIQ-run.jmx` with your values applied before starting JMeter.
 
 Fetch defaults and field descriptions:
 
 ```bash
-curl http://localhost:5050/parameters
+curl "http://localhost:5050/parameters?plan=BIQ.jmx"
 ```
 
 ## Run detail
@@ -116,12 +122,15 @@ es.addEventListener('complete', (e) => {
 
 - `PORT` (default `5050`)
 - `JMETER_BIN` (default `jmeter`)
-- `JMETER_TEST_PLAN` (default `./BIQ.jmx`)
+- `PLANS_DIR` (default `./plans`)
+- `JMETER_TEST_PLAN` (optional legacy single-plan override)
 - `RUNS_DIR` (default `./runs`)
 - `ALLOW_CONCURRENT_RUNS` (`true|false`, default `false`)
 - `DEFAULT_LOG_TAIL_LINES` (default `100`)
 - `MAX_LOG_CHUNK_BYTES` (default `262144`)
 - `SSE_POLL_MS` (default `500`)
+- `BIQ_AUTHORIZATION` (optional Bearer for `/field-options`)
+- `BIQ_DEBUG_API_FIELDS` (`true|false`, verbose field-option logging)
 
 ## Notes
 
