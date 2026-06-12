@@ -1,0 +1,38 @@
+---
+description: Node API and JMX parameter parsing conventions
+globs: server.js,jmx-parameters.js,scripts/**
+alwaysApply: false
+---
+
+# Backend runner API
+
+## Modules
+
+- `server.js` — HTTP routes, run lifecycle, plans CRUD, logs/SSE, JTL
+- `jmx-parameters.js` — parse JMX groups, patch overrides, `fetchApiFieldOptions`
+
+## Plans
+
+- Default directory: `PLANS_DIR` → `./plans`
+- `GET /parameters?plan=<file>`, `POST /runs` with `planFile`, `POST /field-options`
+
+## Parameter parsing
+
+- Groups = JMX `Arguments` `testname` values
+- Headers → `header__<HeaderName>` params (from pre-thread-group `HeaderManager`)
+- Types inferred from `Argument.desc` prefix tags (see JMX rule)
+- Hidden params: `HIDE` in desc → `hidden: true` in schema
+
+## API field options
+
+- Endpoint templates use `${contextname}`, `${fieldName}` substitution
+- `depends=` must be satisfied before fetching options
+- `BIQ_DEBUG_API_FIELDS=true` — verbose upstream logging
+- `BIQ_AUTHORIZATION` — optional Bearer override for field-options only
+
+## Changes
+
+- New plain JMX parameters need **no** backend change if they follow the `Argument.desc` contract
+- New API dropdowns need an entry in **API Field Variables** in the JMX + optional `AUTO_RESOLVE_FIELDS` in `jmx-parameters.js`
+
+Restart API after `jmx-parameters.js` changes; JMX-only changes need UI refresh only.

@@ -1,0 +1,34 @@
+---
+description: Angular UI conventions for the runner workbench
+globs: ui/**/*.ts,ui/**/*.html,ui/**/*.scss
+alwaysApply: false
+---
+
+# Angular UI (`ui/`)
+
+## Stack
+
+Angular 21 standalone components, signals, PrimeNG 21, Tailwind 4. API base: `environment.runnerApiUrl` (default `http://localhost:5050`).
+
+## Key surfaces
+
+- `start-run-form` — plan picker, parameter groups, **Show hidden fields** toggle
+- `plans-panel` / `plans-page` — upload, download, delete plans
+- `run-detail-page` — logs, samples, HTML report
+- `runner.service.ts` — all API calls
+
+## Hidden fields
+
+`isUiHiddenParam()`: hide when `param.hidden` (JMX `HIDE`) **or** `kind === 'header'`. Toggle reveals them with a badge. Empty groups are omitted.
+
+## API dropdowns
+
+Load via `POST /field-options` with current `planFile` + form `props`. Re-resolve when parent `depends` fields change. Load options for hidden API fields too so the toggle works.
+
+## Labels
+
+Use `param.label` from JMX `LABEL=` when present; else format `param.name` via `format-field-label`.
+
+## Style
+
+Match existing SCSS/Tailwind patterns in sibling components. Avoid drive-by refactors outside the requested UI area.

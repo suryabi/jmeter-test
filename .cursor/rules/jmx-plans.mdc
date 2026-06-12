@@ -1,0 +1,45 @@
+---
+description: JMeter plan conventions for plans/*.jmx
+globs: plans/**/*.jmx
+alwaysApply: false
+---
+
+# JMX plan rules (`plans/`)
+
+## Scope
+
+Edit plans under `plans/` only (e.g. `BIQ.jmx`, `BIQ_1.jmx`). Leave root `BIQ.jmx` / `EIQ.jmx` unless the user scopes work there.
+
+## Parameter UI contract (`Argument.desc`)
+
+| Tag | Effect |
+|-----|--------|
+| `REQUIRED` | Required in UI |
+| `DATE,` / `BOOLEAN,` | Type inference |
+| `DROPDOWN, API` | API-backed dropdown |
+| `DROPDOWN, API, MULTI` | Multiselect |
+| `HIDE` | Hidden in UI; value still sent to JMeter |
+| `LABEL=camelCase` | Display label in UI |
+
+API dropdown wiring lives in the **`API Field Variables`** Arguments block (`items=`, `display=`, `value=`, `depends=`, `header.*=`).
+
+## IfController + Groovy
+
+With `useExpression=true`, use the same pattern as other working controllers:
+
+```groovy
+${__groovy(props.get("fn_matchesJourneyType")(vars))}
+```
+
+**Never** pass multiple top-level args inside `${__groovy(...)}` — JMeter splits on commas and breaks compile.
+
+For multi-arg logic, register a **single-arg** closure in common functions (e.g. `fn_matchesLogisticsType(vars)`).
+
+## State actions
+
+- `maxIterationCount` — comma-separated pool (e.g. `2,3,4`); random pick per run; iter 1 always SUBMIT; `0`/empty skips
+- `targetActions` — include list for random picks after SUBMIT (not a single target with early exit)
+
+## Plugins
+
+Plans use `com.atlantbh.jmeter.plugins` JSON elements — requires **jpgc-json** in JMeter.
