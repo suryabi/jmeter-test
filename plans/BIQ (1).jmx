@@ -1016,7 +1016,7 @@ def _fn_resolveFieldLookupMode = { field -&gt;
 props.put(&quot;fn_resolveFieldLookupMode&quot;, _fn_resolveFieldLookupMode)
 
 // Reads isComplexObject from form template metadata (top-level or attributes map).
-// When true, SELECT/MASTER/RESOURCE values are sent as {uniqueId: id}; when false, as a bare id string.
+// When true (and not isNestedEnum), values are sent as {uniqueId: id}; otherwise a bare id string.
 def _fn_resolveIsComplexObject = { field -&gt;
     if (!field) return false
     def raw = field.isComplexObject
@@ -1038,10 +1038,12 @@ def _fn_resolveIsNestedEnum = { field -&gt;
 }
 props.put(&quot;fn_resolveIsNestedEnum&quot;, _fn_resolveIsNestedEnum)
 
-// Formats a master/resource reference id. Temporarily always sends a bare uniqueId string
-// (isComplexObject / {uniqueId: id} wrapping disabled).
+// Formats a master/resource reference id: {uniqueId} when isComplexObject and not isNestedEnum; else plain id.
 def _fn_formatReferenceFieldValue = { field, uniqueId -&gt;
     if (!uniqueId) return null
+    def isComplex = props.get(&quot;fn_resolveIsComplexObject&quot;)(field)
+    def isNested = props.get(&quot;fn_resolveIsNestedEnum&quot;)(field)
+    if (isComplex &amp;&amp; !isNested) return [&quot;uniqueId&quot;: uniqueId]
     return uniqueId
 }
 props.put(&quot;fn_formatReferenceFieldValue&quot;, _fn_formatReferenceFieldValue)
@@ -3415,7 +3417,7 @@ orderedFields.each { field -&gt;
                 } else if ((field.enumType ?: &quot;&quot;) == &quot;RESOURCE&quot; &amp;&amp; resourceTypeId) {
                     // FIX: SELECT fields with enumType=RESOURCE (e.g. Briefing Manager, Technical Manager)
                     // These use resourceTypeId, not lookupName — must be looked up from resourcesFor_ variables.
-                    // Value shape (bare id vs {uniqueId: id}) is controlled by form template isComplexObject.
+                    // Value shape: {uniqueId} when isComplexObject and not isNestedEnum; else bare id.
                     // isNestedEnum: one control with internal cascading levels — pick deepest leaf from hierarchy.
                     def isNestedEnumResource = props.get(&quot;fn_resolveIsNestedEnum&quot;)(field)
                     def usedResourceChain = false

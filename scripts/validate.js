@@ -3,6 +3,9 @@
 const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
+const { loadEnvFile } = require("./load-env");
+
+loadEnvFile();
 
 const root = path.join(__dirname, "..");
 const uiDir = path.join(root, "ui");
@@ -731,6 +734,7 @@ module.exports = {
   resolveJmeterBin,
   resolveJmeterHome,
   hasJsonPlugins,
+  planRequiresJsonPlugins,
   resolveJavaHomeFromJmeterWrapper,
   resolveJavaHomeForJmeter,
   javaExecutableForHome,

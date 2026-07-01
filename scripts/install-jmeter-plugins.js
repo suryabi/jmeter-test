@@ -2,6 +2,10 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadEnvFile } = require("./load-env");
+
+loadEnvFile();
+
 const {
   resolveJmeterBin,
   resolveJmeterHome,
@@ -27,29 +31,32 @@ function shouldCopy(sourcePath, destPath) {
   return fs.statSync(sourcePath).size !== fs.statSync(destPath).size;
 }
 
-function copyJar(sourcePath, destPath, dryRun) {
+function copyJar(sourcePath, destPath, dryRun, quiet) {
   const fileName = path.basename(sourcePath);
   if (!shouldCopy(sourcePath, destPath)) {
-    console.log(`=  ${fileName} (already present)`);
+    if (!quiet) console.log(`=  ${fileName} (already present)`);
     return { copied: false, skipped: true };
   }
 
   if (dryRun) {
-    console.log(`~  would copy ${fileName} → ${destPath}`);
+    if (!quiet) console.log(`~  would copy ${fileName} → ${destPath}`);
     return { copied: false, skipped: false, planned: true };
   }
 
   fs.mkdirSync(path.dirname(destPath), { recursive: true });
   fs.copyFileSync(sourcePath, destPath);
-  console.log(`✓  copied ${fileName} → ${destPath}`);
+  if (!quiet) console.log(`✓  copied ${fileName} → ${destPath}`);
   return { copied: true, skipped: false };
 }
 
 function installJmeterPlugins(options = {}) {
   const dryRun = Boolean(options.dryRun);
+  const quiet = Boolean(options.quiet);
   const jmeterHomeOverride = options.jmeterHome || process.env.JMETER_HOME;
 
-  console.log("BriefingIQ JMeter Runner — install jpgc-json plugins\n");
+  if (!quiet) {
+    console.log("BriefingIQ JMeter Runner — install jpgc-json plugins\n");
+  }
 
   if (!fs.existsSync(vendorDir)) {
     console.error(`✗  Vendor bundle missing: ${vendorDir}`);
@@ -67,16 +74,16 @@ function installJmeterPlugins(options = {}) {
   }
 
   if (!dryRun && hasJsonPlugins(jmeterHome)) {
-    console.log(`JMeter already has JSON plugins at: ${jmeterHome}`);
-    console.log("Installing/updating vendored jars anyway (skips identical files)...\n");
-  } else if (dryRun) {
-    console.log(`Target JMeter home: ${jmeterHome}\n`);
-  } else {
+    if (!quiet) {
+      console.log(`JMeter already has JSON plugins at: ${jmeterHome}`);
+      console.log("Installing/updating vendored jars anyway (skips identical files)...\n");
+    }
+  } else if (!quiet) {
     console.log(`Target JMeter home: ${jmeterHome}\n`);
   }
 
   const javaInfo = getJmeterJavaInfo(jmeterBin, jmeterHome);
-  if (javaInfo.versionLine) {
+  if (!quiet && javaInfo.versionLine) {
     console.log(`JMeter Java: ${javaInfo.versionLine}${javaInfo.source ? ` (${javaInfo.source})` : ""}`);
   }
   const compat = assessPluginBundleJavaCompatibility(manifest, javaInfo.major);
@@ -88,9 +95,9 @@ function installJmeterPlugins(options = {}) {
   if (compat.level === "warn") {
     console.warn(`⚠  ${compat.message}`);
     console.warn("   Installing anyway — upgrade Java if runs crash or show UnsupportedClassVersionError.\n");
-  } else if (compat.level === "pass") {
+  } else if (compat.level === "pass" && !quiet) {
     console.log(`✓  ${compat.message}\n`);
-  } else {
+  } else if (!quiet) {
     console.warn(`⚠  ${compat.message}\n`);
   }
 
@@ -107,12 +114,12 @@ function installJmeterPlugins(options = {}) {
     }
 
     const destPath = path.join(jmeterHome, jar.target, path.basename(jar.file));
-    const result = copyJar(sourcePath, destPath, dryRun);
+    const result = copyJar(sourcePath, destPath, dryRun, quiet);
     if (result.copied) copied++;
     if (result.skipped) skipped++;
   }
 
-  console.log("");
+  if (!quiet) console.log("");
   if (missing > 0) {
     console.error(`Install failed — ${missing} vendored file(s) missing from the repository.`);
     return { ok: false, reason: "missing-jars", copied, skipped, missing };
@@ -129,8 +136,10 @@ function installJmeterPlugins(options = {}) {
     return { ok: false, reason: "verify-failed", copied, skipped };
   }
 
-  console.log(`Done. Copied ${copied} file(s), skipped ${skipped} unchanged.`);
-  console.log("Restart any running JMeter process before the next population run.\n");
+  if (!quiet) {
+    console.log(`Done. Copied ${copied} file(s), skipped ${skipped} unchanged.`);
+    console.log("Restart any running JMeter process before the next population run.\n");
+  }
   return { ok: true, copied, skipped, jmeterHome };
 }
 

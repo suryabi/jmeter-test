@@ -3,6 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 const { randomUUID } = require("crypto");
+const { loadEnvFile } = require("./scripts/load-env");
+
+loadEnvFile();
+
 const {
   parseJmxParameters,
   applyParameterOverrides,
@@ -13,8 +17,11 @@ const {
   resolveJmeterBin,
   resolveJmeterHome,
   resolveJavaHomeForJmeter,
-  javaExecutableForHome
+  javaExecutableForHome,
+  hasJsonPlugins,
+  planRequiresJsonPlugins
 } = require("./scripts/validate");
+const { installJmeterPlugins } = require("./scripts/install-jmeter-plugins");
 
 const PORT = Number(process.env.PORT || 5050);
 const JMETER_BIN = process.env.JMETER_BIN || "jmeter";
@@ -1174,6 +1181,33 @@ function attachLauncherLogStream(child, launcherLogPath) {
   return { closeStream };
 }
 
+function ensureJmeterRuntimeReady() {
+  const jmeterBin = JMETER_BIN;
+  const jmeterHome = process.env.JMETER_HOME || resolveJmeterHome(jmeterBin);
+
+  if (!jmeterHome) {
+    console.warn(
+      "[startup] JMETER_HOME could not be resolved. Set JMETER_HOME or JMETER_BIN in .env or the shell before starting runs."
+    );
+    return { jmeterHome: null, pluginsOk: null };
+  }
+
+  let pluginsOk = hasJsonPlugins(jmeterHome);
+  if (planRequiresJsonPlugins()) {
+    const installResult = installJmeterPlugins({ jmeterHome, quiet: true });
+    pluginsOk = installResult.ok && hasJsonPlugins(jmeterHome);
+    if (!pluginsOk) {
+      console.warn(
+        `[startup] JSON plugins missing for ${jmeterHome}. Run: npm run install:jmeter-plugins`
+      );
+    } else if (installResult.copied > 0) {
+      console.log(`[startup] Installed ${installResult.copied} JMeter plugin jar(s) to ${jmeterHome}`);
+    }
+  }
+
+  return { jmeterHome, pluginsOk };
+}
+
 // Launch a JMeter non-GUI run with a per-run patched plan copy.
 function startRun({ props = {}, runLabel = "", planFile = null }) {
   const sourcePlanPath = resolvePlanPath(planFile);
@@ -1639,4 +1673,11 @@ server.listen(PORT, () => {
   console.log(`Plans dir: ${PLANS_DIR} (${plans.length} plan${plans.length === 1 ? "" : "s"}: ${plans.join(", ") || "none"})`);
   if (LEGACY_PLAN_PATH) console.log(`Legacy plan override: ${LEGACY_PLAN_PATH}`);
   console.log(`Using jmeter bin: ${JMETER_BIN}`);
+
+  const runtime = ensureJmeterRuntimeReady();
+  if (runtime.jmeterHome) {
+    const pluginLabel =
+      runtime.pluginsOk === null ? "unknown" : runtime.pluginsOk ? "ready" : "missing";
+    console.log(`JMeter home: ${runtime.jmeterHome} (json plugins: ${pluginLabel})`);
+  }
 });
