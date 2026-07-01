@@ -10,6 +10,7 @@ import {
   DeletePlanResponse,
   PlansResponse,
   RunDetail,
+  RunSamplePayloadResponse,
   UploadPlanResponse,
   RunSamplesResponse,
   RunSummary,
@@ -109,5 +110,12 @@ export class RunnerService {
       .set('offset', String(offset))
       .set('limit', String(limit));
     return this.http.get<RunSamplesResponse>(`${this.baseUrl}/runs/${id}/samples`, { params });
+  }
+
+  getRunSamplePayload(id: string, sampleKey: string): Observable<RunSamplePayloadResponse> {
+    const params = new HttpParams().set('sampleKey', sampleKey);
+    return this.http.get<RunSamplePayloadResponse>(`${this.baseUrl}/runs/${id}/samples/payload`, {
+      params
+    });
   }
 }

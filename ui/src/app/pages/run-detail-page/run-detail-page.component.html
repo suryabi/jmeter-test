@@ -196,26 +196,30 @@
               <ng-template pTemplate="expandedrow" let-row>
                 <tr class="sample-payload-row">
                   <td colspan="7">
+                    @if (isSamplePayloadLoading(row)) {
+                      <p class="samples-empty">Loading request/response...</p>
+                    } @else {
                     <div class="sample-payload-grid">
                       <div class="sample-payload-block">
                         <div class="sample-payload-heading">
                           Request
-                          @if (row.requestTruncated) {
+                          @if (samplePayload(row)?.requestTruncated) {
                             <span class="sample-payload-truncated">truncated</span>
                           }
                         </div>
-                        <pre class="sample-payload-pre mono">{{ formatPayload(row.requestPayload) }}</pre>
+                        <pre class="sample-payload-pre mono">{{ formatPayload(samplePayload(row)?.requestPayload) }}</pre>
                       </div>
                       <div class="sample-payload-block">
                         <div class="sample-payload-heading">
                           Response
-                          @if (row.responseTruncated) {
+                          @if (samplePayload(row)?.responseTruncated) {
                             <span class="sample-payload-truncated">truncated</span>
                           }
                         </div>
-                        <pre class="sample-payload-pre mono">{{ formatPayload(row.responseBody) }}</pre>
+                        <pre class="sample-payload-pre mono">{{ formatPayload(samplePayload(row)?.responseBody) }}</pre>
                       </div>
                     </div>
+                    }
                   </td>
                 </tr>
               </ng-template>

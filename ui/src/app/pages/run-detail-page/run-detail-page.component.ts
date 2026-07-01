@@ -15,6 +15,7 @@ import {
   RunSampleRow,
   RunStatus,
   RunStep,
+  RunSamplePayloadResponse,
   SseCompleteEvent,
   SseLogEvent
 } from '../../core/models/runner.models';
@@ -72,6 +73,8 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   sampleRowsTotal = 0;
   sampleRowsLoading = false;
   expandedSampleRows: Record<string, boolean> = {};
+  samplePayloadByKey: Record<string, RunSamplePayloadResponse> = {};
+  samplePayloadLoadingByKey: Record<string, boolean> = {};
   activeInsightRequestIndex = 1;
   insightRequestOptions: { index: number; label: string }[] = [];
 
@@ -224,6 +227,8 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     this.activeSampleStatus = this.activeSampleStatus === status ? null : status;
     this.lastSampleSummaryKey = '';
     this.expandedSampleRows = {};
+    this.samplePayloadByKey = {};
+    this.samplePayloadLoadingByKey = {};
     if (!this.activeSampleStatus) {
       this.unbindSamplesScrollListener();
       this.sampleRows = [];
@@ -260,7 +265,15 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   }
 
   hasSamplePayload(row: RunSampleRow): boolean {
-    return Boolean(row.requestPayload?.trim() || row.responseBody?.trim());
+    return Boolean(row.hasPayload);
+  }
+
+  samplePayload(row: RunSampleRow): RunSamplePayloadResponse | null {
+    return this.samplePayloadByKey[row.sampleKey] ?? null;
+  }
+
+  isSamplePayloadLoading(row: RunSampleRow): boolean {
+    return Boolean(this.samplePayloadLoadingByKey[row.sampleKey]);
   }
 
   toggleSampleRow(row: RunSampleRow): void {
@@ -275,6 +288,34 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     }
 
     this.expandedSampleRows = { ...this.expandedSampleRows, [key]: true };
+    this.loadSamplePayload(row);
+  }
+
+  private loadSamplePayload(row: RunSampleRow): void {
+    if (!this.run || !row.sampleKey || this.samplePayloadByKey[row.sampleKey]) return;
+    if (this.samplePayloadLoadingByKey[row.sampleKey]) return;
+
+    this.samplePayloadLoadingByKey = { ...this.samplePayloadLoadingByKey, [row.sampleKey]: true };
+    this.runner.getRunSamplePayload(this.run.id, row.sampleKey).subscribe({
+      next: (payload) => {
+        this.samplePayloadLoadingByKey = { ...this.samplePayloadLoadingByKey, [row.sampleKey]: false };
+        this.samplePayloadByKey = { ...this.samplePayloadByKey, [row.sampleKey]: payload };
+      },
+      error: () => {
+        this.samplePayloadLoadingByKey = { ...this.samplePayloadLoadingByKey, [row.sampleKey]: false };
+        this.samplePayloadByKey = {
+          ...this.samplePayloadByKey,
+          [row.sampleKey]: {
+            runId: this.run?.id || '',
+            sampleKey: row.sampleKey,
+            requestPayload: '',
+            responseBody: '',
+            requestTruncated: false,
+            responseTruncated: false
+          }
+        };
+      }
+    });
   }
 
   hasHtmlReport(): boolean {

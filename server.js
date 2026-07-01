@@ -379,6 +379,18 @@ function sampleDetailKey(row) {
   return `${row.timeStamp ?? ""}|${row.label ?? ""}|${row.threadName ?? ""}|${row.elapsed ?? ""}|${row.url ?? row.apiUrl ?? ""}`;
 }
 
+function encodeSampleKey(rawKey) {
+  return Buffer.from(String(rawKey || ""), "utf-8").toString("base64url");
+}
+
+function decodeSampleKey(encodedKey) {
+  try {
+    return Buffer.from(String(encodedKey || ""), "base64url").toString("utf-8");
+  } catch {
+    return "";
+  }
+}
+
 function loadSampleDetailsMap(detailsFile, contextName = null) {
   const map = new Map();
   if (!detailsFile || !fs.existsSync(detailsFile)) return map;
@@ -514,6 +526,7 @@ function parseJtlSamples(
       );
       const requestFromJtl = idx.samplerData >= 0 ? cols[idx.samplerData] || "" : "";
 
+      const rowKey = sampleDetailKey({ timeStamp, label, threadName, elapsed, apiUrl });
       filtered.push({
         status: rowStatus,
         timeStamp,
@@ -524,10 +537,8 @@ function parseJtlSamples(
         responseMessage: idx.responseMessage >= 0 ? cols[idx.responseMessage] || "" : "",
         failureMessage: idx.failureMessage >= 0 ? cols[idx.failureMessage] || "" : "",
         threadName,
-        requestPayload: detail?.request || requestFromJtl || "",
-        responseBody: detail?.response || "",
-        requestTruncated: Boolean(detail?.requestTruncated),
-        responseTruncated: Boolean(detail?.responseTruncated)
+        sampleKey: encodeSampleKey(rowKey),
+        hasPayload: Boolean(detail?.request || detail?.response || requestFromJtl)
       });
     }
 
@@ -540,6 +551,65 @@ function parseJtlSamples(
   } catch {
     return { total: 0, offset: safeOffset, limit: safeLimit, rows: [] };
   }
+}
+
+function getSamplePayload(run, encodedSampleKey) {
+  const key = decodeSampleKey(encodedSampleKey);
+  if (!key) return null;
+
+  const contextName = getContextNameFromRun(run);
+  const detailsFile = path.join(path.dirname(run.jtlFile), "sample-details.jsonl");
+  const detailsMap = loadSampleDetailsMap(detailsFile, contextName);
+  const detail = detailsMap.get(key);
+  if (detail) {
+    return {
+      sampleKey: encodedSampleKey,
+      requestPayload: detail.request || "",
+      responseBody: detail.response || "",
+      requestTruncated: Boolean(detail.requestTruncated),
+      responseTruncated: Boolean(detail.responseTruncated)
+    };
+  }
+
+  if (!fs.existsSync(run.jtlFile)) return null;
+  try {
+    const raw = fs.readFileSync(run.jtlFile, "utf-8");
+    const lines = raw.trim().split(/\r?\n/).filter(Boolean);
+    if (lines.length < 2) return null;
+    const header = splitCsvLine(lines[0]);
+    const idx = {
+      timeStamp: header.indexOf("timeStamp"),
+      elapsed: header.indexOf("elapsed"),
+      label: header.indexOf("label"),
+      threadName: header.indexOf("threadName"),
+      url: header.indexOf("URL"),
+      samplerData: header.indexOf("samplerData")
+    };
+    for (let i = 1; i < lines.length; i++) {
+      const cols = splitCsvLine(lines[i]);
+      const apiUrl = idx.url >= 0 ? cols[idx.url] || "" : "";
+      if (isDummyLabelApiUrl(apiUrl, contextName)) continue;
+      const rowKey = sampleDetailKey({
+        timeStamp: idx.timeStamp >= 0 ? Number(cols[idx.timeStamp]) || null : null,
+        label: idx.label >= 0 ? cols[idx.label] || "" : "",
+        threadName: idx.threadName >= 0 ? cols[idx.threadName] || "" : "",
+        elapsed: idx.elapsed >= 0 ? Number(cols[idx.elapsed]) || null : null,
+        apiUrl
+      });
+      if (rowKey !== key) continue;
+      return {
+        sampleKey: encodedSampleKey,
+        requestPayload: idx.samplerData >= 0 ? cols[idx.samplerData] || "" : "",
+        responseBody: "",
+        requestTruncated: false,
+        responseTruncated: false
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 // ----------------------------
@@ -1503,6 +1573,7 @@ const server = http.createServer(async (req, res) => {
           startRun: "POST /runs",
           runDetail: "GET /runs/:id",
           runSamples: "GET /runs/:id/samples?status=passed|failed",
+          runSamplePayload: "GET /runs/:id/samples/payload?sampleKey=<key>",
           logPoll: "GET /runs/:id/log?offset=0",
           logStream: "GET /runs/:id/log/stream",
           logDownload: "GET /runs/:id/log?download=1",
@@ -1631,6 +1702,17 @@ const server = http.createServer(async (req, res) => {
         sampleDetailsFile: path.join(path.dirname(run.jtlFile), "sample-details.jsonl")
       });
       return sendJson(res, 200, { runId: run.id, status, ...samples });
+    }
+
+    const samplePayloadMatch = pathname.match(/^\/runs\/([a-f0-9-]+)\/samples\/payload$/i);
+    if (req.method === "GET" && samplePayloadMatch) {
+      const run = findRun(samplePayloadMatch[1]);
+      if (!run) return sendJson(res, 404, { error: "Run not found" });
+      const sampleKey = String(url.searchParams.get("sampleKey") || "").trim();
+      if (!sampleKey) return sendJson(res, 400, { error: "sampleKey is required" });
+      const payload = getSamplePayload(run, sampleKey);
+      if (!payload) return sendJson(res, 404, { error: "Sample payload not found" });
+      return sendJson(res, 200, { runId: run.id, ...payload });
     }
 
     const stopMatch = pathname.match(/^\/runs\/([a-f0-9-]+)\/stop$/i);
