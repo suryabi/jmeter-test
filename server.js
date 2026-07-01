@@ -6,6 +6,7 @@ const { randomUUID } = require("crypto");
 const {
   parseJmxParameters,
   applyParameterOverrides,
+  patchPlanForSampleDetailsListener,
   fetchApiFieldOptions
 } = require("./jmx-parameters");
 const {
@@ -367,6 +368,34 @@ function isDummyLabelApiUrl(url, contextName) {
   }
 }
 
+function sampleDetailKey(row) {
+  return `${row.timeStamp ?? ""}|${row.label ?? ""}|${row.threadName ?? ""}|${row.elapsed ?? ""}|${row.url ?? row.apiUrl ?? ""}`;
+}
+
+function loadSampleDetailsMap(detailsFile, contextName = null) {
+  const map = new Map();
+  if (!detailsFile || !fs.existsSync(detailsFile)) return map;
+
+  try {
+    const raw = fs.readFileSync(detailsFile, "utf-8");
+    for (const line of raw.split(/\r?\n/)) {
+      if (!line.trim()) continue;
+      try {
+        const entry = JSON.parse(line);
+        const apiUrl = entry.url || "";
+        if (isDummyLabelApiUrl(apiUrl, contextName)) continue;
+        map.set(sampleDetailKey({ ...entry, apiUrl }), entry);
+      } catch {
+        // skip malformed lines (e.g. while the file is being written)
+      }
+    }
+  } catch {
+    return map;
+  }
+
+  return map;
+}
+
 function parseJtlSummary(jtlFile, contextName = null) {
   if (!fs.existsSync(jtlFile)) return null;
   try {
@@ -420,7 +449,10 @@ function splitCsvLine(line) {
 }
 
 // Returns filtered sample rows used by the Passed/Failed drill-down table.
-function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200, contextName = null } = {}) {
+function parseJtlSamples(
+  jtlFile,
+  { status = "all", offset = 0, limit = 200, contextName = null, sampleDetailsFile = null } = {}
+) {
   if (!fs.existsSync(jtlFile)) {
     return { total: 0, offset, limit, rows: [] };
   }
@@ -451,9 +483,11 @@ function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200, con
       failureMessage: header.indexOf("failureMessage"),
       success: header.indexOf("success"),
       threadName: header.indexOf("threadName"),
-      url: header.indexOf("URL")
+      url: header.indexOf("URL"),
+      samplerData: header.indexOf("samplerData")
     };
 
+    const detailsMap = loadSampleDetailsMap(sampleDetailsFile, contextName);
     const filtered = [];
     for (let i = 1; i < lines.length; i++) {
       const cols = splitCsvLine(lines[i]);
@@ -464,16 +498,29 @@ function parseJtlSamples(jtlFile, { status = "all", offset = 0, limit = 200, con
       const rowStatus = ok ? "passed" : "failed";
       if (normalizedStatus !== "all" && rowStatus !== normalizedStatus) continue;
 
+      const label = idx.label >= 0 ? cols[idx.label] || "" : "";
+      const threadName = idx.threadName >= 0 ? cols[idx.threadName] || "" : "";
+      const timeStamp = idx.timeStamp >= 0 ? Number(cols[idx.timeStamp]) || null : null;
+      const elapsed = idx.elapsed >= 0 ? Number(cols[idx.elapsed]) || null : null;
+      const detail = detailsMap.get(
+        sampleDetailKey({ timeStamp, label, threadName, elapsed, apiUrl })
+      );
+      const requestFromJtl = idx.samplerData >= 0 ? cols[idx.samplerData] || "" : "";
+
       filtered.push({
         status: rowStatus,
-        timeStamp: idx.timeStamp >= 0 ? Number(cols[idx.timeStamp]) || null : null,
-        elapsed: idx.elapsed >= 0 ? Number(cols[idx.elapsed]) || null : null,
-        label: idx.label >= 0 ? cols[idx.label] || "" : "",
+        timeStamp,
+        elapsed,
+        label,
         apiUrl,
         responseCode: idx.responseCode >= 0 ? cols[idx.responseCode] || "" : "",
         responseMessage: idx.responseMessage >= 0 ? cols[idx.responseMessage] || "" : "",
         failureMessage: idx.failureMessage >= 0 ? cols[idx.failureMessage] || "" : "",
-        threadName: idx.threadName >= 0 ? cols[idx.threadName] || "" : ""
+        threadName,
+        requestPayload: detail?.request || requestFromJtl || "",
+        responseBody: detail?.response || "",
+        requestTruncated: Boolean(detail?.requestTruncated),
+        responseTruncated: Boolean(detail?.responseTruncated)
       });
     }
 
@@ -1146,8 +1193,12 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
   const reportDir = path.join(runDir, "html-report");
   const runPlanPath = path.join(runDir, "BIQ-run.jmx");
 
+  const sampleDetailsFile = path.join(runDir, "sample-details.jsonl");
+
   const { label: _ignoredLabel, ...parameterOverrides } = props;
-  const patchedXml = applyParameterOverrides(sourcePlanPath, parameterOverrides);
+  const patchedXml = patchPlanForSampleDetailsListener(
+    applyParameterOverrides(sourcePlanPath, parameterOverrides)
+  );
   fs.writeFileSync(runPlanPath, patchedXml, "utf-8");
 
   const startedAt = new Date().toISOString();
@@ -1173,7 +1224,11 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     reportDir,
     ...propArgs,
     // HTML report (-e -o) requires CSV JTL; some JMeter installs default to XML.
-    "-Jjmeter.save.saveservice.output_format=csv"
+    "-Jjmeter.save.saveservice.output_format=csv",
+    // Request line/body is available in CSV; response bodies are captured via sample-details.jsonl.
+    "-Jjmeter.save.saveservice.samplerData=true",
+    `-JrunSampleDetailsLog=${sampleDetailsFile}`,
+    "-JrunSampleDetailsMaxChars=32768"
   ];
 
   const launch = buildJmeterLaunch(JMETER_BIN, jmeterArgs);
@@ -1538,7 +1593,8 @@ const server = http.createServer(async (req, res) => {
         status,
         offset,
         limit,
-        contextName: getContextNameFromRun(run)
+        contextName: getContextNameFromRun(run),
+        sampleDetailsFile: path.join(path.dirname(run.jtlFile), "sample-details.jsonl")
       });
       return sendJson(res, 200, { runId: run.id, status, ...samples });
     }

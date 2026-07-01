@@ -1038,10 +1038,10 @@ def _fn_resolveIsNestedEnum = { field -&gt;
 }
 props.put(&quot;fn_resolveIsNestedEnum&quot;, _fn_resolveIsNestedEnum)
 
-// Formats a master/resource reference id per form template isComplexObject (applies to enumType MASTER and RESOURCE).
+// Formats a master/resource reference id. Temporarily always sends a bare uniqueId string
+// (isComplexObject / {uniqueId: id} wrapping disabled).
 def _fn_formatReferenceFieldValue = { field, uniqueId -&gt;
     if (!uniqueId) return null
-    if (props.get(&quot;fn_resolveIsComplexObject&quot;)(field)) return [&quot;uniqueId&quot;: uniqueId]
     return uniqueId
 }
 props.put(&quot;fn_formatReferenceFieldValue&quot;, _fn_formatReferenceFieldValue)

@@ -213,6 +213,12 @@ export interface RunSampleRow {
   responseMessage: string;
   failureMessage: string;
   threadName: string;
+  requestPayload: string;
+  responseBody: string;
+  requestTruncated?: boolean;
+  responseTruncated?: boolean;
+  /** Stable key for table row expansion. */
+  rowKey?: string;
 }
 
 export interface RunSamplesResponse {

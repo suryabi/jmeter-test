@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -650,6 +651,32 @@ function setHeaderValue(xml, headerName, value) {
   return scope.replace(re, `$1${encoded}$2`) + rest;
 }
 
+const SAMPLE_DETAILS_LISTENER_TESTNAME = "Runner sample details";
+
+/** Injects a JSR223 listener that appends per-sample request/response JSON lines at run time. */
+function patchPlanForSampleDetailsListener(xml, { scriptPath } = {}) {
+  if (xml.includes(`testname="${SAMPLE_DETAILS_LISTENER_TESTNAME}"`)) {
+    return xml;
+  }
+
+  const groovyScriptPath =
+    scriptPath || path.join(__dirname, "scripts", "jmeter-sample-detail-listener.groovy");
+  const escapedPath = encodeXml(groovyScriptPath.replace(/\\/g, "/"));
+
+  const listener = `
+      <JSR223Listener guiclass="TestBeanGUI" testclass="JSR223Listener" testname="${SAMPLE_DETAILS_LISTENER_TESTNAME}" enabled="true">
+        <stringProp name="scriptLanguage">groovy</stringProp>
+        <stringProp name="parameters"></stringProp>
+        <stringProp name="filename">${escapedPath}</stringProp>
+        <stringProp name="cacheKey">true</stringProp>
+        <stringProp name="script"></stringProp>
+      </JSR223Listener>
+      <hashTree/>`;
+
+  const replaced = xml.replace(/<\/TestPlan>\s*<hashTree>/, (match) => `${match}${listener}`);
+  return replaced;
+}
+
 function applyParameterOverrides(planPath, overrides) {
   let xml = fs.readFileSync(planPath, "utf-8");
 
@@ -668,6 +695,7 @@ function applyParameterOverrides(planPath, overrides) {
 module.exports = {
   parseJmxParameters,
   applyParameterOverrides,
+  patchPlanForSampleDetailsListener,
   fetchApiFieldOptions,
   buildRequestHeaders,
   DEFAULT_PARAMETER_COLS,

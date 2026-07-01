@@ -71,6 +71,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   sampleRows: RunSampleRow[] = [];
   sampleRowsTotal = 0;
   sampleRowsLoading = false;
+  expandedSampleRows: Record<string, boolean> = {};
   activeInsightRequestIndex = 1;
   insightRequestOptions: { index: number; label: string }[] = [];
 
@@ -222,6 +223,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   selectSampleStatus(status: 'passed' | 'failed'): void {
     this.activeSampleStatus = this.activeSampleStatus === status ? null : status;
     this.lastSampleSummaryKey = '';
+    this.expandedSampleRows = {};
     if (!this.activeSampleStatus) {
       this.unbindSamplesScrollListener();
       this.sampleRows = [];
@@ -241,6 +243,38 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
 
   isSampleStatusActive(status: 'passed' | 'failed'): boolean {
     return this.activeSampleStatus === status;
+  }
+
+  sampleRowKey(row: RunSampleRow): string {
+    return `${row.timeStamp ?? ''}|${row.label}|${row.threadName}|${row.elapsed ?? ''}`;
+  }
+
+  formatPayload(value: string | null | undefined): string {
+    const text = value?.trim();
+    if (!text) return '—';
+    try {
+      return JSON.stringify(JSON.parse(text), null, 2);
+    } catch {
+      return text;
+    }
+  }
+
+  hasSamplePayload(row: RunSampleRow): boolean {
+    return Boolean(row.requestPayload?.trim() || row.responseBody?.trim());
+  }
+
+  toggleSampleRow(row: RunSampleRow): void {
+    const key = row.rowKey || this.sampleRowKey(row);
+    if (!key || !this.hasSamplePayload(row)) return;
+
+    if (this.expandedSampleRows[key]) {
+      const next = { ...this.expandedSampleRows };
+      delete next[key];
+      this.expandedSampleRows = next;
+      return;
+    }
+
+    this.expandedSampleRows = { ...this.expandedSampleRows, [key]: true };
   }
 
   hasHtmlReport(): boolean {
@@ -496,7 +530,10 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
           this.sampleRowsLoading = false;
         }
         if (this.activeSampleStatus !== status) return;
-        this.sampleRows = res.rows;
+        this.sampleRows = res.rows.map((row) => ({
+          ...row,
+          rowKey: this.sampleRowKey(row)
+        }));
         this.sampleRowsTotal = res.total;
         if (this.run) {
           this.lastSampleSummaryKey = this.sampleSummaryKey(this.run);

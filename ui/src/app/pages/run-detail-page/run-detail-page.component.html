@@ -140,6 +140,8 @@
           <div class="samples-table-wrap" #samplesTableWrap>
             <p-table
               [value]="sampleRows"
+              dataKey="rowKey"
+              [expandedRowKeys]="expandedSampleRows"
               [tableStyle]="{ 'min-width': '74rem', 'table-layout': 'fixed' }"
               [scrollable]="true"
               scrollHeight="min(60vh, 460px)"
@@ -149,16 +151,18 @@
             >
               <ng-template pTemplate="colgroup">
                 <colgroup>
+                  <col style="width: 2.5rem" />
                   <col style="width: 7.5rem" />
-                  <col style="width: 22rem" />
-                  <col style="width: 18rem" />
+                  <col style="width: 20rem" />
+                  <col style="width: 16rem" />
                   <col style="width: 7rem" />
                   <col style="width: 6rem" />
-                  <col style="width: 18rem" />
+                  <col style="width: 16rem" />
                 </colgroup>
               </ng-template>
               <ng-template pTemplate="header">
                 <tr>
+                  <th class="samples-col-expand" aria-label="Expand"></th>
                   <th class="samples-col-time">Time</th>
                   <th class="samples-col-label">Label</th>
                   <th class="samples-col-api">API</th>
@@ -167,14 +171,52 @@
                   <th class="samples-col-message">Error / Message</th>
                 </tr>
               </ng-template>
-              <ng-template pTemplate="body" let-row>
+              <ng-template pTemplate="body" let-row let-expanded="expanded">
                 <tr>
+                  <td class="samples-col-expand">
+                    <p-button
+                      type="button"
+                      [text]="true"
+                      [rounded]="true"
+                      severity="secondary"
+                      [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                      [disabled]="!hasSamplePayload(row)"
+                      [attr.aria-label]="expanded ? 'Collapse request and response' : 'Expand request and response'"
+                      (onClick)="toggleSampleRow(row)"
+                    />
+                  </td>
                   <td class="samples-col-time">{{ row.timeStamp ? (row.timeStamp | date: 'shortTime') : '—' }}</td>
                   <td class="mono samples-col-label">{{ row.label || '—' }}</td>
                   <td class="mono samples-col-api">{{ row.apiUrl || '—' }}</td>
                   <td class="samples-col-elapsed">{{ row.elapsed ?? '—' }} ms</td>
                   <td class="mono samples-col-code">{{ row.responseCode || '—' }}</td>
                   <td class="samples-col-message">{{ row.failureMessage || row.responseMessage || '—' }}</td>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="expandedrow" let-row>
+                <tr class="sample-payload-row">
+                  <td colspan="7">
+                    <div class="sample-payload-grid">
+                      <div class="sample-payload-block">
+                        <div class="sample-payload-heading">
+                          Request
+                          @if (row.requestTruncated) {
+                            <span class="sample-payload-truncated">truncated</span>
+                          }
+                        </div>
+                        <pre class="sample-payload-pre mono">{{ formatPayload(row.requestPayload) }}</pre>
+                      </div>
+                      <div class="sample-payload-block">
+                        <div class="sample-payload-heading">
+                          Response
+                          @if (row.responseTruncated) {
+                            <span class="sample-payload-truncated">truncated</span>
+                          }
+                        </div>
+                        <pre class="sample-payload-pre mono">{{ formatPayload(row.responseBody) }}</pre>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               </ng-template>
             </p-table>
