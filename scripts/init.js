@@ -17,6 +17,13 @@ console.log("BriefingIQ JMeter Runner — setup\n");
 run("Installing API dependencies", "npm install", root);
 run("Installing UI dependencies", "npm install", uiDir);
 
+console.log("\n==> Installing JMeter JSON plugins (jpgc-json)");
+try {
+  execSync("node scripts/install-jmeter-plugins.js", { cwd: root, stdio: "inherit" });
+} catch {
+  console.warn("\n⚠  JMeter plugin install skipped or failed — run: npm run install:jmeter-plugins");
+}
+
 console.log("\n==> Validating prerequisites");
 const result = runValidation();
 

@@ -49,11 +49,19 @@ Install and verify everything below **before** running `npm run init` or `npm ru
 
 ### JMeter plugins
 
-`plans/BIQ.jmx` uses elements from the **JMeter Plugins** ecosystem. Install via [Plugins Manager](https://jmeter-plugins.org/install/Install/):
+`plans/BIQ.jmx` uses elements from the **JMeter Plugins** ecosystem (jpgc-json). The repo vendors
+these JARs under `vendor/jmeter-plugins/` so you can install them without the Plugins Manager UI:
 
-- **jpgc-json** (JSON Plugins) — `jp@gc - JSON Format Post Processor` and related JSON utilities used throughout the plan
+```bash
+npm run install:jmeter-plugins
+```
 
-If a run fails at compile time with unknown element classes under `com.atlantbh.jmeter.plugins...`, install the JSON plugins pack and retry.
+This copies the plugin and its dependencies into your JMeter `lib/ext` and `lib` folders. `npm run init`
+runs this automatically after dependency install.
+
+Manual alternative: install via [Plugins Manager](https://jmeter-plugins.org/install/Install/) — search for **jpgc-json** (JSON Plugins).
+
+If a run fails at compile time with unknown element classes under `com.atlantbh.jmeter.plugins...`, run `npm run install:jmeter-plugins` and retry.
 
 ### Network access
 
@@ -94,6 +102,12 @@ npm run validate
 ```
 
 Checks: Node 20.19+/22.12+, npm, Java, JMeter (`JMETER_BIN` or PATH), jpgc-json plugins, `node_modules`, plans in `./plans`, writable `./runs`.
+
+Install vendored JMeter plugins only:
+
+```bash
+npm run install:jmeter-plugins
+```
 
 Manual alternative:
 
@@ -458,6 +472,7 @@ server {
 ```bash
 npm run init              # first-time setup
 npm run validate          # check prerequisites only
+npm run install:jmeter-plugins  # copy vendored jpgc-json into JMeter
 npm run dev               # API + UI (dev)
 npm start                 # API only
 cd ui && npm start        # UI only

@@ -28,7 +28,7 @@ npm run dev     # API :5050 + UI :4200
 - Minimize scope; match existing patterns in the file you touch
 - Do not commit `runs/`, `.env`, or Bearer tokens
 - Do not create git commits or PRs unless the user asks
-- README is the source of truth for prerequisites (Node 20.19+, JMeter 5.4+, jpgc-json plugin)
+- README is the source of truth for prerequisites (Node 20.19+, JMeter 5.4+, jpgc-json in `vendor/jmeter-plugins/`)
 
 ## Debugging runs
 

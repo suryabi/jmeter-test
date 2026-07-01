@@ -7,6 +7,7 @@
   "scripts": {
     "init": "node scripts/init.js",
     "validate": "node scripts/validate.js",
+    "install:jmeter-plugins": "node scripts/install-jmeter-plugins.js",
     "start": "node server.js",
     "start:api": "node server.js",
     "start:ui": "npm start --prefix ui",

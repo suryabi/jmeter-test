@@ -13,8 +13,6 @@ const MIN_NODE = [
   { major: 22, minor: 12 }
 ];
 const MIN_JMETER = { major: 5, minor: 4 };
-const JSON_PLUGIN_HINT =
-  "Install via JMeter Plugins Manager: https://jmeter-plugins.org/install/Install/ — search for 'jpgc-json' (JSON Plugins).";
 
 function parseVersion(versionText) {
   const match = (versionText || "").match(/(\d+)\.(\d+)(?:\.(\d+))?/);
@@ -416,7 +414,7 @@ class Validator {
       this.warn(
         "JMeter JSON plugins",
         "could not verify (JMETER_HOME unknown)",
-        JSON_PLUGIN_HINT
+        "Run: npm run install:jmeter-plugins after setting JMETER_HOME or JMETER_BIN"
       );
       return;
     }
@@ -425,7 +423,7 @@ class Validator {
       this.fail(
         "JMeter JSON plugins",
         "jpgc-json not found in lib/ext",
-        JSON_PLUGIN_HINT
+        "Run: npm run install:jmeter-plugins  (copies vendored jars from vendor/jmeter-plugins/)"
       );
       return;
     }
@@ -518,4 +516,9 @@ if (require.main === module) {
   process.exit(result.ok ? 0 : 1);
 }
 
-module.exports = { runValidation };
+module.exports = {
+  runValidation,
+  resolveJmeterBin,
+  resolveJmeterHome,
+  hasJsonPlugins
+};
