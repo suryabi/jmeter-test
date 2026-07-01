@@ -87,6 +87,14 @@ npm run init
 
 This installs API + UI dependencies and runs the prerequisite checks above.
 
+Validate only (no install):
+
+```bash
+npm run validate
+```
+
+Checks: Node 20.19+/22.12+, npm, Java, JMeter (`JMETER_BIN` or PATH), jpgc-json plugins, `node_modules`, plans in `./plans`, writable `./runs`.
+
 Manual alternative:
 
 ```bash
@@ -449,6 +457,7 @@ server {
 
 ```bash
 npm run init              # first-time setup
+npm run validate          # check prerequisites only
 npm run dev               # API + UI (dev)
 npm start                 # API only
 cd ui && npm start        # UI only

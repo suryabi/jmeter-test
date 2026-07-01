@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-const { execSync, spawnSync } = require("child_process");
+const { execSync } = require("child_process");
 const path = require("path");
+const { runValidation } = require("./validate");
 
 const root = path.join(__dirname, "..");
 const uiDir = path.join(root, "ui");
@@ -11,30 +12,19 @@ function run(label, command, cwd = root) {
   execSync(command, { cwd, stdio: "inherit" });
 }
 
-function check(command, args, label) {
-  const result = spawnSync(command, args, { encoding: "utf8" });
-  if (result.status !== 0) {
-    console.warn(`\n⚠  ${label} not found. Install it and ensure it is on PATH.`);
-    if (label === "JMeter") {
-      console.warn("   Or set JMETER_BIN to the full path of the jmeter executable.");
-    }
-    return false;
-  }
-
-  const version = (result.stdout || result.stderr || "").trim().split("\n")[0];
-  console.log(`✓  ${label}: ${version}`);
-  return true;
-}
-
 console.log("BriefingIQ JMeter Runner — setup\n");
 
 run("Installing API dependencies", "npm install", root);
 run("Installing UI dependencies", "npm install", uiDir);
 
-console.log("\n==> Checking prerequisites");
-check("node", ["--version"], "Node.js");
-check("npm", ["--version"], "npm");
-check("jmeter", ["--version"], "JMeter");
+console.log("\n==> Validating prerequisites");
+const result = runValidation();
+
+if (!result.ok) {
+  console.log("\nSetup installed dependencies, but validation failed.");
+  console.log("Resolve the errors above, then re-run: npm run validate\n");
+  process.exit(1);
+}
 
 console.log("\nSetup complete.");
 console.log("Start both servers with: npm run dev");

@@ -19,6 +19,7 @@ Data-population runner (not load testing): Node API + Angular UI execute JMeter 
 
 ```bash
 npm run init    # first-time setup
+npm run validate # prerequisite check only
 npm run dev     # API :5050 + UI :4200
 ```
 
