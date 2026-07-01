@@ -21,6 +21,7 @@ function encodeXml(value) {
 }
 
 const API_FIELD_VARIABLES_TITLE = "API Field Variables";
+const DEFAULT_PARAMETER_COLS = 4;
 
 /** Fields referenced via header.field:* that are resolved server-side when absent from form props. */
 const AUTO_RESOLVE_FIELDS = {
@@ -51,13 +52,24 @@ function isHiddenParameter(description) {
 }
 
 function parseParameterLabel(description) {
-  const match = String(description || "").match(/\bLABEL=([a-zA-Z][a-zA-Z0-9]*)\b/);
+  const match = String(description || "").match(/\bLABEL=([a-zA-Z][a-zA-Z0-9_]*)\b/);
   return match ? match[1] : null;
+}
+
+function parseParameterCols(description) {
+  const match = String(description || "").match(/\bCOLS=(\d+)\b/i);
+  if (!match) return DEFAULT_PARAMETER_COLS;
+  const cols = Number.parseInt(match[1], 10);
+  if (!Number.isFinite(cols) || cols < 1 || cols > 12) {
+    return DEFAULT_PARAMETER_COLS;
+  }
+  return cols;
 }
 
 function cleanDescription(description) {
   return String(description || "")
-    .replace(/\bLABEL=[a-zA-Z][a-zA-Z0-9]*\s*[,.]?\s*/gi, "")
+    .replace(/\bLABEL=[a-zA-Z][a-zA-Z0-9_]*\s*[,.]?\s*/gi, "")
+    .replace(/\bCOLS=\d+\s*[,.]?\s*/gi, "")
     .replace(/\bHIDE\b\s*[,.]?\s*/gi, "")
     .replace(/,\s*,/g, ",")
     .replace(/^,\s*/, "")
@@ -273,6 +285,7 @@ function parseArgumentsBlock(blockXml) {
       inner.match(/<stringProp name="Argument.desc">([^<]*)<\/stringProp>/)?.[1] || ""
     );
     const label = parseParameterLabel(description);
+    const cols = parseParameterCols(description);
     params.push({
       name,
       defaultValue,
@@ -280,6 +293,7 @@ function parseArgumentsBlock(blockXml) {
       type: inferType(description),
       required: /REQUIRED/i.test(description),
       hidden: isHiddenParameter(description),
+      cols,
       ...(label ? { label } : {}),
       kind: "argument"
     });
@@ -655,5 +669,7 @@ module.exports = {
   parseJmxParameters,
   applyParameterOverrides,
   fetchApiFieldOptions,
-  buildRequestHeaders
+  buildRequestHeaders,
+  DEFAULT_PARAMETER_COLS,
+  parseParameterCols
 };

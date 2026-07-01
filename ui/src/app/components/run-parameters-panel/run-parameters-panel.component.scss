@@ -251,9 +251,6 @@
 }
 
 .run-params-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
   margin: 0;
   padding: 0.9rem 1rem 1rem;
 }
@@ -296,10 +293,4 @@
   color: #64748b;
   font-style: italic;
   font-family: inherit;
-}
-
-@media (max-width: 767px) {
-  .run-params-grid {
-    grid-template-columns: 1fr;
-  }
 }

@@ -136,9 +136,9 @@
                 <span class="fields-card-title">{{ currentGroup.title }}</span>
                 <span class="fields-card-count">{{ visibleParameterCount(currentGroup) }} params</span>
               </div>
-              <div class="field-grid">
+              <div class="field-grid grid grid-cols-12 gap-x-4 gap-y-[0.9rem]">
                 @for (param of visibleParameters(currentGroup); track param.name) {
-                  <div class="field-cell" [class.field-cell-revealed-hidden]="isUiHiddenParam(param)">
+                  <div class="field-cell" [ngClass]="fieldColumnClass(param)" [class.field-cell-revealed-hidden]="isUiHiddenParam(param)">
                     @if (param.type === 'boolean') {
                       <span class="field-label-row">
                         {{ fieldLabel(param) }}

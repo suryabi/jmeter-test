@@ -18,9 +18,10 @@ export function findOptionLabel(options: FieldOption[], token: string): string |
   const hit = options.find(
     (option) =>
       option.value === needle ||
-      option.value.toLowerCase() === normalized ||
-      option.label.toLowerCase() === normalized ||
-      option.label.toLowerCase().replace(/\s+/g, '') === normalized.replace(/\s+/g, '')
+      (option.value != null &&
+        (option.value.toLowerCase() === normalized ||
+          option.label.toLowerCase() === normalized ||
+          option.label.toLowerCase().replace(/\s+/g, '') === normalized.replace(/\s+/g, '')))
   );
 
   return hit?.label;

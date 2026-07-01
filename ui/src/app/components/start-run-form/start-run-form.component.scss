@@ -364,11 +364,8 @@
   color: var(--text-dim);
 }
 
-/* Field grid */
+/* Field grid — 12 columns, 4 cols per field (3 per row on md+) */
 .field-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 0.9rem 1rem;
   padding: 1rem;
   min-height: 0;
 }

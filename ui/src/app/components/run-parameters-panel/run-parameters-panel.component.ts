@@ -8,6 +8,7 @@ import {
   signal,
   untracked
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { RunnerService } from '../../core/services/runner.service';
@@ -18,6 +19,7 @@ import {
   RunProps
 } from '../../core/models/runner.models';
 import { formatFieldLabel, parameterFieldLabel } from '../../core/utils/format-field-label';
+import { parameterFieldColumnClass } from '../../core/utils/parameter-grid-column';
 import { formatRunParameterDisplayValue } from '../../core/utils/format-run-parameter-value';
 import {
   apiDependenciesReady,
@@ -33,6 +35,7 @@ export interface RunParameterRow {
   displayValue: string;
   description: string;
   isEmpty: boolean;
+  columnClass: string;
 }
 
 export interface RunParameterGroupView {
@@ -44,7 +47,7 @@ export interface RunParameterGroupView {
 
 @Component({
   selector: 'app-run-parameters-panel',
-  imports: [MessageModule, ProgressSpinnerModule],
+  imports: [CommonModule, MessageModule, ProgressSpinnerModule],
   templateUrl: './run-parameters-panel.component.html',
   styleUrl: './run-parameters-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -280,7 +283,8 @@ export class RunParametersPanelComponent {
       label: param ? this.fieldLabel(param) : formatFieldLabel(name),
       displayValue,
       description: param?.description ?? '',
-      isEmpty: !value
+      isEmpty: !value,
+      columnClass: param ? parameterFieldColumnClass(param) : parameterFieldColumnClass({})
     };
   }
 

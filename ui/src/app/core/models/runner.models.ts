@@ -17,7 +17,7 @@ export interface ApiFieldConfig {
 
 export interface FieldOption {
   label: string;
-  value: string;
+  value: string | null;
 }
 
 export interface ParameterDef {
@@ -30,6 +30,8 @@ export interface ParameterDef {
   hidden?: boolean;
   /** camelCase UI label from JMX `LABEL=...` in Argument.desc; formatted for display. */
   label?: string;
+  /** Grid width on a 12-column layout (`COLS=4` default, `COLS=6` → 2 per row). */
+  cols?: number;
   kind?: ParameterKind;
   headerName?: string;
   apiConfig?: ApiFieldConfig;

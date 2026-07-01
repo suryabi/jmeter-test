@@ -17,6 +17,7 @@ import {
 } from '../../core/models/runner.models';
 import { RunnerService } from '../../core/services/runner.service';
 import { formatFieldLabel, parameterFieldLabel } from '../../core/utils/format-field-label';
+import { parameterFieldColumnClass } from '../../core/utils/parameter-grid-column';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MessageModule } from 'primeng/message';
@@ -165,7 +166,11 @@ export class StartRunFormComponent implements OnInit {
     if (!this.dependenciesReady(param)) {
       return [];
     }
-    return this.fieldOptions[param.name] || [];
+    const options = this.fieldOptions[param.name] || [];
+    if (param.type === 'dropdown' && !param.required) {
+      return [{ label: 'Select an option', value: null }, ...options];
+    }
+    return options;
   }
 
   dependenciesReady(param: ParameterDef): boolean {
@@ -212,6 +217,10 @@ export class StartRunFormComponent implements OnInit {
 
   fieldLabel(param: ParameterDef): string {
     return parameterFieldLabel(param);
+  }
+
+  fieldColumnClass(param: ParameterDef): string {
+    return parameterFieldColumnClass(param);
   }
 
   isUiHiddenParam(param: ParameterDef): boolean {
@@ -272,7 +281,7 @@ export class StartRunFormComponent implements OnInit {
   }
 
   private buildForm(groups: ParameterGroup[]): void {
-    const controls: Record<string, FormControl<string | boolean | string[]>> = {
+    const controls: Record<string, FormControl<string | boolean | string[] | null>> = {
       label: this.fb.nonNullable.control('sample-run')
     };
 
@@ -285,12 +294,18 @@ export class StartRunFormComponent implements OnInit {
     this.form = this.fb.group(controls);
   }
 
-  private createControl(param: ParameterDef): FormControl<string | boolean | string[]> {
+  private createControl(
+    param: ParameterDef
+  ): FormControl<string | boolean | string[] | null> {
     const validators = param.required && !param.hidden ? [Validators.required] : [];
-    return this.fb.nonNullable.control(this.defaultControlValue(param), validators);
+    const initial = this.defaultControlValue(param);
+    if (param.type === 'dropdown' && !param.required && !param.hidden) {
+      return this.fb.control(initial as string | null, validators);
+    }
+    return this.fb.nonNullable.control(initial as string | boolean | string[], validators);
   }
 
-  private defaultControlValue(param: ParameterDef): string | boolean | string[] {
+  private defaultControlValue(param: ParameterDef): string | boolean | string[] | null {
     if (param.type === 'boolean') {
       return param.defaultValue === 'true';
     }
@@ -300,12 +315,16 @@ export class StartRunFormComponent implements OnInit {
         .map((part) => part.trim())
         .filter(Boolean);
     }
+    if (param.type === 'dropdown' && !param.required) {
+      const trimmed = param.defaultValue.trim();
+      return trimmed ? trimmed : null;
+    }
     return param.defaultValue;
   }
 
   private serializeValue(
     param: ParameterDef,
-    value: string | boolean | string[] | undefined
+    value: string | boolean | string[] | null | undefined
   ): string {
     if (param.type === 'boolean') {
       return value ? 'true' : 'false';
@@ -484,7 +503,7 @@ export class StartRunFormComponent implements OnInit {
 
   private preferredValuesForParam(
     param: ParameterDef,
-    current: string | boolean | string[] | undefined
+    current: string | boolean | string[] | null | undefined
   ): string[] {
     const tokens: string[] = [];
     for (const value of [
@@ -500,7 +519,7 @@ export class StartRunFormComponent implements OnInit {
 
   private valuesFromControl(
     param: ParameterDef,
-    current: string | boolean | string[] | undefined
+    current: string | boolean | string[] | null | undefined
   ): string[] {
     if (param.type === 'multiselect') {
       return Array.isArray(current)
@@ -529,7 +548,7 @@ export class StartRunFormComponent implements OnInit {
 
     for (const token of preferred) {
       const value = this.findOptionValue(options, token);
-      if (value && !seen.has(value)) {
+      if (value != null && value !== '' && !seen.has(value)) {
         seen.add(value);
         matched.push(value);
       }
@@ -538,7 +557,7 @@ export class StartRunFormComponent implements OnInit {
     return matched;
   }
 
-  private findOptionValue(options: FieldOption[], token: string): string | undefined {
+  private findOptionValue(options: FieldOption[], token: string): string | null | undefined {
     const needle = token.trim();
     if (!needle) return undefined;
 
@@ -546,12 +565,13 @@ export class StartRunFormComponent implements OnInit {
     const hit = options.find(
       (option) =>
         option.value === needle ||
-        option.value.toLowerCase() === normalized ||
-        option.label.toLowerCase() === normalized ||
-        option.label.toLowerCase().replace(/\s+/g, '') === normalized.replace(/\s+/g, '')
+        (option.value != null &&
+          (option.value.toLowerCase() === normalized ||
+            option.label.toLowerCase() === normalized ||
+            option.label.toLowerCase().replace(/\s+/g, '') === normalized.replace(/\s+/g, '')))
     );
 
-    return hit?.value;
+    return hit ? hit.value : undefined;
   }
 
   private applyDefaultPopulateFirstElement(param: ParameterDef, options: FieldOption[]): void {
@@ -564,7 +584,7 @@ export class StartRunFormComponent implements OnInit {
     const hasValue =
       param.type === 'multiselect'
         ? Array.isArray(current) && current.length > 0
-        : String(current ?? '').trim() !== '';
+        : current != null && String(current).trim() !== '';
 
     const valueIsValid =
       param.type === 'multiselect'
@@ -575,8 +595,8 @@ export class StartRunFormComponent implements OnInit {
 
     if (hasValue && valueIsValid) return;
 
-    const firstValue = options[0]?.value;
-    if (!firstValue) return;
+    const firstValue = options.find((option) => option.value != null && option.value !== '')?.value;
+    if (firstValue == null) return;
 
     const nextValue = param.type === 'multiselect' ? [firstValue] : firstValue;
     control.setValue(nextValue);

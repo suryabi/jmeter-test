@@ -59,9 +59,9 @@
             <span class="run-params-content-count">{{ currentGroup.rows.length }} params</span>
           </div>
 
-          <dl class="run-params-grid">
+          <dl class="run-params-grid grid grid-cols-12 gap-x-4 gap-y-3">
             @for (row of currentGroup.rows; track row.name) {
-              <div class="run-param-cell">
+              <div class="run-param-cell" [ngClass]="row.columnClass">
                 <dt class="run-param-label" [title]="row.name">{{ row.label }}</dt>
                 <dd
                   class="run-param-value"
