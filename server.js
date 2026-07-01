@@ -950,6 +950,46 @@ function parseProps(input) {
     .map(([key, val]) => `-J${key}=${String(val)}`);
 }
 
+// Safely captures JMeter launcher stdout/stderr. On Windows the child can emit
+// trailing chunks after exit — guard writes so close/error handlers don't race.
+function attachLauncherLogStream(child, launcherLogPath) {
+  const launcherStream = fs.createWriteStream(launcherLogPath, { flags: "a" });
+  let closed = false;
+
+  launcherStream.on("error", (err) => {
+    console.error(`[launcher-log] ${launcherLogPath}: ${err.message}`);
+  });
+
+  const safeWrite = (chunk) => {
+    if (closed || launcherStream.writableEnded || launcherStream.destroyed) return;
+    try {
+      launcherStream.write(chunk);
+    } catch (err) {
+      if (err?.code !== "ERR_STREAM_WRITE_AFTER_END") {
+        console.error(`[launcher-log] write failed: ${err.message}`);
+      }
+    }
+  };
+
+  const onStdout = (chunk) => safeWrite(chunk);
+  const onStderr = (chunk) => safeWrite(chunk);
+  child.stdout.on("data", onStdout);
+  child.stderr.on("data", onStderr);
+
+  const closeStream = (trailer) => {
+    if (closed) return;
+    closed = true;
+    child.stdout.off("data", onStdout);
+    child.stderr.off("data", onStderr);
+    if (trailer) safeWrite(trailer);
+    if (!launcherStream.writableEnded && !launcherStream.destroyed) {
+      launcherStream.end();
+    }
+  };
+
+  return { closeStream };
+}
+
 // Launch a JMeter non-GUI run with a per-run patched plan copy.
 function startRun({ props = {}, runLabel = "", planFile = null }) {
   const sourcePlanPath = resolvePlanPath(planFile);
@@ -1024,16 +1064,13 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
   runs.set(id, run);
 
   const launcherLog = path.join(runDir, "launcher.log");
-  const launcherStream = fs.createWriteStream(launcherLog, { flags: "a" });
-  child.stdout.on("data", (chunk) => launcherStream.write(chunk));
-  child.stderr.on("data", (chunk) => launcherStream.write(chunk));
+  const { closeStream: closeLauncherStream } = attachLauncherLogStream(child, launcherLog);
 
   child.on("error", (err) => {
     run.status = "failed";
     run.endedAt = new Date().toISOString();
     run.exitCode = -1;
-    launcherStream.write(`\n[launcher-error] ${err.message}\n`);
-    launcherStream.end();
+    closeLauncherStream(`\n[launcher-error] ${err.message}\n`);
   });
 
   child.on("close", (code, signal) => {
@@ -1042,8 +1079,7 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     run.endedAt = new Date().toISOString();
     run.status = code === 0 ? "succeeded" : "failed";
     run.process = null;
-    launcherStream.write(`\n[launcher-exit] code=${code} signal=${signal || ""}\n`);
-    launcherStream.end();
+    closeLauncherStream(`\n[launcher-exit] code=${code} signal=${signal || ""}\n`);
   });
 
   return run;
