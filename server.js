@@ -8,6 +8,11 @@ const {
   applyParameterOverrides,
   fetchApiFieldOptions
 } = require("./jmx-parameters");
+const {
+  resolveJmeterBin,
+  resolveJmeterHome,
+  resolveJavaHomeFromJmeterWrapper
+} = require("./scripts/validate");
 
 const PORT = Number(process.env.PORT || 5050);
 const JMETER_BIN = process.env.JMETER_BIN || "jmeter";
@@ -974,22 +979,95 @@ function resolveJmeterSpawn(bin) {
   return { command, shell };
 }
 
+// Prefer `java -jar ApacheJMeter.jar` so Windows avoids cmd.exe, jmeter.bat "pause", and shell quoting bugs.
+function buildJmeterLaunch(jmeterBin, jmeterArgs) {
+  const bin = jmeterBin || resolveJmeterBin();
+  const jmeterHome = process.env.JMETER_HOME || resolveJmeterHome(bin);
+
+  if (jmeterHome) {
+    const jarPath = [
+      path.join(jmeterHome, "bin", "ApacheJMeter.jar"),
+      path.join(jmeterHome, "lib", "ApacheJMeter.jar")
+    ].find((candidate) => fs.existsSync(candidate));
+
+    if (jarPath) {
+      const javaHome = process.env.JAVA_HOME || resolveJavaHomeFromJmeterWrapper(bin);
+      let javaCommand = process.platform === "win32" ? "java.exe" : "java";
+      if (javaHome) {
+        javaCommand = path.join(javaHome, "bin", process.platform === "win32" ? "java.exe" : "java");
+      }
+
+      const env = { ...process.env, JMETER_HOME: process.env.JMETER_HOME || jmeterHome };
+      if (javaHome) env.JAVA_HOME = javaHome;
+
+      const useShell =
+        process.platform === "win32" &&
+        !javaHome &&
+        !javaCommand.includes(path.sep);
+
+      return {
+        command: javaCommand,
+        args: ["-jar", jarPath, ...jmeterArgs],
+        shell: useShell,
+        env,
+        launchMode: "java-jar",
+        jmeterHome,
+        jarPath,
+        javaCommand
+      };
+    }
+  }
+
+  const spawnConfig = resolveJmeterSpawn(bin);
+  return {
+    command: spawnConfig.command,
+    args: jmeterArgs,
+    shell: spawnConfig.shell,
+    env: process.env,
+    launchMode: "jmeter-script",
+    jmeterHome: jmeterHome || null,
+    jarPath: null,
+    javaCommand: null
+  };
+}
+
+function isWindowsJvmCrash(exitCode, launcherText = "") {
+  if (exitCode === -1073741819 || exitCode === 3221225477 || exitCode === -1073740791) {
+    return true;
+  }
+  return /errorlevel=-1073741819|access violation|EXCEPTION_ACCESS_VIOLATION/i.test(launcherText);
+}
+
 function buildFailureHint(run) {
   if (run.status !== "failed" && run.status !== "cancelled" && run.status !== "unknown") {
     return null;
   }
 
   const parts = [];
+  const runDir = run.logFile ? path.dirname(run.logFile) : null;
+  const launcherLog = runDir ? path.join(runDir, "launcher.log") : null;
+  const launcherText = launcherLog && fs.existsSync(launcherLog) ? fs.readFileSync(launcherLog, "utf-8") : "";
+
   if (run.exitCode != null) {
     parts.push(`JMeter exit code: ${run.exitCode}`);
   }
 
-  const runDir = run.logFile ? path.dirname(run.logFile) : null;
+  if (isWindowsJvmCrash(run.exitCode, launcherText)) {
+    parts.unshift(
+      "JVM crashed (Windows access violation). Use 64-bit Java 17 or 21, set JMETER_HOME to your Apache JMeter folder, run npm run install:jmeter-plugins, then retry."
+    );
+  }
+
+  if (/Press any key to continue/i.test(launcherText)) {
+    parts.unshift(
+      "JMeter batch wrapper paused after a crash. The API now launches via java -jar when possible — pull latest server.js and set JMETER_HOME."
+    );
+  }
+
   if (!runDir) return parts.join("\n") || null;
 
-  const launcherLog = path.join(runDir, "launcher.log");
-  if (fs.existsSync(launcherLog)) {
-    const lines = fs.readFileSync(launcherLog, "utf-8").split(/\r?\n/).filter(Boolean);
+  if (launcherText) {
+    const lines = launcherText.split(/\r?\n/).filter(Boolean);
     const tail = lines.slice(-30).join("\n");
     if (tail) parts.push(tail);
   }
@@ -1010,40 +1088,36 @@ function buildFailureHint(run) {
   );
 }
 
-// Safely captures JMeter launcher stdout/stderr. On Windows the child can emit
-// trailing chunks after exit — guard writes so close/error handlers don't race.
+// Safely captures JMeter launcher stdout/stderr. Uses sync append — no WriteStream end races on Windows.
 function attachLauncherLogStream(child, launcherLogPath) {
-  const launcherStream = fs.createWriteStream(launcherLogPath, { flags: "a" });
-  let closed = false;
+  let acceptChunks = true;
 
-  launcherStream.on("error", (err) => {
-    console.error(`[launcher-log] ${launcherLogPath}: ${err.message}`);
-  });
-
-  const safeWrite = (chunk) => {
-    if (closed || launcherStream.writableEnded || launcherStream.destroyed) return;
+  const safeAppend = (chunk) => {
+    if (!acceptChunks) return;
     try {
-      launcherStream.write(chunk);
+      fs.appendFileSync(launcherLogPath, chunk);
     } catch (err) {
-      if (err?.code !== "ERR_STREAM_WRITE_AFTER_END") {
-        console.error(`[launcher-log] write failed: ${err.message}`);
-      }
+      console.error(`[launcher-log] append failed: ${err.message}`);
     }
   };
 
-  const onStdout = (chunk) => safeWrite(chunk);
-  const onStderr = (chunk) => safeWrite(chunk);
-  child.stdout.on("data", onStdout);
-  child.stderr.on("data", onStderr);
+  const onStdout = (chunk) => safeAppend(chunk);
+  const onStderr = (chunk) => safeAppend(chunk);
+
+  if (child.stdout) child.stdout.on("data", onStdout);
+  if (child.stderr) child.stderr.on("data", onStderr);
 
   const closeStream = (trailer) => {
-    if (closed) return;
-    closed = true;
-    child.stdout.off("data", onStdout);
-    child.stderr.off("data", onStderr);
-    if (trailer) safeWrite(trailer);
-    if (!launcherStream.writableEnded && !launcherStream.destroyed) {
-      launcherStream.end();
+    if (!acceptChunks) return;
+    acceptChunks = false;
+    if (child.stdout) child.stdout.off("data", onStdout);
+    if (child.stderr) child.stderr.off("data", onStderr);
+    if (trailer) {
+      try {
+        fs.appendFileSync(launcherLogPath, trailer);
+      } catch (err) {
+        console.error(`[launcher-log] trailer append failed: ${err.message}`);
+      }
     }
   };
 
@@ -1097,23 +1171,27 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     ...propArgs
   ];
 
-  const spawnConfig = resolveJmeterSpawn(JMETER_BIN);
+  const launch = buildJmeterLaunch(JMETER_BIN, jmeterArgs);
   const launcherLog = path.join(runDir, "launcher.log");
   const launchHeader =
     `[launcher-start] ${startedAt}\n` +
     `[launcher-start] platform=${process.platform}\n` +
-    `[launcher-start] command=${spawnConfig.command}\n` +
-    `[launcher-start] shell=${spawnConfig.shell}\n` +
+    `[launcher-start] mode=${launch.launchMode}\n` +
+    `[launcher-start] command=${launch.command}\n` +
+    `[launcher-start] shell=${launch.shell}\n` +
+    `[launcher-start] jmeterHome=${launch.jmeterHome || ""}\n` +
+    `[launcher-start] java=${launch.javaCommand || ""}\n` +
+    `[launcher-start] jar=${launch.jarPath || ""}\n` +
     `[launcher-start] cwd=${__dirname}\n` +
     `[launcher-start] args=${jmeterArgs.join(" ")}\n\n`;
   fs.writeFileSync(launcherLog, launchHeader, "utf-8");
 
-  const child = spawn(spawnConfig.command, jmeterArgs, {
+  const child = spawn(launch.command, launch.args, {
     cwd: __dirname,
     stdio: ["ignore", "pipe", "pipe"],
-    shell: spawnConfig.shell,
+    shell: launch.shell,
     windowsHide: true,
-    env: process.env
+    env: launch.env
   });
 
   const run = {

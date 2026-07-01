@@ -520,5 +520,6 @@ module.exports = {
   runValidation,
   resolveJmeterBin,
   resolveJmeterHome,
-  hasJsonPlugins
+  hasJsonPlugins,
+  resolveJavaHomeFromJmeterWrapper
 };
