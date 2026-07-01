@@ -11,7 +11,8 @@ const {
 const {
   resolveJmeterBin,
   resolveJmeterHome,
-  resolveJavaHomeFromJmeterWrapper
+  resolveJavaHomeForJmeter,
+  javaExecutableForHome
 } = require("./scripts/validate");
 
 const PORT = Number(process.env.PORT || 5050);
@@ -991,10 +992,10 @@ function buildJmeterLaunch(jmeterBin, jmeterArgs) {
     ].find((candidate) => fs.existsSync(candidate));
 
     if (jarPath) {
-      const javaHome = process.env.JAVA_HOME || resolveJavaHomeFromJmeterWrapper(bin);
+      const { javaHome, source: javaHomeSource } = resolveJavaHomeForJmeter(bin, jmeterHome);
       let javaCommand = process.platform === "win32" ? "java.exe" : "java";
       if (javaHome) {
-        javaCommand = path.join(javaHome, "bin", process.platform === "win32" ? "java.exe" : "java");
+        javaCommand = javaExecutableForHome(javaHome) || javaCommand;
       }
 
       const env = { ...process.env, JMETER_HOME: process.env.JMETER_HOME || jmeterHome };
@@ -1013,7 +1014,9 @@ function buildJmeterLaunch(jmeterBin, jmeterArgs) {
         launchMode: "java-jar",
         jmeterHome,
         jarPath,
-        javaCommand
+        javaCommand,
+        javaHome: javaHome || null,
+        javaHomeSource: javaHomeSource || (javaHome ? "unknown" : "none")
       };
     }
   }
@@ -1180,6 +1183,8 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     `[launcher-start] command=${launch.command}\n` +
     `[launcher-start] shell=${launch.shell}\n` +
     `[launcher-start] jmeterHome=${launch.jmeterHome || ""}\n` +
+    `[launcher-start] javaHome=${launch.javaHome || ""}\n` +
+    `[launcher-start] javaHomeSource=${launch.javaHomeSource || ""}\n` +
     `[launcher-start] java=${launch.javaCommand || ""}\n` +
     `[launcher-start] jar=${launch.jarPath || ""}\n` +
     `[launcher-start] cwd=${__dirname}\n` +

@@ -44,7 +44,7 @@ Install and verify everything below **before** running `npm run init` or `npm ru
 |-------------|-----------------|
 | **Node.js** | **20.19+** or **22.12+** (required by Angular 21 CLI). Node 18 is not supported for the UI build. |
 | **npm** | **10+** (ships with Node 20/22) |
-| **Java (JRE/JDK)** | **8+** minimum; **11 or 17** recommended for JMeter 5.4.x |
+| **Java (JRE/JDK)** | **8+** minimum; **11 or 17** recommended for JMeter 5.4.x. The runner prefers Java from JMeter's own launcher (`jmeter.bat` / `setenv.bat`) over system `JAVA_HOME`. |
 | **Apache JMeter** | **5.4+** (plans are saved for JMeter 5.4.1). Must be on `PATH` as `jmeter`, or set `JMETER_BIN`. |
 
 ### JMeter plugins

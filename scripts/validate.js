@@ -191,17 +191,11 @@ function planRequiresJsonPlugins() {
   });
 }
 
-function resolveJavaHomeFromJmeterWrapper(jmeterBin) {
-  let wrapper = jmeterBin;
-  if (!wrapper.includes(path.sep)) {
-    const which = runCommand(process.platform === "win32" ? "where" : "which", [wrapper]);
-    if (which.status === 0) wrapper = firstLine(which.stdout);
-  }
-
-  if (!wrapper || !fs.existsSync(wrapper)) return null;
+function readJavaHomeFromScriptFile(scriptPath) {
+  if (!scriptPath || !fs.existsSync(scriptPath)) return null;
 
   try {
-    const content = fs.readFileSync(wrapper, "utf8");
+    const content = fs.readFileSync(scriptPath, "utf8");
     const patterns = [
       /(?:set\s+)?JAVA_HOME\s*=\s*"([^"]+)"/i,
       /(?:set\s+)?JAVA_HOME\s*=\s*'([^']+)'/i,
@@ -212,11 +206,65 @@ function resolveJavaHomeFromJmeterWrapper(jmeterBin) {
     ];
     for (const pattern of patterns) {
       const match = content.match(pattern);
-      if (match && match[1] && !match[1].startsWith("%")) return match[1];
+      const value = match?.[1]?.trim();
+      if (value && !value.startsWith("%")) return value;
     }
   } catch {
     return null;
   }
+
+  return null;
+}
+
+function javaExecutableForHome(javaHome) {
+  if (!javaHome) return null;
+  const javaExe = path.join(javaHome, "bin", process.platform === "win32" ? "java.exe" : "java");
+  return fs.existsSync(javaExe) ? javaExe : null;
+}
+
+function resolveJavaHomeFromJmeterWrapper(jmeterBin) {
+  let wrapper = jmeterBin;
+  if (!wrapper.includes(path.sep)) {
+    const which = runCommand(process.platform === "win32" ? "where" : "which", [wrapper]);
+    if (which.status === 0) wrapper = firstLine(which.stdout);
+  }
+
+  return readJavaHomeFromScriptFile(wrapper);
+}
+
+// Prefer Java bundled/configured with JMeter (jmeter.bat / setenv.bat) over system JAVA_HOME (e.g. Java 8 on PATH).
+function resolveJavaHomeForJmeter(jmeterBin, jmeterHome) {
+  const scriptCandidates = [];
+
+  let wrapper = jmeterBin;
+  if (!wrapper.includes(path.sep)) {
+    const which = runCommand(process.platform === "win32" ? "where" : "which", [wrapper]);
+    if (which.status === 0) wrapper = firstLine(which.stdout);
+  }
+  if (wrapper) scriptCandidates.push(wrapper);
+
+  if (jmeterHome) {
+    scriptCandidates.push(
+      path.join(jmeterHome, "bin", "jmeter.bat"),
+      path.join(jmeterHome, "bin", "jmeter.cmd"),
+      path.join(jmeterHome, "bin", "jmeter"),
+      path.join(jmeterHome, "bin", "setenv.bat"),
+      path.join(jmeterHome, "bin", "setenv.sh")
+    );
+  }
+
+  for (const scriptPath of scriptCandidates) {
+    const javaHome = readJavaHomeFromScriptFile(scriptPath);
+    if (javaHome && javaExecutableForHome(javaHome)) {
+      return { javaHome, source: `jmeter-launcher (${path.basename(scriptPath)})` };
+    }
+  }
+
+  if (process.env.JAVA_HOME && javaExecutableForHome(process.env.JAVA_HOME)) {
+    return { javaHome: process.env.JAVA_HOME, source: "JAVA_HOME env" };
+  }
+
+  return { javaHome: null, source: null };
 }
 
 function javaVersionFromBin(javaBin) {
@@ -240,7 +288,7 @@ function discoverJava(jmeterBin) {
     candidates.push(javaBin);
   }
 
-  const jmeterJavaHome = resolveJavaHomeFromJmeterWrapper(jmeterBin);
+  const jmeterJavaHome = resolveJavaHomeForJmeter(jmeterBin, resolveJmeterHome(jmeterBin)).javaHome;
   if (jmeterJavaHome) {
     addCandidate(path.join(jmeterJavaHome, "bin", process.platform === "win32" ? "java.exe" : "java"));
   }
@@ -521,5 +569,7 @@ module.exports = {
   resolveJmeterBin,
   resolveJmeterHome,
   hasJsonPlugins,
-  resolveJavaHomeFromJmeterWrapper
+  resolveJavaHomeFromJmeterWrapper,
+  resolveJavaHomeForJmeter,
+  javaExecutableForHome
 };
