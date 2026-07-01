@@ -267,6 +267,86 @@ function resolveJavaHomeForJmeter(jmeterBin, jmeterHome) {
   return { javaHome: null, source: null };
 }
 
+const PLUGIN_MANIFEST_PATH = path.join(root, "vendor", "jmeter-plugins", "manifest.json");
+
+function loadPluginManifest() {
+  if (!fs.existsSync(PLUGIN_MANIFEST_PATH)) return null;
+  return JSON.parse(fs.readFileSync(PLUGIN_MANIFEST_PATH, "utf8"));
+}
+
+function parseJavaMajor(versionLine) {
+  if (!versionLine) return null;
+  const quoted = versionLine.match(/version\s+"([^"]+)"/i);
+  if (quoted) {
+    const parts = quoted[1].split(".");
+    if (parts[0] === "1" && parts[1]) return Number(parts[1]);
+    return Number(parts[0]);
+  }
+  const parsed = parseVersion(versionLine);
+  if (!parsed) return null;
+  if (parsed.major === 1 && parsed.minor) return parsed.minor;
+  return parsed.major;
+}
+
+function getJmeterJavaInfo(jmeterBin, jmeterHome) {
+  const { javaHome, source } = resolveJavaHomeForJmeter(jmeterBin, jmeterHome);
+  if (!javaHome) {
+    return { javaHome: null, source: null, versionLine: null, major: null, javaExe: null };
+  }
+  const javaExe = javaExecutableForHome(javaHome);
+  const info = javaExe ? javaVersionFromBin(javaExe) : null;
+  return {
+    javaHome,
+    source,
+    versionLine: info?.versionLine || null,
+    major: info ? parseJavaMajor(info.versionLine) : null,
+    javaExe
+  };
+}
+
+function assessPluginBundleJavaCompatibility(manifest, javaMajor) {
+  const min = manifest?.java?.minMajor ?? 8;
+  const recommended = manifest?.java?.recommendedMajor ?? 11;
+
+  if (javaMajor == null) {
+    return {
+      ok: false,
+      level: "unknown",
+      min,
+      recommended,
+      message: "Could not determine which Java JMeter will use"
+    };
+  }
+
+  if (javaMajor < min) {
+    return {
+      ok: false,
+      level: "error",
+      min,
+      recommended,
+      message: `Java ${javaMajor} is too old for vendored plugins (need Java ${min}+)`
+    };
+  }
+
+  if (javaMajor < recommended) {
+    return {
+      ok: true,
+      level: "warn",
+      min,
+      recommended,
+      message: `Java ${javaMajor} meets plugin minimum (Java ${min}+) but Java ${recommended}+ is recommended for JMeter 5.4+`
+    };
+  }
+
+  return {
+    ok: true,
+    level: "pass",
+    min,
+    recommended,
+    message: `Java ${javaMajor} is compatible with vendored jpgc-json bundle`
+  };
+}
+
 function javaVersionFromBin(javaBin) {
   const result = runCommand(javaBin, ["-version"]);
   const output = `${result.stdout || ""}\n${result.stderr || ""}`;
@@ -505,10 +585,38 @@ class Validator {
     return { bin: jmeterBin, home };
   }
 
-  checkJsonPlugins(jmeterHome) {
+  checkJsonPlugins(jmeterHome, jmeterBin) {
     if (!planRequiresJsonPlugins()) {
       this.pass("JMeter JSON plugins", "not required by plans in ./plans");
       return;
+    }
+
+    const manifest = loadPluginManifest();
+    const javaInfo = getJmeterJavaInfo(jmeterBin, jmeterHome);
+    const compat = assessPluginBundleJavaCompatibility(manifest, javaInfo.major);
+
+    if (compat.level === "error") {
+      this.fail(
+        "Plugin bundle + Java",
+        compat.message,
+        `Point jmeter.bat / setenv.bat at Java ${compat.recommended}+ before npm run install:jmeter-plugins`
+      );
+      return;
+    }
+    if (compat.level === "unknown") {
+      this.warn(
+        "Plugin bundle + Java",
+        compat.message,
+        "Set JMETER_HOME so validate can read jmeter.bat JAVA_HOME"
+      );
+    } else if (compat.level === "warn") {
+      this.warn(
+        "Plugin bundle + Java",
+        compat.message,
+        "Older Java may work but can cause JVM crashes or UnsupportedClassVersionError with plugin deps"
+      );
+    } else {
+      this.pass("Plugin bundle + Java", compat.message);
     }
 
     const hasPlugins = hasJsonPlugins(jmeterHome);
@@ -589,7 +697,7 @@ function runValidation() {
   validator.checkNpm();
   const jmeter = validator.checkJmeter();
   validator.checkJava(jmeter.bin, jmeter.home);
-  validator.checkJsonPlugins(jmeter.home);
+  validator.checkJsonPlugins(jmeter.home, jmeter.bin);
   validator.checkDependencies();
   validator.checkPlans();
   validator.checkWritableRunsDir();
@@ -625,5 +733,9 @@ module.exports = {
   hasJsonPlugins,
   resolveJavaHomeFromJmeterWrapper,
   resolveJavaHomeForJmeter,
-  javaExecutableForHome
+  javaExecutableForHome,
+  loadPluginManifest,
+  getJmeterJavaInfo,
+  assessPluginBundleJavaCompatibility,
+  parseJavaMajor
 };

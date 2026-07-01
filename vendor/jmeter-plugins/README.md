@@ -4,12 +4,29 @@ BriefingIQ test plans use `com.atlantbh.jmeter.plugins.jsonutils` elements. This
 **jpgc-json** plugin pack and its runtime dependencies so new machines can install them without
 the JMeter Plugins Manager UI.
 
+Our vendored pack (see `manifest.json`) requires **Java 8+**; **Java 11+** is recommended for JMeter 5.4+.
+`npm run validate` checks **Java (JMeter uses)** against these limits before recommending install.
+
 ## Install into JMeter
 
 From the repository root:
 
 ```bash
 npm run install:jmeter-plugins
+```
+
+Re-running install is safe — it overwrites only our vendored files (skips identical copies).
+
+To remove only our vendored jars from JMeter (not other plugins you added separately):
+
+```bash
+npm run uninstall:jmeter-plugins
+```
+
+Preview removals:
+
+```bash
+npm run uninstall:jmeter-plugins -- --dry-run
 ```
 
 Copies JARs into your JMeter installation:

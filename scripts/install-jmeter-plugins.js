@@ -2,7 +2,14 @@
 
 const fs = require("fs");
 const path = require("path");
-const { resolveJmeterBin, resolveJmeterHome, hasJsonPlugins } = require("./validate");
+const {
+  resolveJmeterBin,
+  resolveJmeterHome,
+  hasJsonPlugins,
+  loadPluginManifest,
+  getJmeterJavaInfo,
+  assessPluginBundleJavaCompatibility
+} = require("./validate");
 
 const root = path.join(__dirname, "..");
 const vendorDir = path.join(root, "vendor", "jmeter-plugins");
@@ -66,6 +73,25 @@ function installJmeterPlugins(options = {}) {
     console.log(`Target JMeter home: ${jmeterHome}\n`);
   } else {
     console.log(`Target JMeter home: ${jmeterHome}\n`);
+  }
+
+  const javaInfo = getJmeterJavaInfo(jmeterBin, jmeterHome);
+  if (javaInfo.versionLine) {
+    console.log(`JMeter Java: ${javaInfo.versionLine}${javaInfo.source ? ` (${javaInfo.source})` : ""}`);
+  }
+  const compat = assessPluginBundleJavaCompatibility(manifest, javaInfo.major);
+  if (compat.level === "error") {
+    console.error(`✗  ${compat.message}`);
+    console.error(`   Vendored plugins need Java ${compat.min}+. Configure Java ${compat.recommended}+ in jmeter.bat / setenv.bat.\n`);
+    return { ok: false, reason: "java-incompatible", jmeterHome, javaInfo, compat };
+  }
+  if (compat.level === "warn") {
+    console.warn(`⚠  ${compat.message}`);
+    console.warn("   Installing anyway — upgrade Java if runs crash or show UnsupportedClassVersionError.\n");
+  } else if (compat.level === "pass") {
+    console.log(`✓  ${compat.message}\n`);
+  } else {
+    console.warn(`⚠  ${compat.message}\n`);
   }
 
   let copied = 0;

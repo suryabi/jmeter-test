@@ -4,12 +4,17 @@
   "license": "Apache-2.0",
   "source": "https://github.com/undera/jmeter-plugins",
   "description": "Vendored JMeter JSON plugins (jpgc-json) and runtime dependencies for BriefingIQ plans.",
+  "java": {
+    "minMajor": 8,
+    "recommendedMajor": 11,
+    "notes": "json-path 2.8.0 / json-smart 2.5.0 require Java 8+. JMeter 5.4+ is stable on Java 11+; Java 8 may run but is not recommended."
+  },
   "jars": [
-    { "file": "lib/ext/jmeter-plugins-json-2.7.jar", "target": "lib/ext" },
-    { "file": "lib/jmeter-plugins-cmn-jmeter-0.7.jar", "target": "lib" },
-    { "file": "lib/json-lib-2.4-jdk15.jar", "target": "lib" },
-    { "file": "lib/json-path-2.8.0.jar", "target": "lib" },
-    { "file": "lib/json-smart-2.5.0.jar", "target": "lib" },
-    { "file": "lib/snakeyaml-1.21.jar", "target": "lib" }
+    { "file": "lib/ext/jmeter-plugins-json-2.7.jar", "target": "lib/ext", "minJavaMajor": 7 },
+    { "file": "lib/jmeter-plugins-cmn-jmeter-0.7.jar", "target": "lib", "minJavaMajor": 7 },
+    { "file": "lib/json-lib-2.4-jdk15.jar", "target": "lib", "minJavaMajor": 7 },
+    { "file": "lib/json-path-2.8.0.jar", "target": "lib", "minJavaMajor": 8 },
+    { "file": "lib/json-smart-2.5.0.jar", "target": "lib", "minJavaMajor": 8 },
+    { "file": "lib/snakeyaml-1.21.jar", "target": "lib", "minJavaMajor": 6 }
   ]
 }
