@@ -1171,7 +1171,9 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     "-e",
     "-o",
     reportDir,
-    ...propArgs
+    ...propArgs,
+    // HTML report (-e -o) requires CSV JTL; some JMeter installs default to XML.
+    "-Jjmeter.save.saveservice.output_format=csv"
   ];
 
   const launch = buildJmeterLaunch(JMETER_BIN, jmeterArgs);
