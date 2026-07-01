@@ -101,7 +101,7 @@ Validate only (no install):
 npm run validate
 ```
 
-Checks: Node 20.19+/22.12+, npm, Java, JMeter (`JMETER_BIN` or PATH), jpgc-json plugins, `node_modules`, plans in `./plans`, writable `./runs`.
+Checks: Node 20.19+/22.12+, npm, Java (JMeter launcher vs JAVA_HOME vs PATH), JMeter (`JMETER_BIN` or PATH), jpgc-json plugins, `node_modules`, plans in `./plans`, writable `./runs`.
 
 Install vendored JMeter plugins only:
 

@@ -390,30 +390,84 @@ class Validator {
     }
   }
 
-  checkJava(jmeterBin = resolveJmeterBin()) {
-    const java = discoverJava(jmeterBin);
-    if (!java) {
-      this.fail(
-        "Java",
-        "not found on PATH or via JMeter launcher",
-        "Install a JRE/JDK (11, 17, or 21). On macOS with Homebrew: brew install openjdk@21"
+  checkJava(jmeterBin = resolveJmeterBin(), jmeterHome = null) {
+    const home = jmeterHome || resolveJmeterHome(jmeterBin);
+    const { javaHome, source } = resolveJavaHomeForJmeter(jmeterBin, home);
+    let jmeterJavaOk = false;
+
+    if (javaHome) {
+      const javaExe = javaExecutableForHome(javaHome);
+      const jmeterJava = javaExe ? javaVersionFromBin(javaExe) : null;
+      if (jmeterJava) {
+        jmeterJavaOk = true;
+        this.pass("Java (JMeter uses)", `${jmeterJava.versionLine} — ${source}`);
+        const parsed = parseVersion(jmeterJava.versionLine);
+        if (parsed && (parsed.major < 11 || (parsed.major === 1 && parsed.minor <= 8))) {
+          this.warn(
+            "Java (JMeter)",
+            `${parsed.raw} is older than recommended for JMeter 5.4+`,
+            "Prefer Java 11, 17, or 21 in jmeter.bat or bin/setenv.bat"
+          );
+        }
+      } else {
+        this.fail(
+          "Java (JMeter uses)",
+          `JAVA_HOME in ${source} is not runnable (${javaHome})`,
+          "Fix JAVA_HOME in jmeter.bat or JMETER_HOME/bin/setenv.bat"
+        );
+      }
+    } else {
+      this.warn(
+        "Java (JMeter uses)",
+        "could not resolve from jmeter.bat / setenv.bat",
+        "Set JMETER_HOME and ensure bin/jmeter.bat or bin/setenv.bat defines JAVA_HOME"
       );
-      return;
+    }
+
+    if (process.env.JAVA_HOME) {
+      const envExe = javaExecutableForHome(process.env.JAVA_HOME);
+      const envJava = envExe ? javaVersionFromBin(envExe) : null;
+      if (envJava) {
+        const same =
+          javaHome &&
+          path.resolve(process.env.JAVA_HOME) === path.resolve(javaHome);
+        if (same) {
+          this.pass("Java (JAVA_HOME env)", `same as JMeter — ${envJava.versionLine}`);
+        } else {
+          const label = jmeterJavaOk ? "ignored when JMeter Java is set" : "may be used as fallback";
+          this.warn("Java (JAVA_HOME env)", `${envJava.versionLine} (${label})`);
+        }
+      } else {
+        this.warn("Java (JAVA_HOME env)", `not runnable (${process.env.JAVA_HOME})`);
+      }
     }
 
     const pathJava =
       javaVersionFromBin("java") || (process.platform === "win32" ? javaVersionFromBin("java.exe") : null);
-    if (java.bin === "java" || java.bin === "java.exe" || pathJava) {
-      this.pass("Java", java.versionLine);
-      return;
+    if (pathJava) {
+      const jmeterExe = javaHome ? javaExecutableForHome(javaHome) : null;
+      const sameAsJmeter =
+        jmeterExe && path.resolve(pathJava.bin) === path.resolve(jmeterExe);
+      if (!sameAsJmeter) {
+        this.pass("Java (PATH)", pathJava.versionLine);
+      }
+    } else if (!process.env.JAVA_HOME) {
+      this.warn("Java (PATH)", "system java not on PATH or not usable");
     }
 
-    this.pass("Java", `${java.versionLine} (via ${java.bin})`);
-    this.warn(
-      "Java on PATH",
-      "system java is not usable (macOS stub or missing)",
-      "JMeter will still work via its launcher JAVA_HOME. Optional: set JAVA_HOME and add it to PATH in your shell profile."
-    );
+    if (!jmeterJavaOk && !pathJava && !process.env.JAVA_HOME) {
+      this.fail(
+        "Java",
+        "not found for JMeter or on PATH",
+        "Install a JRE/JDK (11, 17, or 21) and configure JMETER_HOME/bin/jmeter.bat or setenv.bat"
+      );
+    } else if (!jmeterJavaOk && !pathJava) {
+      this.fail(
+        "Java",
+        "no runnable Java found for population runs",
+        "Set JMETER_HOME and JAVA_HOME in bin/setenv.bat, or fix system JAVA_HOME"
+      );
+    }
   }
 
   checkJmeter() {
@@ -534,7 +588,7 @@ function runValidation() {
   validator.checkNode();
   validator.checkNpm();
   const jmeter = validator.checkJmeter();
-  validator.checkJava(jmeter.bin);
+  validator.checkJava(jmeter.bin, jmeter.home);
   validator.checkJsonPlugins(jmeter.home);
   validator.checkDependencies();
   validator.checkPlans();
