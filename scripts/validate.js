@@ -44,11 +44,46 @@ function meetsAnyNodeRequirement(actual) {
   return MIN_NODE.some((min) => meetsMinVersion(actual, min));
 }
 
-function runCommand(command, args) {
+function runCommand(command, args = []) {
+  const isWin = process.platform === "win32";
+  const isBareName =
+    !command.includes(path.sep) &&
+    !path.isAbsolute(command) &&
+    !/\.(exe|cmd|bat)$/i.test(command);
+
   return spawnSync(command, args, {
     encoding: "utf8",
-    env: process.env
+    env: process.env,
+    // Windows: npm/java/jmeter are .cmd shims — spawn needs shell or ENOENT.
+    shell: isWin && isBareName
   });
+}
+
+function readNpmVersionFromEnv() {
+  const userAgent = process.env.npm_config_user_agent || "";
+  const match = userAgent.match(/npm\/(\d+\.\d+\.\d+)/);
+  return match ? match[1] : null;
+}
+
+function runNpmVersionCheck() {
+  const result = runCommand("npm", ["--version"]);
+  if (result.status === 0) {
+    return { ok: true, version: firstLine(result.stdout) };
+  }
+
+  if (process.env.npm_execpath && fs.existsSync(process.env.npm_execpath)) {
+    const viaNode = runCommand(process.execPath, [process.env.npm_execpath, "--version"]);
+    if (viaNode.status === 0) {
+      return { ok: true, version: firstLine(viaNode.stdout), via: process.env.npm_execpath };
+    }
+  }
+
+  const envVersion = readNpmVersionFromEnv();
+  if (envVersion) {
+    return { ok: true, version: envVersion, via: "npm run context" };
+  }
+
+  return { ok: false };
 }
 
 function firstLine(text) {
@@ -169,8 +204,18 @@ function resolveJavaHomeFromJmeterWrapper(jmeterBin) {
 
   try {
     const content = fs.readFileSync(wrapper, "utf8");
-    const match = content.match(/JAVA_HOME=(?:"([^"]+)"|'([^']+)'|([^\s]+))/);
-    return match ? (match[1] || match[2] || match[3]) : null;
+    const patterns = [
+      /(?:set\s+)?JAVA_HOME\s*=\s*"([^"]+)"/i,
+      /(?:set\s+)?JAVA_HOME\s*=\s*'([^']+)'/i,
+      /(?:set\s+)?JAVA_HOME\s*=\s*([^\s\r\n]+)/i,
+      /JAVA_HOME\s*=\s*"([^"]+)"/i,
+      /JAVA_HOME\s*=\s*'([^']+)'/i,
+      /JAVA_HOME\s*=\s*([^\s\r\n]+)/
+    ];
+    for (const pattern of patterns) {
+      const match = content.match(pattern);
+      if (match && match[1] && !match[1].startsWith("%")) return match[1];
+    }
   } catch {
     return null;
   }
@@ -214,6 +259,26 @@ function discoverJava(jmeterBin) {
     }
   }
 
+  if (process.platform === "win32") {
+    const programFiles = process.env.ProgramFiles || "C:\\Program Files";
+    const programFilesX86 = process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)";
+    for (const base of [programFiles, programFilesX86]) {
+      for (const vendor of ["Java", "Eclipse Adoptium", "Microsoft", "Amazon Corretto", "Zulu"]) {
+        const vendorDir = path.join(base, vendor);
+        if (!fs.existsSync(vendorDir)) continue;
+        try {
+          for (const entry of fs.readdirSync(vendorDir)) {
+            const javaExe = path.join(vendorDir, entry, "bin", "java.exe");
+            addCandidate(javaExe);
+          }
+        } catch {
+          // ignore unreadable directories
+        }
+      }
+    }
+  }
+
+  addCandidate(process.platform === "win32" ? "java.exe" : "java");
   addCandidate("java");
 
   for (const javaBin of candidates) {
@@ -261,14 +326,18 @@ class Validator {
   }
 
   checkNpm() {
-    const result = runCommand("npm", ["--version"]);
-    if (result.status !== 0) {
+    const result = runNpmVersionCheck();
+    if (!result.ok) {
       this.fail("npm", "not found", "Install npm (ships with Node.js).");
       return;
     }
 
-    const version = parseVersion(firstLine(result.stdout));
-    this.pass("npm", version?.raw || firstLine(result.stdout));
+    const version = parseVersion(result.version);
+    const detail =
+      result.via && result.via !== "npm run context"
+        ? `${result.version} (via ${result.via})`
+        : result.version;
+    this.pass("npm", detail);
 
     if (version && compareVersion(version, { major: 10, minor: 0, patch: 0 }) < 0) {
       this.warn("npm version", `${version.raw} (10+ recommended)`, "Upgrade npm: npm install -g npm@latest");
@@ -286,8 +355,9 @@ class Validator {
       return;
     }
 
-    const pathJava = javaVersionFromBin("java");
-    if (java.bin === "java" || pathJava) {
+    const pathJava =
+      javaVersionFromBin("java") || (process.platform === "win32" ? javaVersionFromBin("java.exe") : null);
+    if (java.bin === "java" || java.bin === "java.exe" || pathJava) {
       this.pass("Java", java.versionLine);
       return;
     }
@@ -296,7 +366,7 @@ class Validator {
     this.warn(
       "Java on PATH",
       "system java is not usable (macOS stub or missing)",
-      "JMeter will still work via its launcher JAVA_HOME. Optional: export JAVA_HOME and add $JAVA_HOME/bin to PATH in ~/.zshrc."
+      "JMeter will still work via its launcher JAVA_HOME. Optional: set JAVA_HOME and add it to PATH in your shell profile."
     );
   }
 
