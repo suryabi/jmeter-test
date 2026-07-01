@@ -875,7 +875,8 @@ function getRunDetail(run, { logTailLines = DEFAULT_LOG_TAIL_LINES } = {}) {
     summary: parseJtlSummary(run.jtlFile, getContextNameFromRun(run)),
     insights: parseLogInsights(fullLogForInsights),
     logTail,
-    logSize: fileSize(run.logFile)
+    logSize: fileSize(run.logFile),
+    failureHint: buildFailureHint(run)
   };
 }
 
@@ -948,6 +949,65 @@ function parseProps(input) {
   return Object.entries(input)
     .filter(([key, val]) => key && val !== undefined && val !== null)
     .map(([key, val]) => `-J${key}=${String(val)}`);
+}
+
+// Windows: jmeter is a .bat/.cmd shim — spawn() needs shell:true (same class of bug as npm on Windows).
+function resolveJmeterSpawn(bin) {
+  const isWin = process.platform === "win32";
+  let command = bin || "jmeter";
+  let shell = false;
+
+  if (isWin) {
+    if (/\.(bat|cmd)$/i.test(command)) {
+      shell = true;
+    } else if (!command.includes(path.sep) && !path.isAbsolute(command)) {
+      shell = true;
+    } else if (fs.existsSync(`${command}.bat`)) {
+      command = `${command}.bat`;
+      shell = true;
+    } else if (fs.existsSync(`${command}.cmd`)) {
+      command = `${command}.cmd`;
+      shell = true;
+    }
+  }
+
+  return { command, shell };
+}
+
+function buildFailureHint(run) {
+  if (run.status !== "failed" && run.status !== "cancelled" && run.status !== "unknown") {
+    return null;
+  }
+
+  const parts = [];
+  if (run.exitCode != null) {
+    parts.push(`JMeter exit code: ${run.exitCode}`);
+  }
+
+  const runDir = run.logFile ? path.dirname(run.logFile) : null;
+  if (!runDir) return parts.join("\n") || null;
+
+  const launcherLog = path.join(runDir, "launcher.log");
+  if (fs.existsSync(launcherLog)) {
+    const lines = fs.readFileSync(launcherLog, "utf-8").split(/\r?\n/).filter(Boolean);
+    const tail = lines.slice(-30).join("\n");
+    if (tail) parts.push(tail);
+  }
+
+  if (fs.existsSync(run.logFile)) {
+    const text = fs.readFileSync(run.logFile, "utf-8");
+    const errorLines = text
+      .split(/\r?\n/)
+      .filter((line) => /error|exception|not found|JAVA_HOME|missing|failed/i.test(line));
+    if (errorLines.length) {
+      parts.push(errorLines.slice(-12).join("\n"));
+    }
+  }
+
+  return (
+    parts.join("\n\n") ||
+    "Run failed with no log output. Verify JMETER_BIN, Java, and jpgc-json plugins (npm run validate)."
+  );
 }
 
 // Safely captures JMeter launcher stdout/stderr. On Windows the child can emit
@@ -1037,9 +1097,23 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     ...propArgs
   ];
 
-  const child = spawn(JMETER_BIN, jmeterArgs, {
+  const spawnConfig = resolveJmeterSpawn(JMETER_BIN);
+  const launcherLog = path.join(runDir, "launcher.log");
+  const launchHeader =
+    `[launcher-start] ${startedAt}\n` +
+    `[launcher-start] platform=${process.platform}\n` +
+    `[launcher-start] command=${spawnConfig.command}\n` +
+    `[launcher-start] shell=${spawnConfig.shell}\n` +
+    `[launcher-start] cwd=${__dirname}\n` +
+    `[launcher-start] args=${jmeterArgs.join(" ")}\n\n`;
+  fs.writeFileSync(launcherLog, launchHeader, "utf-8");
+
+  const child = spawn(spawnConfig.command, jmeterArgs, {
     cwd: __dirname,
-    stdio: ["ignore", "pipe", "pipe"]
+    stdio: ["ignore", "pipe", "pipe"],
+    shell: spawnConfig.shell,
+    windowsHide: true,
+    env: process.env
   });
 
   const run = {
@@ -1063,14 +1137,18 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
 
   runs.set(id, run);
 
-  const launcherLog = path.join(runDir, "launcher.log");
   const { closeStream: closeLauncherStream } = attachLauncherLogStream(child, launcherLog);
 
   child.on("error", (err) => {
     run.status = "failed";
     run.endedAt = new Date().toISOString();
     run.exitCode = -1;
-    closeLauncherStream(`\n[launcher-error] ${err.message}\n`);
+    closeLauncherStream(
+      `\n[launcher-error] ${err.message}\n` +
+        (err.code === "ENOENT"
+          ? "[launcher-error] Could not start JMeter. On Windows set JMETER_BIN to the full path of bin\\jmeter.bat and ensure Java is installed.\n"
+          : "")
+    );
   });
 
   child.on("close", (code, signal) => {

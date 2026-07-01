@@ -446,7 +446,9 @@ server {
 ### JMeter fails immediately
 
 - Verify `JMETER_BIN` and `jmeter --version`
-- Install **jpgc-json** plugins if compile errors mention `com.atlantbh.jmeter.plugins`
+- **Windows:** set `JMETER_BIN` to the full path of `bin\jmeter.bat` (not bare `jmeter` unless it is on PATH). The API runs batch files via `shell: true` automatically when needed.
+- Install vendored plugins: `npm run install:jmeter-plugins`
+- Open the failed run in the UI — the red **Run failed** banner shows `launcher.log` output
 - Inspect `runs/<id>/launcher.log` and `jmeter.log`
 
 ### API dropdowns empty or 401

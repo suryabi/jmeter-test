@@ -159,6 +159,7 @@ export interface RunDetail extends RunSummary {
   insights: RunInsights;
   logTail: string[];
   logSize: number;
+  failureHint?: string | null;
 }
 
 export interface LogPollResponse {

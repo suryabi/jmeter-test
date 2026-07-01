@@ -70,6 +70,16 @@
       </div>
     </div>
 
+    @if (run.status === 'failed' && run.failureHint) {
+      <div class="failure-banner mt-4">
+        <div class="failure-banner-title">
+          <i class="pi pi-times-circle"></i>
+          Run failed — launcher / JMeter output
+        </div>
+        <pre class="failure-hint">{{ run.failureHint }}</pre>
+      </div>
+    }
+
     <!-- Metric tiles -->
     @if (run.summary) {
       <section class="metrics">

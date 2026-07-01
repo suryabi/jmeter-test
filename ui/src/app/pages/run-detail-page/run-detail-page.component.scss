@@ -19,6 +19,34 @@
   color: #ffffff;
 }
 
+.failure-banner {
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  background: rgba(127, 29, 29, 0.35);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+}
+
+.failure-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #fecaca;
+  margin-bottom: 0.65rem;
+}
+
+.failure-hint {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #fee2e2;
+  max-height: 280px;
+  overflow: auto;
+}
+
 /* Run hero */
 
 .run-hero {

@@ -108,7 +108,9 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     this.runner.getRun(this.runId, 200).subscribe({
       next: ({ run }) => {
         this.applyRunUpdate(run);
-        if (this.logLines.length === 0 && run.logTail?.length) {
+        if (run.status !== 'running' && run.logTail?.length) {
+          this.logLines = [...run.logTail];
+        } else if (this.logLines.length === 0 && run.logTail?.length) {
           this.logLines = [...run.logTail];
         }
         afterLoad?.();
