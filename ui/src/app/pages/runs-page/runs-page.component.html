@@ -131,26 +131,28 @@
           (ngModelChange)="searchTerm.set($event)"
         />
       </span>
-      <p-select
-        class="surface-select history-filter-select"
-        panelStyleClass="surface-select-panel"
-        [options]="statusFilterOptions"
-        optionLabel="label"
-        optionValue="value"
-        [ngModel]="statusFilter()"
-        (ngModelChange)="statusFilter.set($event)"
-        appendTo="body"
-      />
-      <p-select
-        class="surface-select history-filter-select"
-        panelStyleClass="surface-select-panel"
-        [options]="planFilterOptions()"
-        optionLabel="label"
-        optionValue="value"
-        [ngModel]="planFilter()"
-        (ngModelChange)="planFilter.set($event)"
-        appendTo="body"
-      />
+      <div class="history-filter-row">
+        <p-select
+          class="surface-select history-filter-select"
+          panelStyleClass="surface-select-panel"
+          [options]="statusFilterOptions"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="statusFilter()"
+          (ngModelChange)="statusFilter.set($event)"
+          appendTo="body"
+        />
+        <p-select
+          class="surface-select history-filter-select"
+          panelStyleClass="surface-select-panel"
+          [options]="planFilterOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="planFilter()"
+          (ngModelChange)="planFilter.set($event)"
+          appendTo="body"
+        />
+      </div>
       @if (hasActiveFilters()) {
         <p-button
           severity="secondary"

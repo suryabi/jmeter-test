@@ -1,6 +1,6 @@
-<header class="topbar">
+<header class="topbar" [class.menu-open]="mobileMenuOpen()">
   <div class="topbar-inner">
-    <a routerLink="/" class="brand">
+    <a routerLink="/" class="brand" (click)="closeMobileMenu()">
       <span class="brand-logo-wrap">
         <img
           class="brand-logo"
@@ -16,7 +16,7 @@
       </span>
     </a>
 
-    <nav class="nav">
+    <nav class="nav" aria-label="Main navigation">
       <a routerLink="/" routerLinkActive="nav-active" [routerLinkActiveOptions]="{ exact: true }">
         <i class="pi pi-th-large"></i>
         <span>Dashboard</span>
@@ -31,24 +31,61 @@
       </a>
     </nav>
 
-    <div class="status">
-      @if (liveRun(); as run) {
-        <a class="live-run-chip" [routerLink]="['/runs', run.id]" title="Open the running run">
-          <span class="live-dot"></span>
-          <span class="live-run-chip-label">{{ liveRunLabel() }}</span>
-          <i class="pi pi-arrow-right"></i>
-        </a>
-      }
-      <span
-        class="status-pill"
-        [class.online]="apiOnline() === true"
-        [class.offline]="apiOnline() === false"
-        [class.checking]="apiOnline() === null"
+    <div class="topbar-actions">
+      <div class="status">
+        @if (liveRun(); as run) {
+          <a class="live-run-chip" [routerLink]="['/runs', run.id]" title="Open the running run">
+            <span class="live-dot"></span>
+            <span class="live-run-chip-label">{{ liveRunLabel() }}</span>
+            <i class="pi pi-arrow-right"></i>
+          </a>
+        }
+        <span
+          class="status-pill"
+          [class.online]="apiOnline() === true"
+          [class.offline]="apiOnline() === false"
+          [class.checking]="apiOnline() === null"
+        >
+          <span class="dot"></span>
+          <span class="status-pill-text">
+            {{ apiOnline() === null ? 'Connecting…' : apiOnline() ? 'Runner online' : 'Runner offline' }}
+          </span>
+        </span>
+        <span class="version">v1.0.0</span>
+      </div>
+
+      <button
+        type="button"
+        class="nav-toggle"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        aria-controls="mobile-nav"
+        [attr.aria-label]="mobileMenuOpen() ? 'Close menu' : 'Open menu'"
+        (click)="toggleMobileMenu()"
       >
-        <span class="dot"></span>
-        {{ apiOnline() === null ? 'Connecting…' : apiOnline() ? 'Runner online' : 'Runner offline' }}
-      </span>
-      <span class="version">v1.0.0</span>
+        <i class="pi" [class.pi-bars]="!mobileMenuOpen()" [class.pi-times]="mobileMenuOpen()"></i>
+      </button>
     </div>
   </div>
+
+  @if (mobileMenuOpen()) {
+    <nav id="mobile-nav" class="mobile-nav" aria-label="Mobile navigation">
+      <a
+        routerLink="/"
+        routerLinkActive="mobile-nav-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="closeMobileMenu()"
+      >
+        <i class="pi pi-th-large"></i>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/create" routerLinkActive="mobile-nav-active" (click)="closeMobileMenu()">
+        <i class="pi pi-bolt"></i>
+        <span>New Run</span>
+      </a>
+      <a routerLink="/plans" routerLinkActive="mobile-nav-active" (click)="closeMobileMenu()">
+        <i class="pi pi-map"></i>
+        <span>Plans</span>
+      </a>
+    </nav>
+  }
 </header>
