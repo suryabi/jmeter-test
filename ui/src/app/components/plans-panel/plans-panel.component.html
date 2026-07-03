@@ -1,8 +1,8 @@
 <div class="plans-panel flat-panel">
   <header class="plans-header">
     <div>
-      <h2 class="m-0 text-base font-semibold text-slate-100">JMeter Plans</h2>
-      <p class="m-0 mt-0.5 text-xs text-slate-500">
+      <h2 class="m-0 text-base font-semibold text-[var(--text)]">JMeter Plans</h2>
+      <p class="m-0 mt-0.5 text-xs text-[var(--text-dim)]">
         Manage .jmx test plans used when creating runs
       </p>
     </div>
@@ -38,9 +38,9 @@
     </div>
   } @else if (plans().length === 0) {
     <div class="plans-empty">
-      <i class="pi pi-file text-4xl text-slate-600"></i>
-      <p class="mt-3 text-sm text-slate-400">No plans found</p>
-      <p class="m-0 text-xs text-slate-500">Upload a .jmx file to get started.</p>
+      <i class="pi pi-file text-4xl text-[var(--text-dim)]"></i>
+      <p class="mt-3 text-sm text-[var(--text-muted)]">No plans found</p>
+      <p class="m-0 text-xs text-[var(--text-dim)]">Upload a .jmx file to get started.</p>
     </div>
   } @else {
     <div class="plans-table-wrap">
@@ -67,10 +67,10 @@
               </div>
             </td>
             <td>
-              <span class="text-sm text-slate-300">{{ formatSize(plan.sizeBytes) }}</span>
+              <span class="text-sm text-[var(--text-muted)]">{{ formatSize(plan.sizeBytes) }}</span>
             </td>
             <td>
-              <span class="text-sm text-slate-300">
+              <span class="text-sm text-[var(--text-muted)]">
                 {{ plan.updatedAt ? (plan.updatedAt | date: 'MMM d, y, h:mm a') : '—' }}
               </span>
             </td>

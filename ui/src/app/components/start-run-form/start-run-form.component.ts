@@ -1,4 +1,12 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  inject
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -13,7 +21,8 @@ import {
   ParameterDef,
   ParameterGroup,
   PlanInfo,
-  RunProps
+  RunProps,
+  RunSummary
 } from '../../core/models/runner.models';
 import { RunnerService } from '../../core/services/runner.service';
 import { formatFieldLabel, parameterFieldLabel } from '../../core/utils/format-field-label';
@@ -47,6 +56,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
   styleUrl: './start-run-form.component.scss'
 })
 export class StartRunFormComponent implements OnInit {
+  @Input() priorRuns: RunSummary[] = [];
   @Output() start = new EventEmitter<{ label: string; planFile: string; props: RunProps }>();
 
   private readonly fb = inject(FormBuilder);
@@ -68,6 +78,12 @@ export class StartRunFormComponent implements OnInit {
   fieldOptions: Record<string, FieldOption[]> = {};
   fieldOptionsLoading: Record<string, boolean> = {};
   fieldOptionsError: Record<string, string> = {};
+  selectedPriorRunId: string | null = null;
+  propsLoadNotice = '';
+  private pendingPropsFromRun: RunProps | null = null;
+  private pendingPropsSourceLabel = '';
+  /** Set when applyPropsFromRun is called before plans/parameters finished loading. */
+  private pendingApplyRun: RunSummary | null = null;
 
   ngOnInit(): void {
     this.runner.getPlans().subscribe({
@@ -84,6 +100,10 @@ export class StartRunFormComponent implements OnInit {
   }
 
   onPlanChange(plan: PlanInfo | null): void {
+    if (!this.pendingPropsFromRun) {
+      this.selectedPriorRunId = null;
+      this.propsLoadNotice = '';
+    }
     this.selectedPlan = plan;
     this.parameterGroups = [];
     this.showHiddenFields = false;
@@ -124,10 +144,18 @@ export class StartRunFormComponent implements OnInit {
         }
         this.ensureActiveGroupVisible();
         this.loading = false;
+        this.finishPendingPropsLoad();
+        if (this.pendingApplyRun) {
+          const run = this.pendingApplyRun;
+          this.pendingApplyRun = null;
+          this.applyPropsFromRun(run);
+        }
       },
       error: (err) => {
         this.loadError = err?.error?.error || err?.message || 'Failed to load parameters';
         this.loading = false;
+        this.pendingPropsFromRun = null;
+        this.pendingPropsSourceLabel = '';
       }
     });
   }
@@ -144,6 +172,10 @@ export class StartRunFormComponent implements OnInit {
   }
 
   resetToDefaults(): void {
+    this.selectedPriorRunId = null;
+    this.propsLoadNotice = '';
+    this.pendingPropsFromRun = null;
+    this.pendingPropsSourceLabel = '';
     for (const group of this.parameterGroups) {
       for (const param of group.parameters) {
         const control = this.form.get(param.name);
@@ -152,6 +184,68 @@ export class StartRunFormComponent implements OnInit {
       }
     }
     this.loadDropdownOptions();
+  }
+
+  priorRunOptions(): { label: string; value: string | null; run?: RunSummary }[] {
+    const options = this.priorRuns.map((run) => ({
+      label: this.formatPriorRunLabel(run),
+      value: run.id,
+      run
+    }));
+    return [{ label: '— Use plan defaults —', value: null }, ...options];
+  }
+
+  onPriorRunSelected(runId: string | null): void {
+    this.selectedPriorRunId = runId;
+    if (!runId) {
+      this.propsLoadNotice = '';
+      return;
+    }
+    const run = this.priorRuns.find((entry) => entry.id === runId);
+    if (run) {
+      this.applyPropsFromRun(run);
+    }
+  }
+
+  /** Pre-fill the form from a previous run (dropdown, Reuse buttons, or ?fromRun=). */
+  applyPropsFromRun(run: RunSummary): void {
+    if (this.loading) {
+      this.pendingApplyRun = run;
+      return;
+    }
+    this.selectedPriorRunId = run.id;
+    this.propsLoadNotice = '';
+    this.pendingPropsFromRun = null;
+    this.pendingPropsSourceLabel = '';
+
+    const props = run.props ?? {};
+    const sourceLabel = run.label?.trim() || run.id.substring(0, 8);
+    const rerunLabel = this.suggestRerunLabel(sourceLabel);
+    this.form.get('label')?.setValue(rerunLabel, { emitEvent: false });
+
+    const planFile = run.planFile?.trim();
+    if (planFile && this.selectedPlan?.file !== planFile) {
+      const plan = this.plans.find((entry) => entry.file === planFile);
+      if (plan) {
+        this.pendingPropsFromRun = props;
+        this.pendingPropsSourceLabel = sourceLabel;
+        this.selectedPlan = plan;
+        this.parameterGroups = [];
+        this.showHiddenFields = false;
+        this.loadError = '';
+        this.loading = true;
+        this.fetchParameters(plan.file);
+        return;
+      }
+      this.propsLoadNotice = `Loaded parameters from “${sourceLabel}”; plan “${planFile}” is not available — using ${this.selectedPlan?.file ?? 'current plan'}.`;
+    }
+
+    this.applyPropsToForm(props);
+    this.loadDropdownOptions();
+    if (!this.propsLoadNotice) {
+      this.propsLoadNotice = `Loaded parameters from “${sourceLabel}”. Review fields, then start the run.`;
+    }
+    this.cdr.markForCheck();
   }
 
   onDropdownChange(fieldName: string): void {
@@ -303,6 +397,84 @@ export class StartRunFormComponent implements OnInit {
       return this.fb.control(initial as string | null, validators);
     }
     return this.fb.nonNullable.control(initial as string | boolean | string[], validators);
+  }
+
+  private finishPendingPropsLoad(): void {
+    if (!this.pendingPropsFromRun) return;
+
+    const sourceLabel = this.pendingPropsSourceLabel || 'previous run';
+    const props = this.pendingPropsFromRun;
+    this.pendingPropsFromRun = null;
+    this.pendingPropsSourceLabel = '';
+
+    this.applyPropsToForm(props);
+    this.loadDropdownOptions();
+    this.propsLoadNotice = `Loaded parameters from “${sourceLabel}”. Review fields, then start the run.`;
+    this.cdr.markForCheck();
+  }
+
+  private applyPropsToForm(props: RunProps): void {
+    let applied = 0;
+    for (const group of this.parameterGroups) {
+      for (const param of group.parameters) {
+        const control = this.form.get(param.name);
+        if (!control) continue;
+        const raw = props[param.name];
+        if (raw === undefined) continue;
+        control.setValue(this.controlValueFromProp(param, raw), { emitEvent: false });
+        applied += 1;
+      }
+    }
+
+    if (applied === 0 && Object.keys(props).length > 0) {
+      this.propsLoadNotice =
+        'Selected run has parameters, but none matched the current plan schema. Using defaults.';
+    }
+  }
+
+  private controlValueFromProp(
+    param: ParameterDef,
+    raw: string
+  ): string | boolean | string[] | null {
+    if (param.type === 'boolean') {
+      return raw === 'true';
+    }
+    if (param.type === 'multiselect') {
+      return raw
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean);
+    }
+    if (param.type === 'dropdown' && !param.required) {
+      const trimmed = raw.trim();
+      return trimmed ? trimmed : null;
+    }
+    return raw;
+  }
+
+  private formatPriorRunLabel(run: RunSummary): string {
+    const name = run.label?.trim() || 'Unnamed run';
+    const started = run.startedAt
+      ? new Date(run.startedAt).toLocaleString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit'
+        })
+      : '—';
+    const plan = run.planFile ? run.planFile.replace(/\.jmx$/i, '') : 'plan';
+    return `${name} · ${plan} · ${started} · ${run.status}`;
+  }
+
+  private suggestRerunLabel(sourceLabel: string): string {
+    const base = sourceLabel.trim() || 'run';
+    const suffix = '-rerun';
+    if (base.endsWith(suffix)) {
+      const match = base.match(/-rerun(?:-(\d+))?$/);
+      const next = match?.[1] ? Number(match[1]) + 1 : 2;
+      return base.replace(/-rerun(?:-\d+)?$/, `${suffix}-${next}`);
+    }
+    return `${base}${suffix}`;
   }
 
   private defaultControlValue(param: ParameterDef): string | boolean | string[] | null {

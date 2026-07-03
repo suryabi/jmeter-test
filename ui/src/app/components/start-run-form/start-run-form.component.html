@@ -84,7 +84,32 @@
             placeholder="e.g. nightly-smoke-2026-11-15"
           />
         </div>
+        @if (priorRuns.length > 0) {
+          <div class="run-meta-field run-meta-prior">
+            <label class="field-label" for="priorRunSelect">
+              <i class="pi pi-history"></i>
+              Copy parameters from
+            </label>
+            <p-select
+              inputId="priorRunSelect"
+              class="surface-select hero-select w-full"
+              panelStyleClass="surface-select-panel"
+              [options]="priorRunOptions()"
+              [(ngModel)]="selectedPriorRunId"
+              [ngModelOptions]="{ standalone: true }"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Use plan defaults"
+              [showClear]="true"
+              (onChange)="onPriorRunSelected($event.value)"
+            />
+          </div>
+        }
       </div>
+
+      @if (propsLoadNotice) {
+        <p-message severity="info" [text]="propsLoadNotice" />
+      }
 
       <!-- Side nav + fields -->
       @if (visibleParameterGroups().length) {

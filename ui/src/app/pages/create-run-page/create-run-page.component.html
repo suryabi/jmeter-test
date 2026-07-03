@@ -4,12 +4,13 @@
   <section class="page-hero">
     <div class="page-hero-content">
       <span class="page-hero-eyebrow">
-        <i class="pi pi-map"></i>
-        Test plans
+        <i class="pi pi-bolt"></i>
+        New run
       </span>
-      <h1 class="page-hero-title">Your <span class="gradient-text">plan library</span></h1>
+      <h1 class="page-hero-title">Build your <span class="gradient-text">next run</span></h1>
       <p class="page-hero-sub">
-        Upload, download, and manage the .jmx files available in the Create Run workbench.
+        Pick a plan, tune the parameters, and launch. You can copy every setting from a previous
+        run to start faster.
       </p>
     </div>
   </section>
@@ -20,5 +21,5 @@
     </div>
   }
 
-  <app-plans-panel class="mt-6 block" />
+  <app-start-run-form class="mt-6 block" [priorRuns]="priorRuns" (start)="onStartRun($event)" />
 </div>

@@ -1,4 +1,4 @@
-<app-topbar [apiOnline]="apiOnline" />
+<app-topbar />
 
 <div class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
   <!-- HERO -->
@@ -6,17 +6,20 @@
     <div class="hero-content">
       <span class="hero-eyebrow">
         <span class="live-dot"></span>
-        Live workbench
+        Mission control
       </span>
       <h1 class="hero-title">
-        Configure and run JMeter tests or data population
-        <span class="hero-title-accent">from one place.</span>
+        Point. Configure. <span class="hero-title-accent">Launch.</span>
       </h1>
       <p class="hero-sub">
-        Set scenario parameters, launch runs, and follow progress in real time.
+        Everything about your JMeter data-population runs, live in one place.
       </p>
+      <div class="hero-actions">
+        <p-button icon="pi pi-bolt" label="New run" routerLink="/create" />
+      </div>
     </div>
     <div class="hero-orb" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
   </section>
 
   @if (error) {
@@ -59,131 +62,212 @@
       <div class="stat-body">
         <span class="stat-label">Running</span>
         <span class="stat-value">{{ runningRuns() }}</span>
-        @if (latestRun()) {
-          <span class="stat-meta">Last: {{ latestRun().label || '—' }}</span>
+        @if (latestRun(); as latest) {
+          <span class="stat-meta">Last: {{ latest.label || '—' }}</span>
         }
       </div>
     </div>
   </section>
 
-  <!-- TABS -->
-  <p-tabs value="create" class="mt-6 block">
-    <p-tablist>
-      <p-tab value="create"><i class="pi pi-play mr-2"></i>Create Run</p-tab>
-      <p-tab value="history"><i class="pi pi-history mr-2"></i>History</p-tab>
-    </p-tablist>
-    <p-tabpanels>
-      <p-tabpanel value="create">
-        <app-start-run-form (start)="onStartRun($event)" />
-      </p-tabpanel>
+  <!-- Running run spotlight -->
+  @for (run of runningRunsList(); track run.id) {
+    <section class="running-spotlight glass-card">
+      <div class="running-spotlight-left">
+        <div class="running-spotlight-icon">
+          <i class="pi pi-cog pi-spin"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="running-spotlight-eyebrow">
+            <span class="live-dot"></span>
+            Running now
+          </div>
+          <h2 class="running-spotlight-title">{{ run.label || 'Unnamed run' }}</h2>
+          <p class="running-spotlight-meta">
+            <span class="plan-badge">
+              <i class="pi pi-file text-xs"></i>
+              {{ run.planFile ? run.planFile.replace('.jmx', '') : '—' }}
+            </span>
+            <span>Started {{ run.startedAt | date: 'shortTime' }}</span>
+            <span>·</span>
+            <span>{{ runDuration(run) }}</span>
+          </p>
+        </div>
+      </div>
+      <div class="running-spotlight-actions">
+        <p-button
+          [routerLink]="['/runs', run.id]"
+          icon="pi pi-arrow-right"
+          label="Watch live"
+        />
+      </div>
+    </section>
+  }
 
-      <p-tabpanel value="history">
-        <div class="history-panel flat-panel">
-          <header class="history-header">
-            <div>
-              <h2 class="m-0 text-base font-semibold text-slate-100">Run History</h2>
-              <p class="m-0 mt-0.5 text-xs text-slate-500">
-                Auto-refreshing every 3 seconds &middot; {{ runs().length }} total
-              </p>
-            </div>
-            <div class="history-polling">
-              <span class="live-dot"></span> Polling
-            </div>
-          </header>
+  <!-- History -->
+  <section class="history-panel flat-panel mt-6">
+    <header class="history-header">
+      <div>
+        <h2 class="m-0 text-base font-semibold text-[var(--text)]">Run History</h2>
+        <p class="m-0 mt-0.5 text-xs text-[var(--text-dim)]">
+          Auto-refreshing every 3 seconds &middot; {{ filteredRuns().length }} of
+          {{ runs().length }} runs
+        </p>
+      </div>
+      <div class="history-polling">
+        <span class="live-dot"></span> Polling
+      </div>
+    </header>
 
+    <!-- Filter bar -->
+    <div class="history-filters">
+      <span class="history-search">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          type="text"
+          class="surface-input"
+          placeholder="Search label or run id…"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+      </span>
+      <p-select
+        class="surface-select history-filter-select"
+        panelStyleClass="surface-select-panel"
+        [options]="statusFilterOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="statusFilter()"
+        (ngModelChange)="statusFilter.set($event)"
+        appendTo="body"
+      />
+      <p-select
+        class="surface-select history-filter-select"
+        panelStyleClass="surface-select-panel"
+        [options]="planFilterOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="planFilter()"
+        (ngModelChange)="planFilter.set($event)"
+        appendTo="body"
+      />
+      @if (hasActiveFilters()) {
+        <p-button
+          severity="secondary"
+          size="small"
+          icon="pi pi-filter-slash"
+          label="Clear"
+          (onClick)="clearFilters()"
+        />
+      }
+    </div>
+
+    @if (filteredRuns().length === 0) {
+      <div class="history-table-wrap">
+        <div class="empty-state">
+          <i class="pi pi-inbox text-4xl text-[var(--text-dim)]"></i>
           @if (runs().length === 0) {
-            <div class="history-table-wrap">
-              <div class="empty-state">
-                <i class="pi pi-inbox text-4xl text-slate-600"></i>
-                <p class="mt-3 text-sm text-slate-400">No runs yet</p>
-                <p class="m-0 text-xs text-slate-500">
-                  Configure parameters in the <strong>Create Run</strong> tab to launch your first
-                  run.
-                </p>
-              </div>
-            </div>
+            <p class="mt-3 text-sm text-[var(--text-muted)]">No runs yet</p>
+            <p class="m-0 text-xs text-[var(--text-dim)]">
+              Hit <strong>New run</strong> to launch your first population run.
+            </p>
           } @else {
-            <div class="history-table-wrap">
-            <p-table
-              [value]="runs()"
-              [tableStyle]="{ 'min-width': '46rem' }"
-              responsiveLayout="scroll"
-            >
-              <ng-template pTemplate="header">
-                <tr>
-                  <th>Run</th>
-                  <th>Plan</th>
-                  <th>Status</th>
-                  <th>Started</th>
-                  <th class="w-44 text-right">Actions</th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-run>
-                <tr>
-                  <td>
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="run-row-icon"
-                      >
-                        <i class="pi pi-bolt"></i>
-                      </div>
-                      <div>
-                        <div class="text-sm font-medium text-slate-100">
-                          {{ run.label || 'Unnamed run' }}
-                        </div>
-                        <div class="font-mono text-xs text-slate-500">
-                          {{ run.id.substring(0, 8) }}…
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="plan-badge">
-                      <i class="pi pi-file text-xs"></i>
-                      {{ run.planFile ? run.planFile.replace('.jmx', '') : '—' }}
-                    </span>
-                  </td>
-                  <td>
-                    <div class="flex items-center gap-2">
-                      @if (run.status === 'running') {
-                        <span class="live-dot"></span>
-                      }
-                      <p-tag [value]="run.status" [severity]="statusSeverity(run.status)" />
-                    </div>
-                  </td>
-                  <td>
-                    <span class="text-sm text-slate-300">
-                      {{ run.startedAt | date: 'MMM d, h:mm a' }}
-                    </span>
-                  </td>
-                  <td class="text-right">
-                    <div class="inline-flex items-center justify-end gap-2">
-                      <p-button
-                        [routerLink]="['/runs', run.id]"
-                        severity="secondary"
-                        size="small"
-                        icon="pi pi-arrow-right"
-                        label="Open"
-                      />
-                      <p-button
-                        type="button"
-                        severity="danger"
-                        size="small"
-                        icon="pi pi-trash"
-                        [disabled]="run.status === 'running' || deletingId() === run.id"
-                        [loading]="deletingId() === run.id"
-                        (onClick)="deleteRun(run, $event)"
-                        [attr.aria-label]="'Delete run ' + (run.label || run.id)"
-                      />
-                    </div>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-            </div>
+            <p class="mt-3 text-sm text-[var(--text-muted)]">No runs match your filters</p>
+            <p class="m-0 text-xs text-[var(--text-dim)]">Try adjusting the search or filters above.</p>
           }
         </div>
-      </p-tabpanel>
-    </p-tabpanels>
-  </p-tabs>
+      </div>
+    } @else {
+      <div class="history-table-wrap">
+      <p-table
+        [value]="filteredRuns()"
+        [tableStyle]="{ 'min-width': '52rem' }"
+        responsiveLayout="scroll"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Run</th>
+            <th>Plan</th>
+            <th>Status</th>
+            <th>Started</th>
+            <th>Duration</th>
+            <th class="w-44 text-right">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-run>
+          <tr>
+            <td>
+              <div class="flex items-center gap-3">
+                <div class="run-row-icon">
+                  <i class="pi pi-bolt"></i>
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-[var(--text)]">
+                    {{ run.label || 'Unnamed run' }}
+                  </div>
+                  <div class="font-mono text-xs text-[var(--text-dim)]">
+                    {{ run.id.substring(0, 8) }}…
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="plan-badge">
+                <i class="pi pi-file text-xs"></i>
+                {{ run.planFile ? run.planFile.replace('.jmx', '') : '—' }}
+              </span>
+            </td>
+            <td>
+              <div class="flex items-center gap-2">
+                @if (run.status === 'running') {
+                  <span class="live-dot"></span>
+                }
+                <p-tag [value]="run.status" [severity]="statusSeverity(run.status)" />
+              </div>
+            </td>
+            <td>
+              <span class="text-sm text-[var(--text-muted)]">
+                {{ run.startedAt | date: 'MMM d, h:mm a' }}
+              </span>
+            </td>
+            <td>
+              <span class="text-sm text-[var(--text-muted)] tabular-nums">
+                {{ runDuration(run) }}
+              </span>
+            </td>
+            <td class="text-right">
+              <div class="inline-flex items-center justify-end gap-2">
+                <p-button
+                  type="button"
+                  severity="secondary"
+                  size="small"
+                  icon="pi pi-copy"
+                  label="Reuse"
+                  (onClick)="reuseRunParameters(run, $event)"
+                />
+                <p-button
+                  [routerLink]="['/runs', run.id]"
+                  severity="secondary"
+                  size="small"
+                  icon="pi pi-arrow-right"
+                  label="Open"
+                />
+                <p-button
+                  type="button"
+                  severity="danger"
+                  size="small"
+                  icon="pi pi-trash"
+                  [disabled]="run.status === 'running' || deletingId() === run.id"
+                  [loading]="deletingId() === run.id"
+                  (onClick)="deleteRun(run, $event)"
+                  [attr.aria-label]="'Delete run ' + (run.label || run.id)"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      </div>
+    }
+  </section>
 </div>

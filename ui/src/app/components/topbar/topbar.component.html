@@ -10,24 +10,43 @@
           height="173"
         />
       </span>
-      <span class="brand-sub">JMeter Console</span>
+      <span class="brand-text">
+        <span class="brand-name">JMeter <span class="brand-name-accent">Console</span></span>
+        <span class="brand-tag">data population, but make it fun</span>
+      </span>
     </a>
 
     <nav class="nav">
       <a routerLink="/" routerLinkActive="nav-active" [routerLinkActiveOptions]="{ exact: true }">
+        <i class="pi pi-th-large"></i>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/create" routerLinkActive="nav-active">
         <i class="pi pi-bolt"></i>
-        <span>Workbench</span>
+        <span>New Run</span>
       </a>
       <a routerLink="/plans" routerLinkActive="nav-active">
-        <i class="pi pi-folder-open"></i>
+        <i class="pi pi-map"></i>
         <span>Plans</span>
       </a>
     </nav>
 
     <div class="status">
-      <span class="status-pill" [class.online]="apiOnline" [class.offline]="!apiOnline">
+      @if (liveRun(); as run) {
+        <a class="live-run-chip" [routerLink]="['/runs', run.id]" title="Open the running run">
+          <span class="live-dot"></span>
+          <span class="live-run-chip-label">{{ liveRunLabel() }}</span>
+          <i class="pi pi-arrow-right"></i>
+        </a>
+      }
+      <span
+        class="status-pill"
+        [class.online]="apiOnline() === true"
+        [class.offline]="apiOnline() === false"
+        [class.checking]="apiOnline() === null"
+      >
         <span class="dot"></span>
-        {{ apiOnline ? 'Runner online' : 'Runner offline' }}
+        {{ apiOnline() === null ? 'Connecting…' : apiOnline() ? 'Runner online' : 'Runner offline' }}
       </span>
       <span class="version">v1.0.0</span>
     </div>

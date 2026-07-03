@@ -29,13 +29,13 @@
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
-              <stringProp name="Argument.value">2026-12-01</stringProp>
+              <stringProp name="Argument.value">2026-12-21</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
             </elementProp>
             <elementProp name="requestEndDate" elementType="Argument">
               <stringProp name="Argument.name">requestEndDate</stringProp>
-              <stringProp name="Argument.value">2026-12-01</stringProp>
+              <stringProp name="Argument.value">2026-12-21</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
             </elementProp>
@@ -47,7 +47,7 @@
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">2</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
@@ -85,7 +85,7 @@
               <stringProp name="Argument.name">category</stringProp>
               <stringProp name="Argument.value">D06189A1-69AF-4D17-AC5B-480F7589D427</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=requestType. Select the request type to create</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=requestType. Select the request type for the requests to be created</stringProp>
             </elementProp>
             <elementProp name="targetActions" elementType="Argument">
               <stringProp name="Argument.name">targetActions</stringProp>
@@ -94,7 +94,6 @@
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">CONFIRM, HOLD, WAITLIST</stringProp>
         </Arguments>
         <hashTree/>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Customer Variables" enabled="true">
@@ -121,7 +120,7 @@
               <stringProp name="Argument.name">checkDuplicateCustomer</stringProp>
               <stringProp name="Argument.value">true</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">BOOLEAN. Check for duplicate customer names. Enabled = unique customer name; Disabled = allow duplicates</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN. Check for duplicate customer names</stringProp>
             </elementProp>
             <elementProp name="duplicateCustomerFromDate" elementType="Argument">
               <stringProp name="Argument.name">duplicateCustomerFromDate</stringProp>
@@ -166,7 +165,7 @@
             </elementProp>
             <elementProp name="form1Range" elementType="Argument">
               <stringProp name="Argument.name">form1Range</stringProp>
-              <stringProp name="Argument.value">2,5</stringProp>
+              <stringProp name="Argument.value">1,1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">COLS=6, LABEL=form_1_range. Entry count range for Form 1 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form1 matches</stringProp>
             </elementProp>
@@ -217,66 +216,6 @@
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">COLS=6, LABEL=form_5_range. Entry count range for Form 5 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form5 matches</stringProp>
-            </elementProp>
-            <elementProp name="form6" elementType="Argument">
-              <stringProp name="Argument.name">form6</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_6. Select a multi-entry form for per-form entry override. Pair with form6Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form6Range" elementType="Argument">
-              <stringProp name="Argument.name">form6Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_6_range. Entry count range for Form 6 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form6 matches</stringProp>
-            </elementProp>
-            <elementProp name="form7" elementType="Argument">
-              <stringProp name="Argument.name">form7</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_7. Select a multi-entry form for per-form entry override. Pair with form7Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form7Range" elementType="Argument">
-              <stringProp name="Argument.name">form7Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_7_range. Entry count range for Form 7 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form7 matches</stringProp>
-            </elementProp>
-            <elementProp name="form8" elementType="Argument">
-              <stringProp name="Argument.name">form8</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_8. Select a multi-entry form for per-form entry override. Pair with form8Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form8Range" elementType="Argument">
-              <stringProp name="Argument.name">form8Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_8_range. Entry count range for Form 8 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form8 matches</stringProp>
-            </elementProp>
-            <elementProp name="form9" elementType="Argument">
-              <stringProp name="Argument.name">form9</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_9. Select a multi-entry form for per-form entry override. Pair with form9Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form9Range" elementType="Argument">
-              <stringProp name="Argument.name">form9Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_9_range. Entry count range for Form 9 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form9 matches</stringProp>
-            </elementProp>
-            <elementProp name="form10" elementType="Argument">
-              <stringProp name="Argument.name">form10</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_10. Select a multi-entry form for per-form entry override. Pair with form10Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form10Range" elementType="Argument">
-              <stringProp name="Argument.name">form10Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_10_range. Entry count range for Form 10 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form10 matches</stringProp>
             </elementProp>
           </collectionProp>
         </Arguments>
@@ -556,36 +495,6 @@
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
             </elementProp>
-            <elementProp name="form6" elementType="Argument">
-              <stringProp name="Argument.name">form6</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/forms</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
-            </elementProp>
-            <elementProp name="form7" elementType="Argument">
-              <stringProp name="Argument.name">form7</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/forms</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
-            </elementProp>
-            <elementProp name="form8" elementType="Argument">
-              <stringProp name="Argument.name">form8</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/forms</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
-            </elementProp>
-            <elementProp name="form9" elementType="Argument">
-              <stringProp name="Argument.name">form9</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/forms</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
-            </elementProp>
-            <elementProp name="form10" elementType="Argument">
-              <stringProp name="Argument.name">form10</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/forms</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.forms display=formName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
-            </elementProp>
             <elementProp name="targetActions" elementType="Argument">
               <stringProp name="Argument.name">targetActions</stringProp>
               <stringProp name="Argument.value">/${contextname}/api/admin/actions</stringProp>
@@ -670,19 +579,18 @@ props.put(&quot;fn_allCustomers&quot;, [
     &quot;GMC&quot;, &quot;General Motors&quot;, &quot;Genesis&quot;, &quot;Harley-Davidson&quot;, &quot;Honda Motor&quot;, &quot;Hyundai Motor&quot;, &quot;Jaguar Land Rover&quot;, &quot;Jeep&quot;, &quot;Kia Corporation&quot;,
     &quot;Lamborghini&quot;, &quot;Lexus&quot;, &quot;Maserati&quot;, &quot;Mazda&quot;, &quot;Mercedes-Benz&quot;, &quot;Nissan Motor&quot;, &quot;Porsche&quot;, &quot;Renault&quot;, &quot;Rolls-Royce&quot;, &quot;Subaru Corporation&quot;,
     &quot;Suzuki&quot;, &quot;Tata Motors&quot;, &quot;Tesla&quot;, &quot;Toyota Motor&quot;, &quot;Volkswagen&quot;, &quot;Volvo&quot;, &quot;Ducati&quot;, &quot;Fiat&quot;, &quot;Alfa Romeo&quot;, &quot;SEAT&quot;, &quot;Skoda&quot;, &quot;Peugeot&quot;,
-    &quot;Mitsubishi Motors&quot;, &quot;Yamaha Motor&quot;, &quot;Royal Enfield&quot;,
-    &quot;Zurich Insurance&quot;, &quot;American Express&quot;, &quot;Allianz&quot;, &quot;Aviva&quot;, &quot;Bank of America&quot;, &quot;Bank of China&quot;, &quot;Barclays&quot;,
+    &quot;Mitsubishi Motors&quot;, &quot;Yamaha Motor&quot;, &quot;Royal Enfield&quot;, &quot;Zurich Insurance&quot;, &quot;American Express&quot;, &quot;Allianz&quot;, &quot;Aviva&quot;, &quot;Bank of America&quot;,
+    &quot;Bank of China&quot;, &quot;Barclays&quot;, &quot;Morgan Stanley&quot;, &quot;PNC Financial Services&quot;, &quot;PayPal&quot;, &quot;Paytm&quot;, &quot;PhonePe&quot;, &quot;Razorpay&quot;, &quot;Royal Bank of Canada&quot;,
     &quot;Berkshire Hathaway&quot;, &quot;BlackRock&quot;, &quot;BNP Paribas&quot;, &quot;Capital One&quot;, &quot;Citigroup&quot;, &quot;Commonwealth Bank of Australia&quot;, &quot;Deutsche Bank&quot;,
     &quot;Goldman Sachs&quot;, &quot;HDFC Bank&quot;, &quot;HSBC&quot;, &quot;ICICI Bank&quot;, &quot;ING Group&quot;, &quot;JPMorgan Chase&quot;, &quot;Kotak Mahindra Bank&quot;, &quot;Mastercard&quot;, &quot;MetLife&quot;,
-    &quot;Morgan Stanley&quot;, &quot;PNC Financial Services&quot;, &quot;PayPal&quot;, &quot;Paytm&quot;, &quot;PhonePe&quot;, &quot;Razorpay&quot;, &quot;Royal Bank of Canada&quot;,
     &quot;Standard Chartered&quot;, &quot;State Bank of India&quot;, &quot;State Farm&quot;, &quot;Sun Life Financial&quot;, &quot;Visa&quot;, &quot;Wells Fargo&quot;, &quot;Cigna&quot;, &quot;Humana&quot;,
     &quot;Kaiser Permanente&quot;, &quot;Axis Bank&quot;, &quot;Yes Bank&quot;, &quot;Bank of Baroda&quot;, &quot;Canara Bank&quot;, &quot;DBS Bank&quot;, &quot;Union Bank of India&quot;,
     &quot;Alstom&quot;, &quot;Caterpillar&quot;, &quot;Chevron&quot;, &quot;Ecolab&quot;, &quot;ExxonMobil&quot;, &quot;General Dynamics&quot;, &quot;General Electric&quot;,
     &quot;Kansai Electric Power&quot;, &quot;L3Harris Technologies&quot;, &quot;Larsen &amp; Toubro&quot;, &quot;NTPC Limited&quot;, &quot;National Grid&quot;, &quot;Reliance Industries&quot;, &quot;Siemens Energy&quot;,
     &quot;ONGC&quot;, &quot;Adani Energy&quot;, &quot;Shell&quot;, &quot;Vedanta Limited&quot;, &quot;NextEra Energy&quot;, &quot;Torrent Power&quot;, &quot;Tata Power&quot;, &quot;Indian Oil&quot;, &quot;Bharat Petroleum&quot;,
-    &quot;GAIL&quot;, &quot;First Solar&quot;, &quot;Power Grid Corporation&quot;, &quot;Amgen&quot;, &quot;Biogen&quot;, &quot;CVS Health&quot;, &quot;Cardinal Health&quot;, &quot;Cencora&quot;, &quot;Divis Laboratories&quot;, &quot;HCA Healthcare&quot;,
-    &quot;Johnson &amp; Johnson&quot;, &quot;Novartis&quot;, &quot;Pfizer&quot;, &quot;Stryker&quot;, &quot;Takeda Pharmaceutical&quot;, &quot;McKesson&quot;, &quot;Lupin&quot;, &quot;Sun Pharma&quot;, &quot;Cipla&quot;, &quot;Torrent Pharmaceuticals&quot;,
-    &quot;Blue Dart&quot;, &quot;FedEx&quot;, &quot;Hyatt&quot;, &quot;Japan Post Holdings&quot;, &quot;Marriott International&quot;, &quot;Marubeni Corporation&quot;,
+    &quot;GAIL&quot;, &quot;First Solar&quot;, &quot;Power Grid Corporation&quot;, &quot;Amgen&quot;, &quot;Biogen&quot;, &quot;CVS Health&quot;, &quot;Cardinal Health&quot;, &quot;Cencora&quot;, &quot;Divis Laboratories&quot;,      
+    &quot;HCA Healthcare&quot;, &quot;Johnson &amp; Johnson&quot;, &quot;Novartis&quot;, &quot;Pfizer&quot;, &quot;Stryker&quot;, &quot;Takeda Pharmaceutical&quot;, &quot;McKesson&quot;, &quot;Lupin&quot;, &quot;Sun Pharma&quot;, &quot;Cipla&quot;,  
+    &quot;Torrent Pharmaceuticals&quot;, &quot;Blue Dart&quot;, &quot;FedEx&quot;, &quot;Hyatt&quot;, &quot;Japan Post Holdings&quot;, &quot;Marriott International&quot;, &quot;Marubeni Corporation&quot;,
     &quot;Mitsubishi Corporation&quot;, &quot;Uber&quot;, &quot;DTDC&quot;, &quot;UPS&quot;, &quot;USPS&quot;, &quot;XPO Logistics&quot;, &quot;Nippon Express&quot;, &quot;Ecom Express&quot;,
     &quot;Warner Bros&quot;, &quot;Universal Music&quot;, &quot;HBO&quot;, &quot;Paramount&quot;, &quot;Amazon Prime Video&quot;, &quot;EA Sports&quot;, &quot;Netflix&quot;, &quot;Sony&quot;,
     &quot;Spotify&quot;, &quot;Walt Disney&quot;, &quot;Zee Entertainment&quot;, &quot;Sony Pictures&quot;, &quot;BBC Studios&quot;, &quot;SonyLIV&quot;, &quot;MX Player&quot;, &quot;Hotstar&quot;,
@@ -708,7 +616,6 @@ props.put(&quot;fn_allCustomers&quot;, [
     &quot;T-Mobile US&quot;, &quot;Verizon&quot;, &quot;Vodafone&quot;, &quot;Jio&quot;, &quot;BSNL&quot;, &quot;Globe Telecom&quot;
 ] as String[])
 
-// Generate a future date based on startDate or current date
 // Generates a random future date (1-30 days ahead) based on the request startDate, formatted as yyyy-MM-dd&apos;T&apos;HH:mm:ss.
 def _fn_generateFutureDate = { varsRef -&gt;
     def rand = java.util.concurrent.ThreadLocalRandom.current()
@@ -724,7 +631,6 @@ def _fn_generateFutureDate = { varsRef -&gt;
 }
 props.put(&quot;fn_generateFutureDate&quot;, _fn_generateFutureDate)
 
-// Generate a future time with a fixed hour
 // Generates a future datetime at a specific hour, reusing the same random day offset within a form iteration to keep start/end times on the same day.
 def _fn_generateFutureTime = { varsRef, int hoursOffset -&gt;
     def rand = java.util.concurrent.ThreadLocalRandom.current()
@@ -763,21 +669,14 @@ props.put(&quot;fn_generateRandomNumber&quot;, _fn_generateRandomNumber)
 
 // Used when TEXT fields do not have mapped input data
 props.put(&quot;fn_defaultTextFields&quot;, [
-    &quot;Innovation Workshop&quot;,
-    &quot;Executive Briefing&quot;,
-    &quot;Product Roadmap Discussion&quot;,
-    &quot;Solution Architecture Review&quot;,
-    &quot;Strategic Planning Session&quot;,
-    &quot;Requirements Gathering&quot;,
-    &quot;Revenue Growth Strategy&quot;,
-    &quot;Workforce Planning Session&quot;,
-    &quot;Cloud Migration Strategy&quot;,
-    &quot;API Integration Planning&quot;,
-    &quot;Data Analytics Discussion&quot;,
-    &quot;Platform Evaluation&quot;,
-    &quot;Weekly Sync Meeting&quot;,
-    &quot;Training Workshop&quot;,
-    &quot;Knowledge Transfer Session&quot;
+    &quot;Innovation Workshop&quot;, &quot;Executive Briefing&quot;, &quot;Product Roadmap Discussion&quot;, 
+    &quot;Solution Architecture Review&quot;, &quot;Strategic Planning Session&quot;, &quot;Requirements Gathering&quot;, 
+    &quot;Revenue Growth Strategy&quot;, &quot;Workforce Planning Session&quot;, &quot;Cloud Migration Strategy&quot;,
+    &quot;API Integration Planning&quot;, &quot;Data Analytics Discussion&quot;, &quot;Platform Evaluation&quot;, 
+    &quot;Weekly Sync Meeting&quot;, &quot;Training Workshop&quot;, &quot;Performance Optimization Session&quot;,
+    &quot;User Feedback Session&quot;, &quot;Data Quality Assessment&quot;, &quot;Reporting Requirements Review&quot;, 
+    &quot;Network Design Review&quot;, &quot;Contract Review Session&quot;, &quot;Leadership Strategy Meeting&quot;, 
+    &quot;Executive Decision Workshop&quot;, &quot;Annual Planning Meeting&quot;, &quot;Knowledge Transfer Session&quot;
 ] as String[])
 
 // Used when TEXTAREA fields need longer descriptive content
@@ -793,6 +692,13 @@ props.put(&quot;fn_defaultTextAreas&quot;, [
     &quot;Customer expressed interest in advanced analytics capabilities including forecasting and executive dashboards&quot;,
     &quot;Reviewed implementation roadmap, project milestones, and expected business outcomes&quot;,
     &quot;Discussed integration requirements with existing enterprise applications and data sources&quot;,
+    &quot;Review customer business objectives and identify opportunities for long-term strategic collaboration&quot;,
+    &quot;Discuss API lifecycle management, versioning strategy, and integration best practices&quot;,
+    &quot;Evaluate automation opportunities across approval workflows and routine business processes&quot;,
+    &quot;Summarize discussion outcomes and define next steps for all participating stakeholders&quot;,
+    &quot;Discuss security policies, compliance requirements, and governance standards for enterprise deployment&quot;,
+    &quot;Define success criteria, project timelines, and stakeholder responsibilities for the implementation&quot;,
+    &quot;Capture meeting decisions, assigned action items, owners, and target completion dates&quot;,
     &quot;Evaluated performance, scalability, and security requirements for future growth initiatives&quot;
 ] as String[])
 
@@ -1115,17 +1021,7 @@ def _fn_buildLeafFirstReferenceChain = { varsRef, varBase, neededLevels, randRef
 props.put(&quot;fn_buildLeafFirstReferenceChain&quot;, _fn_buildLeafFirstReferenceChain)
 
 // Builds a map of child field → parent field name from dependentControls, used for resolving child lookup filtering.
-// FIX: Some form APIs never populate dependentControls for cascading lookup fields (e.g. a 4-level
 // Parent Topic → Topic → Sub-Topic → Micro Topic hierarchy) — they only mark lookupMode=&quot;parent&quot;/&quot;child&quot;
-// on each field without declaring the parent→child link anywhere. When that happened this map stayed
-// empty for those fields, so &quot;child&quot;-mode fields (e.g. Micro Topic) had no parentFieldValues/parentRowId
-// to filter candidate rows against, fn_filterLookupRowsByMode found zero candidates, and the field was
-// silently skipped from the payload (skipField=true) — leaving it required/empty in the UI even though
-// Parent Topic/Topic/Sub-Topic were filled correctly. This now falls back to (1) explicit parent-reference
-// attributes some APIs put on the CHILD field itself, then (2) inferring the parent by field order: the
-// nearest preceding field in the form whose lookupMode is &quot;parent&quot; or &quot;child&quot; is treated as the immediate
-// parent of the next &quot;child&quot; field in sequence — this reconstructs N-level cascades (not just 2-level),
-// as long as the API returns fields in form layout order (which matches how they render in the UI).
 def _fn_buildLookupParentFieldMap = { allFieldsList -&gt;
     def map = [:]
     // PRIMARY: parent field explicitly declares its dependent children via dependentControls
@@ -1789,13 +1685,6 @@ def _fn_extractAllFields = { String fuiConfigStr -&gt;
 props.put(&quot;fn_extractAllFields&quot;, _fn_extractAllFields)
 
 // Builds a map of parent field → dependent child fields with hide conditions, used to skip fields that should not appear based on parent values.
-// FIX: dcFieldSet previously only contained fields explicitly listed under another field&apos;s dependentControls.
-// If the API never returns dependentControls for a cascading lookup chain (see fn_buildLookupParentFieldMap
-// fix above for the full explanation), those fields were treated as &quot;standalone&quot; for ordering purposes —
-// which is harmless for hide/show logic but meant nothing guaranteed the parent (e.g. Sub-Topic) ran before
-// the child (e.g. Micro Topic) when an explicit link did exist some other way. Now any field whose
-// lookupMode resolves to &quot;child&quot; is also added to dcFieldSet (independent of dependentControls/hide rules),
-// so the two-pass field ordering in the PayloadBuilder always processes hierarchy parents before children.
 def _fn_buildDependentControlsMap = { allFieldsList -&gt;
     def dcMap = [:]
     def dcFieldSet = [] as Set
@@ -1828,7 +1717,7 @@ def _fn_buildDependentControlsMap = { allFieldsList -&gt;
 }
 props.put(&quot;fn_buildDependentControlsMap&quot;, _fn_buildDependentControlsMap)
 
-// Returns true if a dependent field should be included in the payload — evaluates the parent field&apos;s hide condition against already-processed form data.
+// Returns true if a dependent field should be included in the payload — evaluates the parent field&apos;s hide condition against already-processed form data
 def _fn_shouldShowDependentField = { String depFN, Map formDataSoFar, Map dcMap, varsRef -&gt;
     def result = true
     dcMap.each { parentField, dependents -&gt;
@@ -1876,7 +1765,10 @@ def _fn_setCurrentFormVariables = { varsRef -&gt;
     varsRef.put(&quot;currentPageName&quot;, varsRef.get(&quot;pageName_&quot; + configIndex) ?: &quot;&quot;)
     varsRef.put(&quot;currentModuleId&quot;, varsRef.get(&quot;moduleId_&quot; + configIndex) ?: &quot;&quot;)
     varsRef.put(&quot;currentFormId&quot;, varsRef.get(&quot;formId_&quot; + configIndex) ?: &quot;&quot;)
-    varsRef.put(&quot;currentFormName&quot;, varsRef.get(&quot;formName_&quot; + configIndex) ?: &quot;&quot;)
+ //   varsRef.put(&quot;currentFormName&quot;, varsRef.get(&quot;formName_&quot; + configIndex) ?: &quot;&quot;)
+  
+  	varsRef.put(&quot;currentFormName&quot;, varsRef.get(&quot;formName_&quot; + configIndex) ?: varsRef.get(		&quot;currentFormName&quot;)?: varsRef.get(&quot;currentActivityModuleName&quot;) ?: &quot;Unknown Form&quot;)
+  	
     varsRef.put(&quot;currentFormIdentifier&quot;, varsRef.get(&quot;formIdentifier_&quot; + configIndex) ?: &quot;&quot;)
     varsRef.put(&quot;currentIsMultiEntry&quot;, varsRef.get(&quot;isMultiEntry_&quot; + configIndex) ?: &quot;false&quot;)
 
@@ -2015,8 +1907,6 @@ def _fn_fieldDiffCheck = { varsRef, propsRef, logRef -&gt;
 props.put(&quot;fn_fieldDiffCheck&quot;, _fn_fieldDiffCheck)
 
 // Activity State Action Selector - picks a random allowed state action from API response _links
-// Pass &quot;prev&quot; so the function can read the HTTP response
-
 // Sets formDataId, isPrimary, entry counters, and existingFormData for the current record in a ForEach multi-entry loop.
 def _fn_setIsPrimaryAndFormDataId = { varsRef, logRef -&gt;
     def currentRecordId = varsRef.get(&quot;currentMultiEntryRecordId&quot;)
@@ -2114,7 +2004,6 @@ props.put(&quot;fn_formPostProcessor&quot;, _fn_formPostProcessor)
 def _fn_beautifyFormConfig = { varsRef, prevRef, logRef -&gt;
 
 // UI Config JSON Beautifier
-
 try {
     def response = prevRef.getResponseDataAsString()
     def json = new groovy.json.JsonSlurper().parseText(response)
@@ -2994,7 +2883,6 @@ props.put(&quot;fn_activityStateActionSelector&quot;, _fn_activityStateActionSel
 def _fn_dynamicPayloadBuilder = { varsRef, logRef -&gt;
 
 // Dynamic payload entry
-
 def formName = varsRef.get(&quot;currentFormName&quot;)
 
 def rand = java.util.concurrent.ThreadLocalRandom.current()
@@ -3998,7 +3886,6 @@ orderedFields.each { field -&gt;
             // MASTER Field
             case &quot;MASTER&quot;:
                 if (masterTypeId) {
-
                     // ── Leaf-first chain (same fix as the SELECT/masterTypeId branch above) ────
                     // FIX: this dedicated &quot;case MASTER&quot; block is a SEPARATE code path from the
                     // SELECT-with-masterTypeId branch above — some BriefingIQ form configs define
@@ -4096,7 +3983,7 @@ orderedFields.each { field -&gt;
                             // to land on the same chain node as the previous field (duplicate uniqueId)
                             // which triggers alreadyUsedInChainM=true and falls to the legacy path —
                             // where the dead-end / leaf-reuse problem then produces the empty Micro Topic.
-                            //
+                            
                             // Fix: compute chainOffset = number of form-level fields that map ABOVE
                             // the flat-data root (i.e. virtual levels not represented in the chain).
                             // For most BriefingIQ configs this is exactly 1 (the ParentTopic field),
@@ -4480,7 +4367,6 @@ props.put(_trackKey, _existingTracked)
 logRef.info(&quot;Field Tracking: Stored ${formData.size()} fields for &apos;${_trackKey}&apos; (total tracked: ${_existingTracked.size()})&quot;)
 }
 
-
 // Assigns resource and master type IDs to form fields by matching stored resource/master variables to the current form&apos;s RESOURCE and MASTER field definitions.
 def _fn_resourceMasterAssigner = { varsRef, logRef -&gt;
 
@@ -4666,7 +4552,7 @@ if (rtCount &gt; 0 || mtCount &gt; 0) {
 props.put(&quot;fn_resourceMasterAssigner&quot;, _fn_resourceMasterAssigner)
 
 
-// Parses the Create Request API response to extract and store the new requestId, requestFormId, and initial request status for use in subsequent steps.
+// Parses the Create Request API response to extract and store the new requestId, requestFormId, and initial request status for use in subsequent steps
 def _fn_createRequestStatusPostProcessor = { varsRef, prevRef, logRef -&gt;
     // Validate Previous Request Status
     if (prevRef.isSuccessful()) {
@@ -4875,18 +4761,17 @@ def _fn_newRequestConfigPostProcessor = { varsRef, prevRef, logRef -&gt;
 }
 props.put(&quot;fn_newRequestConfigPostProcessor&quot;, _fn_newRequestConfigPostProcessor)
 
-// Parses the Activity Type Config API response to extract and store all form configs (primary + secondary), resource type IDs, and document form details as indexed variables for the activity form loop.
-def _fn_activityTypeConfigPostProcessor = { varsRef, prevRef, logRef -&gt;
-
-    // ACTIVITY TYPE CONFIG POST PROCESSOR
-    // Extracts form, journey, and page details from module configs API response
-    // Stores indexed variables for primary and secondary forms
+// Parses module /configs JSON and stores activity form config vars (primary + secondary, document form, resource/master types).
+def _fn_applyActivityTypeConfigFromResponse = { varsRef, responseJson, logRef, Map opts = [:] -&gt;
+    boolean showCheatSheet = opts.get(&quot;showCheatSheet&quot;, true)
 
     def activityType = varsRef.get(&quot;activityType&quot;) ?: &quot;unknown&quot;
+    if (!responseJson?.trim()) {
+        logRef.warn(&quot;Activity module config response empty for ${activityType}&quot;)
+        return
+    }
 
-    // STEP 1: Parse API Response
-    def response = prevRef.getResponseDataAsString()
-    def json = new groovy.json.JsonSlurper().parseText(response)
+    def json = new groovy.json.JsonSlurper().parseText(responseJson)
 
     // STEP 2: Extract Configs Array
     def configs = json._embedded?.configs ?: []
@@ -4895,9 +4780,9 @@ def _fn_activityTypeConfigPostProcessor = { varsRef, prevRef, logRef -&gt;
     varsRef.put(&quot;activityConfigsCount&quot;, totalConfigs.toString())
 
     // ===== Form Entry UDV Cheat Sheet =====
-    // Printed every time configs are loaded so tester knows which uniqueId to use in formN/formNRange pairs
+    // Printed on first fetch per module so tester knows which uniqueId to use in formN/formNRange pairs
     def multiEntryForms = configs.findAll { it.isMultiEntry &amp;&amp; it.form?.uniqueId }
-    if (multiEntryForms) {
+    if (showCheatSheet &amp;&amp; multiEntryForms) {
         logRef.info(&quot;====== Form Entry UDV Cheat Sheet ======&quot;)
         logRef.info(&quot;Pair formN (uniqueId) with formNRange (entry count):&quot;)
         logRef.info(&quot;  form1=&lt;uniqueId&gt;  form1Range=2,5&quot;)
@@ -4968,7 +4853,7 @@ def _fn_activityTypeConfigPostProcessor = { varsRef, prevRef, logRef -&gt;
     if (isMultiEntry) {
         def _activityFormIdentifier = primaryConfig.form?.formIdentifier ?: &quot;&quot;
         def _activityFormUniqueId   = primaryConfig.form?.uniqueId ?: &quot;&quot;
-        (minEntries, maxEntries) = props.get(&quot;fn_multiFormEntries&quot;)(primaryConfig.minEntries, primaryConfig.maxEntries, vars, _activityFormIdentifier, _activityFormUniqueId)
+        (minEntries, maxEntries) = props.get(&quot;fn_multiFormEntries&quot;)(primaryConfig.minEntries, primaryConfig.maxEntries, varsRef, _activityFormIdentifier, _activityFormUniqueId)
     } else {
     }
 
@@ -5077,7 +4962,7 @@ def _fn_activityTypeConfigPostProcessor = { varsRef, prevRef, logRef -&gt;
         if (cfgIsMultiEntry) {
             def _cfgFormIdentifier = cfg.form?.formIdentifier ?: &quot;&quot;
             def _cfgFormUniqueId   = cfg.form?.uniqueId ?: &quot;&quot;
-            def (udvMin, udvMax) = props.get(&quot;fn_multiFormEntries&quot;)(cfg.minEntries, cfg.maxEntries, vars, _cfgFormIdentifier, _cfgFormUniqueId)
+            def (udvMin, udvMax) = props.get(&quot;fn_multiFormEntries&quot;)(cfg.minEntries, cfg.maxEntries, varsRef, _cfgFormIdentifier, _cfgFormUniqueId)
             varsRef.put(prefix + &quot;minEntries&quot;, udvMin.toString())
             varsRef.put(prefix + &quot;maxEntries&quot;, udvMax.toString())
         } else {
@@ -5180,7 +5065,59 @@ def _fn_activityTypeConfigPostProcessor = { varsRef, prevRef, logRef -&gt;
     }
 
     varsRef.put(&quot;activitySecondaryConfigCount&quot;, secondaryConfigCount.toString())
-    
+}
+props.put(&quot;fn_applyActivityTypeConfigFromResponse&quot;, _fn_applyActivityTypeConfigFromResponse)
+
+def _fn_moduleConfigCacheCheck = { varsRef, logRef -&gt;
+    def mid = varsRef.get(&quot;currentActivityModuleId&quot;)?.trim()
+    def cachedJson = mid ? varsRef.get(&quot;moduleConfigCache_&quot; + mid + &quot;_json&quot;) : null
+    def hit = mid &amp;&amp; varsRef.get(&quot;moduleConfigCache_&quot; + mid + &quot;_loaded&quot;) == &quot;true&quot; &amp;&amp; cachedJson?.trim()
+    varsRef.put(&quot;moduleConfigCached&quot;, hit ? &quot;true&quot; : &quot;false&quot;)
+    if (hit) {
+        logRef.info(&quot;Module Config Cache HIT: moduleId=&quot; + mid + &quot; (reused for run)&quot;)
+    }
+}
+props.put(&quot;fn_moduleConfigCacheCheck&quot;, _fn_moduleConfigCacheCheck)
+
+def _fn_saveActivityModuleConfigCache = { varsRef, responseJson, logRef -&gt;
+    def mid = varsRef.get(&quot;currentActivityModuleId&quot;)?.trim()
+    if (!mid || !responseJson?.trim()) {
+        return
+    }
+    try {
+        def configs = new groovy.json.JsonSlurper().parseText(responseJson)?._embedded?.configs ?: []
+        if (configs.isEmpty()) {
+            return
+        }
+        varsRef.put(&quot;moduleConfigCache_&quot; + mid + &quot;_json&quot;, responseJson)
+        varsRef.put(&quot;moduleConfigCache_&quot; + mid + &quot;_loaded&quot;, &quot;true&quot;)
+        logRef.info(&quot;Module Config Cache SAVE: moduleId=&quot; + mid + &quot; (first fetch this run)&quot;)
+    } catch (Exception e) {
+        logRef.warn(&quot;Module Config Cache SAVE failed for moduleId=&quot; + mid + &quot;: &quot; + e.message)
+    }
+}
+props.put(&quot;fn_saveActivityModuleConfigCache&quot;, _fn_saveActivityModuleConfigCache)
+
+def _fn_applyActivityModuleConfigFromCache = { varsRef, logRef -&gt;
+    def mid = varsRef.get(&quot;currentActivityModuleId&quot;)?.trim()
+    def cachedJson = mid ? varsRef.get(&quot;moduleConfigCache_&quot; + mid + &quot;_json&quot;) : null
+    if (!cachedJson?.trim()) {
+        logRef.warn(&quot;Module Config Cache restore requested but no JSON for moduleId=&quot; + mid)
+        varsRef.put(&quot;moduleConfigCached&quot;, &quot;false&quot;)
+        return
+    }
+    props.get(&quot;fn_applyActivityTypeConfigFromResponse&quot;)(varsRef, cachedJson, logRef, [showCheatSheet: false])
+}
+props.put(&quot;fn_applyActivityModuleConfigFromCache&quot;, _fn_applyActivityModuleConfigFromCache)
+
+def _fn_activityTypeConfigPostProcessor = { varsRef, prevRef, logRef -&gt;
+    if (prevRef.getResponseCode() != &quot;200&quot;) {
+        logRef.warn(&quot;Activity module config GET failed: &quot; + prevRef.getResponseCode())
+        return
+    }
+    def response = prevRef.getResponseDataAsString()
+    props.get(&quot;fn_applyActivityTypeConfigFromResponse&quot;)(varsRef, response, logRef, [showCheatSheet: true])
+    props.get(&quot;fn_saveActivityModuleConfigCache&quot;)(varsRef, response, logRef)
 }
 props.put(&quot;fn_activityTypeConfigPostProcessor&quot;, _fn_activityTypeConfigPostProcessor)
 log.info(&quot;Common Function - Payload and PostProcessors initialized&quot;)
@@ -8894,61 +8831,6 @@ if (existingFormDataStr &amp;&amp; existingFormDataStr.trim() != &quot;{}&quot; 
                             </JSR223PreProcessor>
                             <hashTree/>
                           </hashTree>
-                          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get By ID" enabled="true">
-                            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                              <collectionProp name="Arguments.arguments"/>
-                            </elementProp>
-                            <stringProp name="HTTPSampler.domain"></stringProp>
-                            <stringProp name="HTTPSampler.port"></stringProp>
-                            <stringProp name="HTTPSampler.protocol"></stringProp>
-                            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                            <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/data/${formDataId}</stringProp>
-                            <stringProp name="HTTPSampler.method">GET</stringProp>
-                            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-                            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-                            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                            <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                            <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                          </HTTPSamplerProxy>
-                          <hashTree>
-                            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                              <collectionProp name="HeaderManager.headers">
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                  <stringProp name="Header.value">${customerId}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                  <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                  <stringProp name="Header.value">${categoryId}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
-                                  <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                  <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
-                                  <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-eventid</stringProp>
-                                  <stringProp name="Header.value">${requestId}</stringProp>
-                                </elementProp>
-                              </collectionProp>
-                            </HeaderManager>
-                            <hashTree/>
-                            <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
-                            <hashTree/>
-                          </hashTree>
                         </hashTree>
                         <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
                           <stringProp name="ConstantTimer.delay">3000</stringProp>
@@ -9078,65 +8960,6 @@ vars.put(&quot;currentEntryIndex&quot;, currentEntryIndex.toString())</stringPro
                             <stringProp name="ConstantTimer.delay">300</stringProp>
                           </ConstantTimer>
                           <hashTree/>
-                          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get By ID" enabled="true">
-                            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                              <collectionProp name="Arguments.arguments"/>
-                            </elementProp>
-                            <stringProp name="HTTPSampler.domain"></stringProp>
-                            <stringProp name="HTTPSampler.port"></stringProp>
-                            <stringProp name="HTTPSampler.protocol"></stringProp>
-                            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                            <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/data/${dataId}</stringProp>
-                            <stringProp name="HTTPSampler.method">GET</stringProp>
-                            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-                            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-                            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                            <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                            <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                          </HTTPSamplerProxy>
-                          <hashTree>
-                            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                              <collectionProp name="HeaderManager.headers">
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                  <stringProp name="Header.value">${customerId}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                  <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                  <stringProp name="Header.value">${categoryId}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
-                                  <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                  <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
-                                  <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">x-cloud-eventid</stringProp>
-                                  <stringProp name="Header.value">${requestId}</stringProp>
-                                </elementProp>
-                                <elementProp name="" elementType="Header">
-                                  <stringProp name="Header.name">X_cloud_user</stringProp>
-                                  <stringProp name="Header.value">${currentUser}</stringProp>
-                                </elementProp>
-                              </collectionProp>
-                            </HeaderManager>
-                            <hashTree/>
-                            <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
-                            <hashTree/>
-                          </hashTree>
                         </hashTree>
                       </hashTree>
                     </hashTree>
@@ -9479,61 +9302,6 @@ vars.put(&quot;currentEntryIndex&quot;, currentEntryIndex.toString())</stringPro
                             <stringProp name="filename"></stringProp>
                             <stringProp name="cacheKey">true</stringProp>
                           </JSR223PreProcessor>
-                          <hashTree/>
-                        </hashTree>
-                        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get By ID" enabled="true">
-                          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                            <collectionProp name="Arguments.arguments"/>
-                          </elementProp>
-                          <stringProp name="HTTPSampler.domain"></stringProp>
-                          <stringProp name="HTTPSampler.port"></stringProp>
-                          <stringProp name="HTTPSampler.protocol"></stringProp>
-                          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                          <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/data/${formDataId}</stringProp>
-                          <stringProp name="HTTPSampler.method">GET</stringProp>
-                          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                        </HTTPSamplerProxy>
-                        <hashTree>
-                          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                            <collectionProp name="HeaderManager.headers">
-                              <elementProp name="" elementType="Header">
-                                <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                <stringProp name="Header.value">${customerId}</stringProp>
-                              </elementProp>
-                              <elementProp name="" elementType="Header">
-                                <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                              </elementProp>
-                              <elementProp name="" elementType="Header">
-                                <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                <stringProp name="Header.value">${categoryId}</stringProp>
-                              </elementProp>
-                              <elementProp name="" elementType="Header">
-                                <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
-                                <stringProp name="Header.value">${baseTimezone}</stringProp>
-                              </elementProp>
-                              <elementProp name="" elementType="Header">
-                                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                              </elementProp>
-                              <elementProp name="" elementType="Header">
-                                <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
-                                <stringProp name="Header.value">${baseTimezone}</stringProp>
-                              </elementProp>
-                              <elementProp name="" elementType="Header">
-                                <stringProp name="Header.name">x-cloud-eventid</stringProp>
-                                <stringProp name="Header.value">${requestId}</stringProp>
-                              </elementProp>
-                            </collectionProp>
-                          </HeaderManager>
-                          <hashTree/>
-                          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
                           <hashTree/>
                         </hashTree>
                       </hashTree>
@@ -12732,6 +12500,16 @@ SampleResult.setResponseMessage(&quot;Room ${counter}/${roomCount}: ${currentRoo
       def status = shouldSkip ? &quot;SKIP&quot; : &quot;OK&quot;
       log.info(&quot;[Activity Module PreProcessor] #&quot; + modulePosition + &quot;: &quot; + moduleName + &quot; (&quot; + activityType + &quot;) - &quot; + status)
       vars.put(&quot;lastLoggedActivityModule&quot;, activityType)
+  }
+
+  // Module config is static per moduleId for the whole run — check once per activity-type entry, not per HTTP sampler.
+  if (shouldSkip) {
+      vars.put(&quot;moduleConfigCached&quot;, &quot;false&quot;)
+  } else {
+      props.get(&quot;fn_moduleConfigCacheCheck&quot;)(vars, log)
+      if (vars.get(&quot;moduleConfigCached&quot;) == &quot;true&quot;) {
+          props.get(&quot;fn_applyActivityModuleConfigFromCache&quot;)(vars, log)
+      }
   }</stringProp>
                               <stringProp name="scriptLanguage">groovy</stringProp>
                               <stringProp name="parameters"></stringProp>
@@ -12757,6 +12535,12 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                               <boolProp name="IfController.evaluateAll">false</boolProp>
                             </IfController>
                             <hashTree>
+                              <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Module Config Not Cached)" enabled="true">
+                                <stringProp name="IfController.condition">${__groovy(vars.get(&quot;moduleConfigCached&quot;) != &quot;true&quot;)}</stringProp>
+                                <boolProp name="IfController.useExpression">true</boolProp>
+                                <boolProp name="IfController.evaluateAll">false</boolProp>
+                              </IfController>
+                              <hashTree>
                               <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Module Config - ${currentActivityModuleName}" enabled="true">
                                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                                   <collectionProp name="Arguments.arguments"/>
@@ -12804,7 +12588,8 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                                 <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
                                 <hashTree/>
                               </hashTree>
-                              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="FORM : ${currentActivityModuleName}" enabled="true">
+                              </hashTree>
+                              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="FORM : ${currentFormName}" enabled="false">
                                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                                   <collectionProp name="Arguments.arguments"/>
                                 </elementProp>
@@ -12832,8 +12617,39 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                                   <stringProp name="cacheKey">true</stringProp>
                                 </JSR223PreProcessor>
                                 <hashTree/>
+                                <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Form Cache Check (Agenda - skip repeat Field Mappings/Form Fields per room)" enabled="true">
+                                  <stringProp name="script">// PERF FIX: for a given activity type, formId is the same across every room in the Room Loop.
+// Field Mappings and Form Fields are static per formId, so once fetched for the first room we
+// reuse them from vars instead of re-calling both APIs on every subsequent room.
+def fid = vars.get(&quot;formId&quot;)
+def cachedFM = fid ? vars.get(&quot;formCache_&quot; + fid + &quot;_fieldMappings&quot;) : null
+def cachedUI = fid ? vars.get(&quot;formCache_&quot; + fid + &quot;_formUIConfig&quot;) : null
+
+if (fid &amp;&amp; cachedFM) {
+    vars.put(&quot;currentFieldMappings&quot;, cachedFM)
+    vars.put(&quot;formFieldMappingsCached&quot;, &quot;true&quot;)
+    log.info(&quot;Form Cache HIT: fieldMappings reused for formId=&quot; + fid)
+} else {
+    vars.put(&quot;formFieldMappingsCached&quot;, &quot;false&quot;)
+}
+
+if (fid &amp;&amp; cachedUI) {
+    vars.put(&quot;currentFormUIConfig&quot;, cachedUI)
+    vars.put(&quot;isDocumentForm&quot;, vars.get(&quot;formCache_&quot; + fid + &quot;_isDocumentForm&quot;) ?: &quot;false&quot;)
+    vars.put(&quot;formFormFieldsCached&quot;, &quot;true&quot;)
+    log.info(&quot;Form Cache HIT: formUIConfig reused for formId=&quot; + fid)
+} else {
+    vars.put(&quot;formFormFieldsCached&quot;, &quot;false&quot;)
+}
+</stringProp>
+                                  <stringProp name="scriptLanguage">groovy</stringProp>
+                                  <stringProp name="parameters"></stringProp>
+                                  <stringProp name="filename"></stringProp>
+                                  <stringProp name="cacheKey">true</stringProp>
+                                </JSR223PreProcessor>
+                                <hashTree/>
                               </hashTree>
-                              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Field Mappings" enabled="true">
+                              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="FORM : ${currentFormName}" enabled="true">
                                 <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                                   <collectionProp name="Arguments.arguments"/>
                                 </elementProp>
@@ -12841,7 +12657,7 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                                 <stringProp name="HTTPSampler.port"></stringProp>
                                 <stringProp name="HTTPSampler.protocol"></stringProp>
                                 <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/fieldmappings</stringProp>
+                                <stringProp name="HTTPSampler.path">/${contextname}/api</stringProp>
                                 <stringProp name="HTTPSampler.method">GET</stringProp>
                                 <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
                                 <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -12852,95 +12668,201 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                                 <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
                               </HTTPSamplerProxy>
                               <hashTree>
-                                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                  <collectionProp name="HeaderManager.headers">
-                                    <elementProp name="" elementType="Header">
-                                      <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                      <stringProp name="Header.value">${customerId}</stringProp>
-                                    </elementProp>
-                                    <elementProp name="" elementType="Header">
-                                      <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                      <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                    </elementProp>
-                                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
-                                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                                    </elementProp>
-                                  </collectionProp>
-                                </HeaderManager>
-                                <hashTree/>
-                                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Field Mappings PostProcessor" enabled="true">
-                                  <stringProp name="script">props.get(&quot;fn_fieldMappingsPostProcessor&quot;)(vars, prev, log)</stringProp>
+                                <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Set Current Form Variables" enabled="true">
+                                  <stringProp name="script">props.get(&quot;fn_setCurrentFormVariables&quot;)(vars)
+</stringProp>
                                   <stringProp name="scriptLanguage">groovy</stringProp>
                                   <stringProp name="parameters"></stringProp>
                                   <stringProp name="filename"></stringProp>
                                   <stringProp name="cacheKey">true</stringProp>
-                                </JSR223PostProcessor>
+                                </JSR223PreProcessor>
                                 <hashTree/>
-                                <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Form Cache Check (Agenda - skip repeat Field Mappings/Form Fields per room)" enabled="true">
+                                  <stringProp name="script">// PERF FIX: for a given activity type, formId is the same across every room in the Room Loop.
+// Field Mappings and Form Fields are static per formId, so once fetched for the first room we
+// reuse them from vars instead of re-calling both APIs on every subsequent room.
+def fid = vars.get(&quot;formId&quot;)
+def cachedFM = fid ? vars.get(&quot;formCache_&quot; + fid + &quot;_fieldMappings&quot;) : null
+def cachedUI = fid ? vars.get(&quot;formCache_&quot; + fid + &quot;_formUIConfig&quot;) : null
+
+if (fid &amp;&amp; cachedFM) {
+    vars.put(&quot;currentFieldMappings&quot;, cachedFM)
+    vars.put(&quot;formFieldMappingsCached&quot;, &quot;true&quot;)
+    log.info(&quot;Form Cache HIT: fieldMappings reused for formId=&quot; + fid)
+} else {
+    vars.put(&quot;formFieldMappingsCached&quot;, &quot;false&quot;)
+}
+
+if (fid &amp;&amp; cachedUI) {
+    vars.put(&quot;currentFormUIConfig&quot;, cachedUI)
+    vars.put(&quot;isDocumentForm&quot;, vars.get(&quot;formCache_&quot; + fid + &quot;_isDocumentForm&quot;) ?: &quot;false&quot;)
+    vars.put(&quot;formFormFieldsCached&quot;, &quot;true&quot;)
+    log.info(&quot;Form Cache HIT: formUIConfig reused for formId=&quot; + fid)
+} else {
+    vars.put(&quot;formFormFieldsCached&quot;, &quot;false&quot;)
+}
+</stringProp>
+                                  <stringProp name="scriptLanguage">groovy</stringProp>
+                                  <stringProp name="parameters"></stringProp>
+                                  <stringProp name="filename"></stringProp>
+                                  <stringProp name="cacheKey">true</stringProp>
+                                </JSR223PreProcessor>
                                 <hashTree/>
                               </hashTree>
-                              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Form Fields" enabled="true">
-                                <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                                  <collectionProp name="Arguments.arguments"/>
-                                </elementProp>
-                                <stringProp name="HTTPSampler.domain"></stringProp>
-                                <stringProp name="HTTPSampler.port"></stringProp>
-                                <stringProp name="HTTPSampler.protocol"></stringProp>
-                                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}</stringProp>
-                                <stringProp name="HTTPSampler.method">GET</stringProp>
-                                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                              </HTTPSamplerProxy>
+                              <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Field Mappings Not Cached)" enabled="true">
+                                <stringProp name="IfController.condition">${__groovy(vars.get(&quot;formFieldMappingsCached&quot;) != &quot;true&quot;, )}</stringProp>
+                                <boolProp name="IfController.useExpression">true</boolProp>
+                                <boolProp name="IfController.evaluateAll">false</boolProp>
+                              </IfController>
                               <hashTree>
-                                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                  <collectionProp name="HeaderManager.headers">
-                                    <elementProp name="" elementType="Header">
-                                      <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                      <stringProp name="Header.value">${customerId}</stringProp>
-                                    </elementProp>
-                                    <elementProp name="" elementType="Header">
-                                      <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                      <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                    </elementProp>
-                                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
-                                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                                    </elementProp>
-                                  </collectionProp>
-                                </HeaderManager>
-                                <hashTree/>
-                                <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="UI Config Extractor" enabled="true">
-                                  <stringProp name="JSONPostProcessor.referenceNames">currentFormUIConfig</stringProp>
-                                  <stringProp name="JSONPostProcessor.jsonPathExprs">$.formUIConfig</stringProp>
-                                  <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                                </JSONPostProcessor>
-                                <hashTree/>
-                                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Beautify Form Config PostProcessor" enabled="true">
-                                  <stringProp name="script">props.get(&quot;fn_beautifyFormConfig&quot;)(vars, prev, log)</stringProp>
-                                  <stringProp name="scriptLanguage">groovy</stringProp>
-                                  <stringProp name="parameters"></stringProp>
-                                  <stringProp name="filename"></stringProp>
-                                  <stringProp name="cacheKey">true</stringProp>
-                                </JSR223PostProcessor>
-                                <hashTree/>
-                                <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
-                                <hashTree/>
-                                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Resource/Master PostProcessor" enabled="true">
-                                  <stringProp name="script">props.get(&quot;fn_resourceMasterExtractor&quot;)(vars, log)</stringProp>
-                                  <stringProp name="scriptLanguage">groovy</stringProp>
-                                  <stringProp name="parameters"></stringProp>
-                                  <stringProp name="filename"></stringProp>
-                                  <stringProp name="cacheKey">true</stringProp>
-                                </JSR223PostProcessor>
-                                <hashTree/>
+                                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Field Mappings" enabled="true">
+                                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                                    <collectionProp name="Arguments.arguments"/>
+                                  </elementProp>
+                                  <stringProp name="HTTPSampler.domain"></stringProp>
+                                  <stringProp name="HTTPSampler.port"></stringProp>
+                                  <stringProp name="HTTPSampler.protocol"></stringProp>
+                                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                                  <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/fieldmappings</stringProp>
+                                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                                  <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                                  <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                                  <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                                  <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                                </HTTPSamplerProxy>
+                                <hashTree>
+                                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                    <collectionProp name="HeaderManager.headers">
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                        <stringProp name="Header.value">${customerId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                        <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                                      </elementProp>
+                                    </collectionProp>
+                                  </HeaderManager>
+                                  <hashTree/>
+                                  <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Field Mappings PostProcessor" enabled="true">
+                                    <stringProp name="script">props.get(&quot;fn_fieldMappingsPostProcessor&quot;)(vars, prev, log)</stringProp>
+                                    <stringProp name="scriptLanguage">groovy</stringProp>
+                                    <stringProp name="parameters"></stringProp>
+                                    <stringProp name="filename"></stringProp>
+                                    <stringProp name="cacheKey">true</stringProp>
+                                  </JSR223PostProcessor>
+                                  <hashTree/>
+                                  <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Form Cache Write - Field Mappings" enabled="true">
+                                    <stringProp name="script">def fid = vars.get(&quot;formId&quot;)
+if (fid) {
+    vars.put(&quot;formCache_&quot; + fid + &quot;_fieldMappings&quot;, vars.get(&quot;currentFieldMappings&quot;))
+}</stringProp>
+                                    <stringProp name="scriptLanguage">groovy</stringProp>
+                                    <stringProp name="parameters"></stringProp>
+                                    <stringProp name="filename"></stringProp>
+                                    <stringProp name="cacheKey">true</stringProp>
+                                  </JSR223PostProcessor>
+                                  <hashTree/>
+                                  <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                  <hashTree/>
+                                </hashTree>
                               </hashTree>
+                              <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Form Fields Not Cached)" enabled="true">
+                                <stringProp name="IfController.condition">${__groovy(vars.get(&quot;formFormFieldsCached&quot;) != &quot;true&quot;, )}</stringProp>
+                                <boolProp name="IfController.useExpression">true</boolProp>
+                                <boolProp name="IfController.evaluateAll">false</boolProp>
+                              </IfController>
+                              <hashTree>
+                                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Form Fields" enabled="true">
+                                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                                    <collectionProp name="Arguments.arguments"/>
+                                  </elementProp>
+                                  <stringProp name="HTTPSampler.domain"></stringProp>
+                                  <stringProp name="HTTPSampler.port"></stringProp>
+                                  <stringProp name="HTTPSampler.protocol"></stringProp>
+                                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                                  <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}</stringProp>
+                                  <stringProp name="HTTPSampler.method">GET</stringProp>
+                                  <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                                  <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                                  <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                                  <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                                </HTTPSamplerProxy>
+                                <hashTree>
+                                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                    <collectionProp name="HeaderManager.headers">
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                        <stringProp name="Header.value">${customerId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                        <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                                      </elementProp>
+                                    </collectionProp>
+                                  </HeaderManager>
+                                  <hashTree/>
+                                  <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="UI Config Extractor" enabled="true">
+                                    <stringProp name="JSONPostProcessor.referenceNames">currentFormUIConfig</stringProp>
+                                    <stringProp name="JSONPostProcessor.jsonPathExprs">$.formUIConfig</stringProp>
+                                    <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                                  </JSONPostProcessor>
+                                  <hashTree/>
+                                  <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Beautify Form Config PostProcessor" enabled="true">
+                                    <stringProp name="script">props.get(&quot;fn_beautifyFormConfig&quot;)(vars, prev, log)</stringProp>
+                                    <stringProp name="scriptLanguage">groovy</stringProp>
+                                    <stringProp name="parameters"></stringProp>
+                                    <stringProp name="filename"></stringProp>
+                                    <stringProp name="cacheKey">true</stringProp>
+                                  </JSR223PostProcessor>
+                                  <hashTree/>
+                                  <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Form Cache Write - Form Fields" enabled="true">
+                                    <stringProp name="script">def fid = vars.get(&quot;formId&quot;)
+if (fid) {
+    vars.put(&quot;formCache_&quot; + fid + &quot;_formUIConfig&quot;, vars.get(&quot;currentFormUIConfig&quot;))
+    vars.put(&quot;formCache_&quot; + fid + &quot;_isDocumentForm&quot;, vars.get(&quot;isDocumentForm&quot;))
+}</stringProp>
+                                    <stringProp name="scriptLanguage">groovy</stringProp>
+                                    <stringProp name="parameters"></stringProp>
+                                    <stringProp name="filename"></stringProp>
+                                    <stringProp name="cacheKey">true</stringProp>
+                                  </JSR223PostProcessor>
+                                  <hashTree/>
+                                  <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                  <hashTree/>
+                                </hashTree>
+                              </hashTree>
+                              <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Resource/Master PostProcessor" enabled="true">
+                                <stringProp name="script">SampleResult.setIgnore()
+// BUG FIX: this was a JSR223PostProcessor floating as a sibling at the FORM sampler&apos;s
+// scope. In JMeter, a PostProcessor at that scope re-fires after EVERY sampler nested
+// below it in the tree (Get ResourceType, Repopulate, Get MasterType, Reset Activity,
+// etc) - not just once. fn_resourceMasterExtractor CLEARS mastersFor_&lt;id&gt;_*/
+// resourcesFor_&lt;id&gt;_* before rebuilding the id list on every firing, so by the time this
+// scope closed the data was left wiped - even though a fetch/cache-hit had populated it
+// moments earlier. Converting this to a Sampler makes it run exactly ONCE per room, at
+// its position in the flow, instead of repeatedly clearing state that was just built.
+props.get(&quot;fn_resourceMasterExtractor&quot;)(vars, log)</stringProp>
+                                <stringProp name="scriptLanguage">groovy</stringProp>
+                                <stringProp name="parameters"></stringProp>
+                                <stringProp name="filename"></stringProp>
+                                <stringProp name="cacheKey">true</stringProp>
+                              </JSR223Sampler>
+                              <hashTree/>
                               <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (ResourceType Exists)" enabled="true">
                                 <stringProp name="IfController.condition">${__groovy(vars.get(&quot;activityResourceTypeIds_count&quot;)?.toInteger() &gt; 0)}</stringProp>
                                 <boolProp name="IfController.useExpression">true</boolProp>
@@ -12962,60 +12884,99 @@ SampleResult.setResponseMessage(activityType + (skip ? &quot; [SKIP]&quot; : &qu
                                     <stringProp name="cacheKey">true</stringProp>
                                   </JSR223PreProcessor>
                                   <hashTree/>
-                                  <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get ResourceType - ${currentActivityResourceTypeName}" enabled="true">
-                                    <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                                      <collectionProp name="Arguments.arguments"/>
-                                    </elementProp>
-                                    <stringProp name="HTTPSampler.domain"></stringProp>
-                                    <stringProp name="HTTPSampler.port"></stringProp>
-                                    <stringProp name="HTTPSampler.protocol"></stringProp>
-                                    <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                    <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${currentActivityResourceTypeId}/resources</stringProp>
-                                    <stringProp name="HTTPSampler.method">GET</stringProp>
-                                    <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                    <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                    <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                    <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                    <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                    <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                    <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                                  </HTTPSamplerProxy>
+                                  <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="ResourceType Cache Check (skip repeat resource fetch per room)" enabled="true">
+                                    <stringProp name="script">SampleResult.setIgnore()
+// PERF FIX: for a given resourceTypeId, the resource list returned by
+// /resourcetypes/{id}/resources is identical across every room in the Room Loop
+// (it depends only on customerId/categoryTypeId/parentCategoryId, none of which
+// change per room). Once fetched for the first room, reuse the cached
+// resourcesFor_&lt;id&gt;_* vars instead of re-calling the API on every subsequent room.
+// NOTE: this must be a Sampler (not a PreProcessor) so it runs exactly ONCE per
+// loop iteration. A PreProcessor at this scope would re-run before EVERY sampler
+// below it (both the HTTP call and the repopulate step), flipping the flag mid-iteration.
+// NOTE 2: only a count &gt; 0 counts as a cache HIT. A failed/empty first fetch stores
+// count=&quot;0&quot;, and treating that as a valid cache would permanently zero out the field
+// for every subsequent room instead of retrying. Retry on the next room instead.
+def rtId = vars.get(&quot;currentActivityResourceTypeId&quot;)
+def cachedCount = rtId ? vars.get(&quot;resourcesFor_&quot; + rtId + &quot;_count&quot;) : null
+def cachedCountNum = (cachedCount != null &amp;&amp; cachedCount.isInteger()) ? cachedCount.toInteger() : -1
+
+if (rtId &amp;&amp; cachedCountNum &gt; 0) {
+    vars.put(&quot;resourceTypeCached&quot;, &quot;true&quot;)
+    log.info(&quot;ResourceType Cache HIT for id=&quot; + rtId + &quot; (count=&quot; + cachedCountNum + &quot;)&quot;)
+} else {
+    vars.put(&quot;resourceTypeCached&quot;, &quot;false&quot;)
+    if (cachedCountNum == 0) {
+        log.warn(&quot;ResourceType Cache: previous fetch for id=&quot; + rtId + &quot; returned 0 resources - retrying this room&quot;)
+    }
+}
+</stringProp>
+                                    <stringProp name="scriptLanguage">groovy</stringProp>
+                                    <stringProp name="parameters"></stringProp>
+                                    <stringProp name="filename"></stringProp>
+                                    <stringProp name="cacheKey">true</stringProp>
+                                  </JSR223Sampler>
+                                  <hashTree/>
+                                  <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (ResourceType Not Cached)" enabled="true">
+                                    <stringProp name="IfController.condition">${__groovy(vars.get(&quot;resourceTypeCached&quot;) != &quot;true&quot;, )}</stringProp>
+                                    <boolProp name="IfController.useExpression">true</boolProp>
+                                    <boolProp name="IfController.evaluateAll">false</boolProp>
+                                  </IfController>
                                   <hashTree>
-                                    <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                      <collectionProp name="HeaderManager.headers">
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                          <stringProp name="Header.value">${customerId}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                          <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                          <stringProp name="Header.value">${parentCategoryId}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
-                                          <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                          <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
-                                          <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">X_cloud_user</stringProp>
-                                          <stringProp name="Header.value">${currentUser}</stringProp>
-                                        </elementProp>
-                                      </collectionProp>
-                                    </HeaderManager>
-                                    <hashTree/>
-                                    <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Activity Type Resources Extractor" enabled="true">
-                                      <stringProp name="script">
+                                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get ResourceType - ${currentActivityResourceTypeName}" enabled="true">
+                                      <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                                        <collectionProp name="Arguments.arguments"/>
+                                      </elementProp>
+                                      <stringProp name="HTTPSampler.domain"></stringProp>
+                                      <stringProp name="HTTPSampler.port"></stringProp>
+                                      <stringProp name="HTTPSampler.protocol"></stringProp>
+                                      <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                                      <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${currentActivityResourceTypeId}/resources</stringProp>
+                                      <stringProp name="HTTPSampler.method">GET</stringProp>
+                                      <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                                      <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                                      <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                                      <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                                      <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                                      <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                                      <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                                    </HTTPSamplerProxy>
+                                    <hashTree>
+                                      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                        <collectionProp name="HeaderManager.headers">
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                            <stringProp name="Header.value">${customerId}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                            <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                                            <stringProp name="Header.value">${parentCategoryId}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
+                                            <stringProp name="Header.value">${baseTimezone}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                                            <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
+                                            <stringProp name="Header.value">${baseTimezone}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">X_cloud_user</stringProp>
+                                            <stringProp name="Header.value">${currentUser}</stringProp>
+                                          </elementProp>
+                                        </collectionProp>
+                                      </HeaderManager>
+                                      <hashTree/>
+                                      <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Activity Type Resources Extractor" enabled="true">
+                                        <stringProp name="script">
 
 def currentResourceTypeId = vars.get(&quot;currentActivityResourceTypeId&quot;)
 def resourceTypeName = vars.get(&quot;currentActivityResourceTypeName&quot;) ?: &quot;Resource&quot;
@@ -13098,13 +13059,55 @@ try {
     vars.put(&quot;resourcesFor_&quot; + currentResourceTypeId + &quot;_count&quot;, &quot;0&quot;)
 }
 </stringProp>
+                                        <stringProp name="scriptLanguage">groovy</stringProp>
+                                        <stringProp name="parameters"></stringProp>
+                                        <stringProp name="filename"></stringProp>
+                                        <stringProp name="cacheKey">true</stringProp>
+                                      </JSR223PostProcessor>
+                                      <hashTree/>
+                                      <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                      <hashTree/>
+                                    </hashTree>
+                                  </hashTree>
+                                  <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (ResourceType Cached - Repopulate Presenter Vars)" enabled="true">
+                                    <stringProp name="IfController.condition">${__groovy(vars.get(&quot;resourceTypeCached&quot;) == &quot;true&quot;, )}</stringProp>
+                                    <boolProp name="IfController.useExpression">true</boolProp>
+                                    <boolProp name="IfController.evaluateAll">false</boolProp>
+                                  </IfController>
+                                  <hashTree>
+                                    <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Repopulate Presenter Vars From Cache" enabled="true">
+                                      <stringProp name="script">SampleResult.setIgnore()
+// Mirrors the presenter-population block inside &quot;Activity Type Resources Extractor&quot;,
+// but reads from the already-cached resourcesFor_&lt;id&gt;_* vars instead of a fresh
+// HTTP response, so presenter selection still works correctly on cache-hit rooms.
+def rtId = vars.get(&quot;currentActivityResourceTypeId&quot;)
+def count = (vars.get(&quot;resourcesFor_&quot; + rtId + &quot;_count&quot;) ?: &quot;0&quot;).toInteger()
+def presenterRtId = vars.get(&quot;presenterResourceTypeId&quot;)
+
+if (presenterRtId &amp;&amp; presenterRtId == rtId) {
+    vars.put(&quot;presenterId_matchNr&quot;, count.toString())
+
+    for (int i = 1; i &lt;= count; i++) {
+        def id = vars.get(&quot;resourcesFor_&quot; + rtId + &quot;_&quot; + i + &quot;_id&quot;)
+        def name = vars.get(&quot;resourcesFor_&quot; + rtId + &quot;_&quot; + i + &quot;_name&quot;)
+        def dataJson = vars.get(&quot;resourcesFor_&quot; + rtId + &quot;_&quot; + i + &quot;_data&quot;)
+        def email = vars.get(&quot;resourcesFor_&quot; + rtId + &quot;_&quot; + i + &quot;_primaryEmail&quot;)
+        def designation = vars.get(&quot;resourcesFor_&quot; + rtId + &quot;_&quot; + i + &quot;_designation&quot;)
+
+        vars.put(&quot;presenterId_&quot; + i, id ?: &quot;&quot;)
+        vars.put(&quot;presenterName_&quot; + i, name ?: &quot;&quot;)
+        vars.put(&quot;presenterData_&quot; + i, dataJson ?: &quot;{}&quot;)
+        vars.put(&quot;presenterEmail_&quot; + i, email ?: &quot;&quot;)
+        vars.put(&quot;presenterDesignation_&quot; + i, designation ?: &quot;&quot;)
+    }
+    log.info(&quot;ResourceType Cache: repopulated &quot; + count + &quot; presenter var(s) from cache for id=&quot; + rtId)
+}
+</stringProp>
                                       <stringProp name="scriptLanguage">groovy</stringProp>
                                       <stringProp name="parameters"></stringProp>
                                       <stringProp name="filename"></stringProp>
                                       <stringProp name="cacheKey">true</stringProp>
-                                    </JSR223PostProcessor>
-                                    <hashTree/>
-                                    <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                    </JSR223Sampler>
                                     <hashTree/>
                                   </hashTree>
                                 </hashTree>
@@ -13412,44 +13415,78 @@ log.info(&quot;----- Presenters to add: ${selectedPresenters.size()} (deduplicat
                                     <stringProp name="cacheKey">true</stringProp>
                                   </JSR223PreProcessor>
                                   <hashTree/>
-                                  <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get MasterType - ${currentActivityMasterTypeName}" enabled="true">
-                                    <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                                      <collectionProp name="Arguments.arguments"/>
-                                    </elementProp>
-                                    <stringProp name="HTTPSampler.domain"></stringProp>
-                                    <stringProp name="HTTPSampler.port"></stringProp>
-                                    <stringProp name="HTTPSampler.protocol"></stringProp>
-                                    <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                    <stringProp name="HTTPSampler.path">/${contextname}/api/mastertypes/${currentActivityMasterTypeId}/masters</stringProp>
-                                    <stringProp name="HTTPSampler.method">GET</stringProp>
-                                    <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                    <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                    <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                    <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                    <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                    <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                    <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                                  </HTTPSamplerProxy>
+                                  <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="MasterType Cache Check (skip repeat master fetch per room)" enabled="true">
+                                    <stringProp name="script">SampleResult.setIgnore()
+// PERF FIX: for a given masterTypeId, the master list returned by
+// /mastertypes/{id}/masters is identical across every room in the Room Loop.
+// Once fetched for the first room, reuse the cached mastersFor_&lt;id&gt;_* vars
+// instead of re-calling the API on every subsequent room.
+// Only a count &gt; 0 counts as a cache HIT, so a failed/empty first fetch retries
+// on the next room instead of permanently caching zero masters.
+def mtId = vars.get(&quot;currentActivityMasterTypeId&quot;)
+def cachedCount = mtId ? vars.get(&quot;mastersFor_&quot; + mtId + &quot;_count&quot;) : null
+def cachedCountNum = (cachedCount != null &amp;&amp; cachedCount.isInteger()) ? cachedCount.toInteger() : -1
+
+if (mtId &amp;&amp; cachedCountNum &gt; 0) {
+    vars.put(&quot;masterTypeCached&quot;, &quot;true&quot;)
+    log.info(&quot;MasterType Cache HIT for id=&quot; + mtId + &quot; (count=&quot; + cachedCountNum + &quot;)&quot;)
+} else {
+    vars.put(&quot;masterTypeCached&quot;, &quot;false&quot;)
+    if (cachedCountNum == 0) {
+        log.warn(&quot;MasterType Cache: previous fetch for id=&quot; + mtId + &quot; returned 0 masters - retrying this room&quot;)
+    }
+}
+</stringProp>
+                                    <stringProp name="scriptLanguage">groovy</stringProp>
+                                    <stringProp name="parameters"></stringProp>
+                                    <stringProp name="filename"></stringProp>
+                                    <stringProp name="cacheKey">true</stringProp>
+                                  </JSR223Sampler>
+                                  <hashTree/>
+                                  <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (MasterType Not Cached)" enabled="true">
+                                    <stringProp name="IfController.condition">${__groovy(vars.get(&quot;masterTypeCached&quot;) != &quot;true&quot;, )}</stringProp>
+                                    <boolProp name="IfController.useExpression">true</boolProp>
+                                    <boolProp name="IfController.evaluateAll">false</boolProp>
+                                  </IfController>
                                   <hashTree>
-                                    <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                      <collectionProp name="HeaderManager.headers">
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                          <stringProp name="Header.value">${customerId}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                          <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                        </elementProp>
-                                        <elementProp name="" elementType="Header">
-                                          <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                          <stringProp name="Header.value">${categoryId}</stringProp>
-                                        </elementProp>
-                                      </collectionProp>
-                                    </HeaderManager>
-                                    <hashTree/>
-                                    <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Activity Type Masters Extractor" enabled="true">
-                                      <stringProp name="script">
+                                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get MasterType - ${currentActivityMasterTypeName}" enabled="true">
+                                      <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                                        <collectionProp name="Arguments.arguments"/>
+                                      </elementProp>
+                                      <stringProp name="HTTPSampler.domain"></stringProp>
+                                      <stringProp name="HTTPSampler.port"></stringProp>
+                                      <stringProp name="HTTPSampler.protocol"></stringProp>
+                                      <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                                      <stringProp name="HTTPSampler.path">/${contextname}/api/mastertypes/${currentActivityMasterTypeId}/masters</stringProp>
+                                      <stringProp name="HTTPSampler.method">GET</stringProp>
+                                      <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                                      <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                                      <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                                      <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                                      <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                                      <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                                      <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                                    </HTTPSamplerProxy>
+                                    <hashTree>
+                                      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                        <collectionProp name="HeaderManager.headers">
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                            <stringProp name="Header.value">${customerId}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                            <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                          </elementProp>
+                                          <elementProp name="" elementType="Header">
+                                            <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                                            <stringProp name="Header.value">${categoryId}</stringProp>
+                                          </elementProp>
+                                        </collectionProp>
+                                      </HeaderManager>
+                                      <hashTree/>
+                                      <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Activity Type Masters Extractor" enabled="true">
+                                        <stringProp name="script">
 
 def currentMasterTypeId = vars.get(&quot;currentActivityMasterTypeId&quot;)
 def masterTypeName = vars.get(&quot;currentActivityMasterTypeName&quot;) ?: &quot;Master&quot;
@@ -13513,14 +13550,15 @@ try {
     vars.put(&quot;mastersFor_&quot; + currentMasterTypeId + &quot;_count&quot;, &quot;0&quot;)
 }
 </stringProp>
-                                      <stringProp name="scriptLanguage">groovy</stringProp>
-                                      <stringProp name="parameters"></stringProp>
-                                      <stringProp name="filename"></stringProp>
-                                      <stringProp name="cacheKey">true</stringProp>
-                                    </JSR223PostProcessor>
-                                    <hashTree/>
-                                    <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
-                                    <hashTree/>
+                                        <stringProp name="scriptLanguage">groovy</stringProp>
+                                        <stringProp name="parameters"></stringProp>
+                                        <stringProp name="filename"></stringProp>
+                                        <stringProp name="cacheKey">true</stringProp>
+                                      </JSR223PostProcessor>
+                                      <hashTree/>
+                                      <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                      <hashTree/>
+                                    </hashTree>
                                   </hashTree>
                                 </hashTree>
                               </hashTree>
@@ -15759,45 +15797,16 @@ log.info(&quot;[Topic Doc] Setup: saved formId=${vars.get(&apos;formId&apos;)}, 
                                         <stringProp name="cacheKey">true</stringProp>
                                       </JSR223Sampler>
                                       <hashTree/>
-                                      <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Module Config - Document" enabled="true">
-                                        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                                          <collectionProp name="Arguments.arguments"/>
-                                        </elementProp>
-                                        <stringProp name="HTTPSampler.domain"></stringProp>
-                                        <stringProp name="HTTPSampler.port"></stringProp>
-                                        <stringProp name="HTTPSampler.protocol"></stringProp>
-                                        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                        <stringProp name="HTTPSampler.path">/${contextname}/api/modules/${currentActivityModuleId}/configs</stringProp>
-                                        <stringProp name="HTTPSampler.method">GET</stringProp>
-                                        <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                        <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                        <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                        <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                        <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                                      </HTTPSamplerProxy>
-                                      <hashTree>
-                                        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                          <collectionProp name="HeaderManager.headers">
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                              <stringProp name="Header.value">${customerId}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                              <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                              <stringProp name="Header.value">${categoryId}</stringProp>
-                                            </elementProp>
-                                          </collectionProp>
-                                        </HeaderManager>
-                                        <hashTree/>
-                                        <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
-                                        <hashTree/>
-                                      </hashTree>
+                                      <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Skip Redundant Document Module Config GET" enabled="true">
+                                        <stringProp name="script">SampleResult.setIgnore()
+// Document form vars are set when topic module config is applied (live GET or module config cache).
+log.info(&quot;[Topic Doc] Skipping redundant module config GET; docFormId=&quot; + (vars.get(&quot;activityDocumentFormId&quot;) ?: &quot;&quot;))</stringProp>
+                                        <stringProp name="scriptLanguage">groovy</stringProp>
+                                        <stringProp name="parameters"></stringProp>
+                                        <stringProp name="filename"></stringProp>
+                                        <stringProp name="cacheKey">true</stringProp>
+                                      </JSR223Sampler>
+                                      <hashTree/>
                                       <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="FORM : ${currentFormName}" enabled="true">
                                         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                                           <collectionProp name="Arguments.arguments"/>
@@ -15832,153 +15841,252 @@ log.info(&quot;[Topic Doc] FORM: switched formId=${docFormId}, name=${docFormNam
                                           <stringProp name="cacheKey">true</stringProp>
                                         </JSR223PreProcessor>
                                         <hashTree/>
-                                      </hashTree>
-                                      <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Field Mappings" enabled="true">
-                                        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                                          <collectionProp name="Arguments.arguments"/>
-                                        </elementProp>
-                                        <stringProp name="HTTPSampler.domain"></stringProp>
-                                        <stringProp name="HTTPSampler.port"></stringProp>
-                                        <stringProp name="HTTPSampler.protocol"></stringProp>
-                                        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                        <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/fieldmappings</stringProp>
-                                        <stringProp name="HTTPSampler.method">GET</stringProp>
-                                        <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                        <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                        <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                        <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                        <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                                      </HTTPSamplerProxy>
-                                      <hashTree>
-                                        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                          <collectionProp name="HeaderManager.headers">
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                              <stringProp name="Header.value">${customerId}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                              <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                            </elementProp>
-                                          </collectionProp>
-                                        </HeaderManager>
-                                        <hashTree/>
-                                        <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Field Mappings PostProcessor" enabled="true">
-                                          <stringProp name="script">props.get(&quot;fn_fieldMappingsPostProcessor&quot;)(vars, prev, log)</stringProp>
+                                        <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Form Cache Check (Topic Document - skip repeat Field Mappings/Form Fields per topic)" enabled="true">
+                                          <stringProp name="script">// PERF FIX: the Document form is the same formId for every topic/activity created within
+// this activity type, so once fetched for the first topic we reuse it from vars instead of
+// re-calling both APIs on every subsequent topic.
+def fid = vars.get(&quot;formId&quot;)
+def cachedFM = fid ? vars.get(&quot;formCache_&quot; + fid + &quot;_fieldMappings&quot;) : null
+def cachedUI = fid ? vars.get(&quot;formCache_&quot; + fid + &quot;_formUIConfig&quot;) : null
+
+if (fid &amp;&amp; cachedFM) {
+    vars.put(&quot;currentFieldMappings&quot;, cachedFM)
+    vars.put(&quot;formFieldMappingsCached&quot;, &quot;true&quot;)
+    log.info(&quot;Form Cache HIT: fieldMappings reused for formId=&quot; + fid)
+} else {
+    vars.put(&quot;formFieldMappingsCached&quot;, &quot;false&quot;)
+}
+
+if (fid &amp;&amp; cachedUI) {
+    vars.put(&quot;currentFormUIConfig&quot;, cachedUI)
+    vars.put(&quot;isDocumentForm&quot;, vars.get(&quot;formCache_&quot; + fid + &quot;_isDocumentForm&quot;) ?: &quot;false&quot;)
+    vars.put(&quot;formFormFieldsCached&quot;, &quot;true&quot;)
+    log.info(&quot;Form Cache HIT: formUIConfig reused for formId=&quot; + fid)
+} else {
+    vars.put(&quot;formFormFieldsCached&quot;, &quot;false&quot;)
+}
+</stringProp>
                                           <stringProp name="scriptLanguage">groovy</stringProp>
                                           <stringProp name="parameters"></stringProp>
                                           <stringProp name="filename"></stringProp>
                                           <stringProp name="cacheKey">true</stringProp>
-                                        </JSR223PostProcessor>
+                                        </JSR223PreProcessor>
                                         <hashTree/>
-                                        <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
-                                        <hashTree/>
-                                      </hashTree>
-                                      <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Form Fields" enabled="true">
-                                        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                                          <collectionProp name="Arguments.arguments"/>
-                                        </elementProp>
-                                        <stringProp name="HTTPSampler.domain"></stringProp>
-                                        <stringProp name="HTTPSampler.port"></stringProp>
-                                        <stringProp name="HTTPSampler.protocol"></stringProp>
-                                        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                        <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}</stringProp>
-                                        <stringProp name="HTTPSampler.method">GET</stringProp>
-                                        <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                        <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                        <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                        <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                        <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                                      </HTTPSamplerProxy>
-                                      <hashTree>
-                                        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                          <collectionProp name="HeaderManager.headers">
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                              <stringProp name="Header.value">${customerId}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                              <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                            </elementProp>
-                                          </collectionProp>
-                                        </HeaderManager>
-                                        <hashTree/>
-                                        <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="UI Config Extractor" enabled="true">
-                                          <stringProp name="JSONPostProcessor.referenceNames">currentFormUIConfig</stringProp>
-                                          <stringProp name="JSONPostProcessor.jsonPathExprs">$.formUIConfig</stringProp>
-                                          <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
-                                        </JSONPostProcessor>
-                                        <hashTree/>
-                                        <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Beautify Form Config PostProcessor" enabled="true">
-                                          <stringProp name="script">props.get(&quot;fn_beautifyFormConfig&quot;)(vars, prev, log)</stringProp>
+                                        <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Document Types Cache Check (Topic Document - skip repeat Get Document Types per topic)" enabled="true">
+                                          <stringProp name="script">// PERF FIX: document types are static per category/tenant, not per topic, so once fetched
+// for the first topic we reuse them from vars instead of re-calling the API every topic.
+def catId = vars.get(&quot;categoryId&quot;)
+def cachedCount = catId ? vars.get(&quot;docTypesCache_&quot; + catId + &quot;_count&quot;) : null
+
+if (catId &amp;&amp; cachedCount) {
+    vars.put(&quot;documentTypeCount&quot;, cachedCount)
+    def cnt = cachedCount.isInteger() ? cachedCount.toInteger() : 0
+    for (int i = 1; i &lt;= cnt; i++) {
+        vars.put(&quot;docType_&quot; + i + &quot;_id&quot;, vars.get(&quot;docTypesCache_&quot; + catId + &quot;_docType_&quot; + i + &quot;_id&quot;) ?: &quot;&quot;)
+        vars.put(&quot;docType_&quot; + i + &quot;_name&quot;, vars.get(&quot;docTypesCache_&quot; + catId + &quot;_docType_&quot; + i + &quot;_name&quot;) ?: &quot;&quot;)
+    }
+    vars.put(&quot;documentTypesCached&quot;, &quot;true&quot;)
+    log.info(&quot;Form Cache HIT: documentTypes reused for categoryId=&quot; + catId)
+} else {
+    vars.put(&quot;documentTypesCached&quot;, &quot;false&quot;)
+}
+</stringProp>
                                           <stringProp name="scriptLanguage">groovy</stringProp>
                                           <stringProp name="parameters"></stringProp>
                                           <stringProp name="filename"></stringProp>
                                           <stringProp name="cacheKey">true</stringProp>
-                                        </JSR223PostProcessor>
-                                        <hashTree/>
-                                        <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                        </JSR223PreProcessor>
                                         <hashTree/>
                                       </hashTree>
-                                      <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Document Types" enabled="true">
-                                        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-                                          <collectionProp name="Arguments.arguments"/>
-                                        </elementProp>
-                                        <stringProp name="HTTPSampler.domain"></stringProp>
-                                        <stringProp name="HTTPSampler.port"></stringProp>
-                                        <stringProp name="HTTPSampler.protocol"></stringProp>
-                                        <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                        <stringProp name="HTTPSampler.path">/${contextname}/api/documenttypes</stringProp>
-                                        <stringProp name="HTTPSampler.method">GET</stringProp>
-                                        <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-                                        <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-                                        <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-                                        <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-                                        <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-                                        <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-                                      </HTTPSamplerProxy>
+                                      <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Field Mappings Not Cached)" enabled="true">
+                                        <stringProp name="IfController.condition">${__groovy(vars.get(&quot;formFieldMappingsCached&quot;) != &quot;true&quot;, )}</stringProp>
+                                        <boolProp name="IfController.useExpression">true</boolProp>
+                                        <boolProp name="IfController.evaluateAll">false</boolProp>
+                                      </IfController>
                                       <hashTree>
-                                        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-                                          <collectionProp name="HeaderManager.headers">
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-customerid</stringProp>
-                                              <stringProp name="Header.value">${customerId}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
-                                              <stringProp name="Header.value">${categoryTypeId}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-categoryid</stringProp>
-                                              <stringProp name="Header.value">${categoryId}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
-                                              <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
-                                              <stringProp name="Header.value">${clientTimeZone}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
-                                              <stringProp name="Header.value">${baseTimezone}</stringProp>
-                                            </elementProp>
-                                            <elementProp name="" elementType="Header">
-                                              <stringProp name="Header.name">x-cloud-eventid</stringProp>
-                                              <stringProp name="Header.value">${requestId}</stringProp>
-                                            </elementProp>
-                                          </collectionProp>
-                                        </HeaderManager>
-                                        <hashTree/>
-                                        <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Document Type Extractor" enabled="true">
-                                          <stringProp name="script">
+                                        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Field Mappings" enabled="true">
+                                          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                                            <collectionProp name="Arguments.arguments"/>
+                                          </elementProp>
+                                          <stringProp name="HTTPSampler.domain"></stringProp>
+                                          <stringProp name="HTTPSampler.port"></stringProp>
+                                          <stringProp name="HTTPSampler.protocol"></stringProp>
+                                          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                                          <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}/fieldmappings</stringProp>
+                                          <stringProp name="HTTPSampler.method">GET</stringProp>
+                                          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                                          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                                          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                                          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                                          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                                          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                                          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                                        </HTTPSamplerProxy>
+                                        <hashTree>
+                                          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                            <collectionProp name="HeaderManager.headers">
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                                <stringProp name="Header.value">${customerId}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                                <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                              </elementProp>
+                                            </collectionProp>
+                                          </HeaderManager>
+                                          <hashTree/>
+                                          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Field Mappings PostProcessor" enabled="true">
+                                            <stringProp name="script">props.get(&quot;fn_fieldMappingsPostProcessor&quot;)(vars, prev, log)</stringProp>
+                                            <stringProp name="scriptLanguage">groovy</stringProp>
+                                            <stringProp name="parameters"></stringProp>
+                                            <stringProp name="filename"></stringProp>
+                                            <stringProp name="cacheKey">true</stringProp>
+                                          </JSR223PostProcessor>
+                                          <hashTree/>
+                                          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Form Cache Write - Field Mappings" enabled="true">
+                                            <stringProp name="script">def fid = vars.get(&quot;formId&quot;)
+if (fid) {
+    vars.put(&quot;formCache_&quot; + fid + &quot;_fieldMappings&quot;, vars.get(&quot;currentFieldMappings&quot;))
+}</stringProp>
+                                            <stringProp name="scriptLanguage">groovy</stringProp>
+                                            <stringProp name="parameters"></stringProp>
+                                            <stringProp name="filename"></stringProp>
+                                            <stringProp name="cacheKey">true</stringProp>
+                                          </JSR223PostProcessor>
+                                          <hashTree/>
+                                          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                          <hashTree/>
+                                        </hashTree>
+                                      </hashTree>
+                                      <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Form Fields Not Cached)" enabled="true">
+                                        <stringProp name="IfController.condition">${__groovy(vars.get(&quot;formFormFieldsCached&quot;) != &quot;true&quot;, )}</stringProp>
+                                        <boolProp name="IfController.useExpression">true</boolProp>
+                                        <boolProp name="IfController.evaluateAll">false</boolProp>
+                                      </IfController>
+                                      <hashTree>
+                                        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Form Fields" enabled="true">
+                                          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                                            <collectionProp name="Arguments.arguments"/>
+                                          </elementProp>
+                                          <stringProp name="HTTPSampler.domain"></stringProp>
+                                          <stringProp name="HTTPSampler.port"></stringProp>
+                                          <stringProp name="HTTPSampler.protocol"></stringProp>
+                                          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                                          <stringProp name="HTTPSampler.path">/${contextname}/api/forms/${formId}</stringProp>
+                                          <stringProp name="HTTPSampler.method">GET</stringProp>
+                                          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                                          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                                          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                                          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                                          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                                          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                                          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                                        </HTTPSamplerProxy>
+                                        <hashTree>
+                                          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                            <collectionProp name="HeaderManager.headers">
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                                <stringProp name="Header.value">${customerId}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                                <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                              </elementProp>
+                                            </collectionProp>
+                                          </HeaderManager>
+                                          <hashTree/>
+                                          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="UI Config Extractor" enabled="true">
+                                            <stringProp name="JSONPostProcessor.referenceNames">currentFormUIConfig</stringProp>
+                                            <stringProp name="JSONPostProcessor.jsonPathExprs">$.formUIConfig</stringProp>
+                                            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+                                          </JSONPostProcessor>
+                                          <hashTree/>
+                                          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Beautify Form Config PostProcessor" enabled="true">
+                                            <stringProp name="script">props.get(&quot;fn_beautifyFormConfig&quot;)(vars, prev, log)</stringProp>
+                                            <stringProp name="scriptLanguage">groovy</stringProp>
+                                            <stringProp name="parameters"></stringProp>
+                                            <stringProp name="filename"></stringProp>
+                                            <stringProp name="cacheKey">true</stringProp>
+                                          </JSR223PostProcessor>
+                                          <hashTree/>
+                                          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Form Cache Write - Form Fields" enabled="true">
+                                            <stringProp name="script">def fid = vars.get(&quot;formId&quot;)
+if (fid) {
+    vars.put(&quot;formCache_&quot; + fid + &quot;_formUIConfig&quot;, vars.get(&quot;currentFormUIConfig&quot;))
+    vars.put(&quot;formCache_&quot; + fid + &quot;_isDocumentForm&quot;, vars.get(&quot;isDocumentForm&quot;))
+}</stringProp>
+                                            <stringProp name="scriptLanguage">groovy</stringProp>
+                                            <stringProp name="parameters"></stringProp>
+                                            <stringProp name="filename"></stringProp>
+                                            <stringProp name="cacheKey">true</stringProp>
+                                          </JSR223PostProcessor>
+                                          <hashTree/>
+                                          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                          <hashTree/>
+                                        </hashTree>
+                                      </hashTree>
+                                      <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Document Types Not Cached)" enabled="true">
+                                        <stringProp name="IfController.condition">${__groovy(vars.get(&quot;documentTypesCached&quot;) != &quot;true&quot;, )}</stringProp>
+                                        <boolProp name="IfController.useExpression">true</boolProp>
+                                        <boolProp name="IfController.evaluateAll">false</boolProp>
+                                      </IfController>
+                                      <hashTree>
+                                        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Document Types" enabled="true">
+                                          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                                            <collectionProp name="Arguments.arguments"/>
+                                          </elementProp>
+                                          <stringProp name="HTTPSampler.domain"></stringProp>
+                                          <stringProp name="HTTPSampler.port"></stringProp>
+                                          <stringProp name="HTTPSampler.protocol"></stringProp>
+                                          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                                          <stringProp name="HTTPSampler.path">/${contextname}/api/documenttypes</stringProp>
+                                          <stringProp name="HTTPSampler.method">GET</stringProp>
+                                          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                                          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                                          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
+                                          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                                          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                                          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                                          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                                        </HTTPSamplerProxy>
+                                        <hashTree>
+                                          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                            <collectionProp name="HeaderManager.headers">
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                                <stringProp name="Header.value">${customerId}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                                <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                                                <stringProp name="Header.value">${categoryId}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
+                                                <stringProp name="Header.value">${baseTimezone}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                                                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
+                                                <stringProp name="Header.value">${baseTimezone}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-eventid</stringProp>
+                                                <stringProp name="Header.value">${requestId}</stringProp>
+                                              </elementProp>
+                                            </collectionProp>
+                                          </HeaderManager>
+                                          <hashTree/>
+                                          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Document Type Extractor" enabled="true">
+                                            <stringProp name="script">
 
 try {
     def response = prev.getResponseDataAsString()
@@ -16014,14 +16122,32 @@ try {
     log.error(&quot;Document Type Extractor error: ${e.message}&quot;)
     vars.put(&quot;documentTypeCount&quot;, &quot;0&quot;)
 }</stringProp>
-                                          <stringProp name="scriptLanguage">groovy</stringProp>
-                                          <stringProp name="parameters"></stringProp>
-                                          <stringProp name="filename"></stringProp>
-                                          <stringProp name="cacheKey">true</stringProp>
-                                        </JSR223PostProcessor>
-                                        <hashTree/>
-                                        <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
-                                        <hashTree/>
+                                            <stringProp name="scriptLanguage">groovy</stringProp>
+                                            <stringProp name="parameters"></stringProp>
+                                            <stringProp name="filename"></stringProp>
+                                            <stringProp name="cacheKey">true</stringProp>
+                                          </JSR223PostProcessor>
+                                          <hashTree/>
+                                          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Document Types Cache Write" enabled="true">
+                                            <stringProp name="script">def catId = vars.get(&quot;categoryId&quot;)
+if (catId) {
+    def cnt = vars.get(&quot;documentTypeCount&quot;) ?: &quot;0&quot;
+    vars.put(&quot;docTypesCache_&quot; + catId + &quot;_count&quot;, cnt)
+    def cntInt = cnt.isInteger() ? cnt.toInteger() : 0
+    for (int i = 1; i &lt;= cntInt; i++) {
+        vars.put(&quot;docTypesCache_&quot; + catId + &quot;_docType_&quot; + i + &quot;_id&quot;, vars.get(&quot;docType_&quot; + i + &quot;_id&quot;) ?: &quot;&quot;)
+        vars.put(&quot;docTypesCache_&quot; + catId + &quot;_docType_&quot; + i + &quot;_name&quot;, vars.get(&quot;docType_&quot; + i + &quot;_name&quot;) ?: &quot;&quot;)
+    }
+}</stringProp>
+                                            <stringProp name="scriptLanguage">groovy</stringProp>
+                                            <stringProp name="parameters"></stringProp>
+                                            <stringProp name="filename"></stringProp>
+                                            <stringProp name="cacheKey">true</stringProp>
+                                          </JSR223PostProcessor>
+                                          <hashTree/>
+                                          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                                          <hashTree/>
+                                        </hashTree>
                                       </hashTree>
                                       <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Existing Documents" enabled="true">
                                         <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
@@ -17057,7 +17183,7 @@ vars.put(&quot;participantLoopIdx&quot;, idx.toString())
                                         </hashTree>
                                       </hashTree>
                                     </hashTree>
-                                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get By Id - ${activityType}" enabled="true">
+                                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get By Id - ${activityType}" enabled="false">
                                       <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
                                         <collectionProp name="Arguments.arguments"/>
                                       </elementProp>
@@ -17149,7 +17275,7 @@ log.info(&quot;Activity State Action Iterations: ${randomIterations} total, ${re
                                       <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
                                       <hashTree/>
                                     </hashTree>
-                                    <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Valid Activity State Action)" enabled="true">
+                                    <IfController guiclass="IfControllerPanel" testclass="IfController" testname="◉ If (Valid Activity State Action)" enabled="false">
                                       <stringProp name="IfController.condition">${__groovy(vars.get(&apos;skipActivityStateAction&apos;) != &apos;true&apos;)}</stringProp>
                                       <boolProp name="IfController.useExpression">true</boolProp>
                                       <boolProp name="IfController.evaluateAll">false</boolProp>
@@ -17220,7 +17346,7 @@ log.info(&quot;Activity State Action Iterations: ${randomIterations} total, ${re
                                         <hashTree/>
                                       </hashTree>
                                     </hashTree>
-                                    <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="◉ Activity State Action Loop" enabled="true">
+                                    <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="◉ Activity State Action Loop" enabled="false">
                                       <boolProp name="LoopController.continue_forever">true</boolProp>
                                       <stringProp name="LoopController.loops">${activityStateActionLoopCount}</stringProp>
                                     </LoopController>
@@ -17706,7 +17832,7 @@ log.info(&quot;State Action Loop: safety ceiling set to ${safetyCeiling}. Loop w
                     <boolProp name="IfController.evaluateAll">false</boolProp>
                   </IfController>
                   <hashTree>
-                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="${selectedAction} Request - ${customerName}" enabled="true">
+                    <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="${selectedAction} Request (${customerName})" enabled="true">
                       <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
                       <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
                         <collectionProp name="Arguments.arguments">

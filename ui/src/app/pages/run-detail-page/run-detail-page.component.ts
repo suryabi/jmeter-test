@@ -30,6 +30,7 @@ import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
 import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
+import { TabsModule } from 'primeng/tabs';
 
 @Component({
   selector: 'app-run-detail-page',
@@ -47,7 +48,8 @@ import { SelectModule } from 'primeng/select';
     MessageModule,
     DividerModule,
     TableModule,
-    SelectModule
+    SelectModule,
+    TabsModule
   ],
   templateUrl: './run-detail-page.component.html',
   styleUrl: './run-detail-page.component.scss'
@@ -65,8 +67,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   error = '';
   deleting = false;
   streaming = false;
-  showReportEmbed = false;
-  showRunParameters = false;
+  detailTab = 'overview';
   reportEmbedUrl: SafeResourceUrl | null = null;
   activeSampleStatus: 'passed' | 'failed' | null = null;
   sampleRows: RunSampleRow[] = [];
@@ -192,6 +193,11 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     });
   }
 
+  reuseParameters(): void {
+    if (!this.run) return;
+    void this.router.navigate(['/create'], { queryParams: { fromRun: this.run.id } });
+  }
+
   deleteRun(): void {
     if (!this.run || this.deleting) return;
 
@@ -223,20 +229,30 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     this.logLines = [];
   }
 
-  selectSampleStatus(status: 'passed' | 'failed'): void {
-    this.activeSampleStatus = this.activeSampleStatus === status ? null : status;
+  /** From metric tiles: jump to the Samples tab filtered to a status. */
+  openSamples(status: 'passed' | 'failed'): void {
+    this.detailTab = 'samples';
+    this.setSampleStatus(status);
+  }
+
+  setSampleStatus(status: 'passed' | 'failed'): void {
+    if (this.activeSampleStatus === status && this.sampleRows.length) return;
+    this.activeSampleStatus = status;
     this.lastSampleSummaryKey = '';
     this.expandedSampleRows = {};
     this.samplePayloadByKey = {};
     this.samplePayloadLoadingByKey = {};
-    if (!this.activeSampleStatus) {
-      this.unbindSamplesScrollListener();
-      this.sampleRows = [];
-      this.sampleRowsTotal = 0;
-      return;
-    }
     this.samplesPinnedToBottom = true;
-    this.loadSampleRows(this.activeSampleStatus);
+    this.loadSampleRows(status);
+  }
+
+  onDetailTabChange(value: string | number | undefined): void {
+    if (value == null) return;
+    this.detailTab = String(value);
+    if (this.detailTab === 'samples' && !this.activeSampleStatus) {
+      const failed = this.run?.summary?.failed ?? 0;
+      this.setSampleStatus(failed > 0 ? 'failed' : 'passed');
+    }
   }
 
   onSamplesTableScroll(): void {
@@ -320,17 +336,6 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
 
   hasHtmlReport(): boolean {
     return !!this.run?.artifacts?.htmlReportUrl;
-  }
-
-  toggleReportEmbed(): void {
-    this.showReportEmbed = !this.showReportEmbed;
-    if (this.showReportEmbed) {
-      this.ensureReportEmbedUrl();
-    }
-  }
-
-  toggleRunParameters(): void {
-    this.showRunParameters = !this.showRunParameters;
   }
 
   openReportInNewTab(): void {
@@ -550,7 +555,9 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   private clearReportEmbedUrl(): void {
     this.reportEmbedUrlKey = '';
     this.reportEmbedUrl = null;
-    this.showReportEmbed = false;
+    if (this.detailTab === 'report') {
+      this.detailTab = 'overview';
+    }
   }
 
   private loadSampleRows(status: 'passed' | 'failed', options: { silent?: boolean } = {}): void {

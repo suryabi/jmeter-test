@@ -1,41 +1,42 @@
-import { Component, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { interval, startWith, Subscription, switchMap, catchError, of } from 'rxjs';
 import { RunnerService } from '../../core/services/runner.service';
-import { RunProps, RunSummary } from '../../core/models/runner.models';
+import { RunSummary } from '../../core/models/runner.models';
 import { confirmDeleteRun } from '../../core/utils/confirm-delete-run';
-import { StartRunFormComponent } from '../../components/start-run-form/start-run-form.component';
+import { formatDurationMs } from '../../core/utils/format-duration';
 import { TopbarComponent } from '../../components/topbar/topbar.component';
-import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { MessageModule } from 'primeng/message';
-import { TabsModule } from 'primeng/tabs';
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+
+type StatusFilter = 'all' | 'succeeded' | 'failed' | 'running';
 
 @Component({
   selector: 'app-runs-page',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
-    StartRunFormComponent,
     TopbarComponent,
-    CardModule,
     TagModule,
     ButtonModule,
     TableModule,
     MessageModule,
-    TabsModule
+    SelectModule,
+    InputTextModule
   ],
   templateUrl: './runs-page.component.html',
   styleUrl: './runs-page.component.scss'
 })
 export class RunsPageComponent implements OnInit, OnDestroy {
-  @ViewChild(StartRunFormComponent) startForm?: StartRunFormComponent;
-
   private readonly runner = inject(RunnerService);
   private readonly router = inject(Router);
   private readonly confirmation = inject(ConfirmationService);
@@ -46,12 +47,61 @@ export class RunsPageComponent implements OnInit, OnDestroy {
   error = '';
   private pollSub?: Subscription;
 
+  /* Filters */
+  searchTerm = signal('');
+  statusFilter = signal<StatusFilter>('all');
+  planFilter = signal<string | null>(null);
+
+  readonly statusFilterOptions: { label: string; value: StatusFilter }[] = [
+    { label: 'All statuses', value: 'all' },
+    { label: 'Succeeded', value: 'succeeded' },
+    { label: 'Failed', value: 'failed' },
+    { label: 'Running', value: 'running' }
+  ];
+
+  planFilterOptions = computed(() => {
+    const planFiles = [
+      ...new Set(this.runs().map((run) => run.planFile).filter((f): f is string => !!f))
+    ].sort();
+    return [
+      { label: 'All plans', value: null as string | null },
+      ...planFiles.map((file) => ({ label: file.replace(/\.jmx$/i, ''), value: file as string | null }))
+    ];
+  });
+
+  filteredRuns = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const status = this.statusFilter();
+    const plan = this.planFilter();
+
+    return this.runs().filter((run) => {
+      if (status !== 'all') {
+        const matchesStatus =
+          status === 'failed'
+            ? run.status === 'failed' || run.status === 'cancelled'
+            : run.status === status;
+        if (!matchesStatus) return false;
+      }
+      if (plan && run.planFile !== plan) return false;
+      if (term) {
+        const haystack = `${run.label ?? ''} ${run.id}`.toLowerCase();
+        if (!haystack.includes(term)) return false;
+      }
+      return true;
+    });
+  });
+
+  hasActiveFilters = computed(
+    () => !!this.searchTerm().trim() || this.statusFilter() !== 'all' || !!this.planFilter()
+  );
+
   totalRuns = computed(() => this.runs().length);
   succeededRuns = computed(() => this.runs().filter((r) => r.status === 'succeeded').length);
   failedRuns = computed(() =>
     this.runs().filter((r) => r.status === 'failed' || r.status === 'cancelled').length
   );
-  runningRuns = computed(() => this.runs().filter((r) => r.status === 'running').length);
+  runningRunsList = computed(() => this.runs().filter((r) => r.status === 'running'));
+  runningRuns = computed(() => this.runningRunsList().length);
   successRate = computed(() => {
     const total = this.totalRuns();
     if (total === 0) return 0;
@@ -84,20 +134,32 @@ export class RunsPageComponent implements OnInit, OnDestroy {
     this.pollSub?.unsubscribe();
   }
 
-  onStartRun(payload: { label: string; planFile: string; props: RunProps }): void {
-    this.error = '';
-    this.startForm?.setSubmitting(true);
+  clearFilters(): void {
+    this.searchTerm.set('');
+    this.statusFilter.set('all');
+    this.planFilter.set(null);
+  }
 
-    this.runner.startRun(payload).subscribe({
-      next: ({ run }) => {
-        this.startForm?.setSubmitting(false);
-        void this.router.navigate(['/runs', run.id]);
-      },
-      error: (err) => {
-        this.startForm?.setSubmitting(false);
-        this.error = err?.error?.error || err?.message || 'Failed to start run';
-      }
-    });
+  reuseRunParameters(run: RunSummary, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    void this.router.navigate(['/create'], { queryParams: { fromRun: run.id } });
+  }
+
+  runDuration(run: RunSummary): string {
+    const startMs = Date.parse(run.startedAt);
+    if (!Number.isFinite(startMs)) return '—';
+
+    let endMs: number | null = null;
+    if (run.endedAt) {
+      endMs = Date.parse(run.endedAt);
+    } else if (run.status === 'running') {
+      endMs = Date.now();
+    }
+    if (endMs == null || !Number.isFinite(endMs) || endMs <= startMs) return '—';
+
+    const label = formatDurationMs(endMs - startMs);
+    return run.status === 'running' ? `${label}…` : label;
   }
 
   deleteRun(run: RunSummary, event: Event): void {

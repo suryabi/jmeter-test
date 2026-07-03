@@ -12,7 +12,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  border-bottom: 1px solid var(--border);
 }
 
 .plans-header-actions {
@@ -38,9 +38,9 @@
 
 .plans-table-wrap {
   margin: 1rem;
-  background: rgba(7, 14, 27, 0.72);
+  background: rgba(13, 8, 27, 0.72);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
 }
 
@@ -56,22 +56,22 @@
   width: 2.25rem;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
-  background: rgba(79, 140, 255, 0.14);
-  border: 1px solid rgba(79, 140, 255, 0.28);
-  color: #c7ddff;
+  border-radius: 0.85rem;
+  background: rgba(139, 92, 246, 0.16);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  color: #ddd6fe;
 }
 
 .plan-row-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #f5f3ff;
 }
 
 .plan-row-file {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: #64748b;
+  color: var(--text-dim);
   margin-top: 0.1rem;
 }
 
