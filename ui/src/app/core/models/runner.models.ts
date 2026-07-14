@@ -76,6 +76,8 @@ export interface RunSummary {
   id: string;
   label: string;
   planFile: string | null;
+  /** Optional caller tag (e.g. terraform / console) for who started the run. */
+  source?: string | null;
   status: RunStatus;
   pid: number | null;
   startedAt: string;
@@ -176,6 +178,8 @@ export interface LogPollResponse {
 export interface StartRunRequest {
   label?: string;
   planFile?: string;
+  /** Optional caller tag so runs can be attributed to an upstream UI/system. */
+  source?: string;
   props?: RunProps;
 }
 

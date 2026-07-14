@@ -671,6 +671,36 @@ input.p-inputtext.surface-input {
   animation: pulse-dot 1.6s ease-in-out infinite;
 }
 
+/* Optional run.source tag (e.g. terraform) */
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 12rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #a5f3fc;
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.32);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.source-badge i {
+  font-size: 0.65rem;
+  flex-shrink: 0;
+}
+
+.source-badge-default {
+  color: var(--text-muted);
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.22);
+}
+
 .live-dot.success {
   background: var(--success);
   animation-color: rgba(52, 211, 153, 0.5);

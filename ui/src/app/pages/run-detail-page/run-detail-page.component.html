@@ -20,11 +20,19 @@
           <i class="pi" [class.pi-bolt]="run.status !== 'running'" [class.pi-spin]="run.status === 'running'" [class.pi-cog]="run.status === 'running'"></i>
         </div>
         <div class="min-w-0">
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 flex-wrap">
             @if (run.status === 'running') {
               <span class="live-dot"></span>
             }
             <p-tag [value]="run.status" [severity]="statusSeverity(run.status)" />
+            <span
+              class="source-badge"
+              [class.source-badge-default]="!run.source"
+              [title]="'Started by ' + displaySource(run.source)"
+            >
+              <i class="pi" [class.pi-desktop]="!run.source" [class.pi-send]="!!run.source"></i>
+              {{ displaySource(run.source) }}
+            </span>
             <span class="run-hero-duration">{{ formatRunExecutionDuration(run) }}</span>
           </div>
           <h1 class="run-hero-title">{{ run.label || 'Untitled run' }}</h1>
@@ -203,6 +211,17 @@
               <dl class="info-grid">
                 <dt>Plan</dt>
                 <dd class="mono">{{ run.planFile || '—' }}</dd>
+                <dt>Source</dt>
+                <dd>
+                  <span
+                    class="source-badge"
+                    [class.source-badge-default]="!run.source"
+                    [title]="'Started by ' + displaySource(run.source)"
+                  >
+                    <i class="pi" [class.pi-desktop]="!run.source" [class.pi-send]="!!run.source"></i>
+                    {{ displaySource(run.source) }}
+                  </span>
+                </dd>
                 <dt>Started</dt>
                 <dd>{{ run.startedAt | date: 'medium' }}</dd>
                 <dt>Ended</dt>

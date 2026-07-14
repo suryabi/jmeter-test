@@ -236,6 +236,7 @@ Base URL: `http://localhost:5050`
 {
   "label": "sample-run",
   "planFile": "BIQ.jmx",
+  "source": "terraform",
   "props": {
     "requestStartDate": "2026-12-10",
     "requestEndDate": "2026-12-10",
@@ -247,6 +248,7 @@ Base URL: `http://localhost:5050`
 ```
 
 `props` keys match JMX `Argument.name` values and `header__<Header-Name>` for HTTP headers.
+Optional `source` tags who started the run (e.g. `"terraform"`); returned on list/detail and stored in `run.meta.json`.
 
 ### Field options payload
 

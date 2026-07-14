@@ -8,6 +8,7 @@ import { RunnerService } from '../../core/services/runner.service';
 import { RunSummary } from '../../core/models/runner.models';
 import { confirmDeleteRun } from '../../core/utils/confirm-delete-run';
 import { formatDurationMs } from '../../core/utils/format-duration';
+import { displayRunSource } from '../../core/utils/display-run-source';
 import { TopbarComponent } from '../../components/topbar/topbar.component';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -108,6 +109,8 @@ export class RunsPageComponent implements OnInit, OnDestroy {
     return Math.round((this.succeededRuns() / total) * 100);
   });
   latestRun = computed(() => this.runs()[0]);
+
+  readonly displaySource = displayRunSource;
 
   ngOnInit(): void {
     this.runner.health().subscribe({

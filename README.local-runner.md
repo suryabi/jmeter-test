@@ -40,6 +40,7 @@ curl -X POST http://localhost:5050/runs \
   -d '{
     "label": "quick-local-test",
     "planFile": "BIQ.jmx",
+    "source": "terraform",
     "props": {
       "requestStartDate": "2026-12-10",
       "requestEndDate": "2026-12-10",
@@ -49,6 +50,8 @@ curl -X POST http://localhost:5050/runs \
 ```
 
 `props` may include any JMX user-defined variable or `header__*` override. The runner writes a per-run copy at `runs/<id>/BIQ-run.jmx` with your values applied before starting JMeter.
+
+Optional `source` is a free-form caller tag (max 128 chars) stored on the run and returned in list/detail responses — use it to mark launches from another UI (e.g. `"terraform"`). Omit it for console runs.
 
 Fetch defaults and field descriptions:
 

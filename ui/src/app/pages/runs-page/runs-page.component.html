@@ -87,6 +87,14 @@
               <i class="pi pi-file text-xs"></i>
               {{ run.planFile ? run.planFile.replace('.jmx', '') : '—' }}
             </span>
+            <span
+              class="source-badge"
+              [class.source-badge-default]="!run.source"
+              [title]="'Started by ' + displaySource(run.source)"
+            >
+              <i class="pi" [class.pi-desktop]="!run.source" [class.pi-send]="!!run.source"></i>
+              {{ displaySource(run.source) }}
+            </span>
             <span>Started {{ run.startedAt | date: 'shortTime' }}</span>
             <span>·</span>
             <span>{{ runDuration(run) }}</span>
@@ -183,13 +191,14 @@
       <div class="history-table-wrap">
       <p-table
         [value]="filteredRuns()"
-        [tableStyle]="{ 'min-width': '52rem' }"
+        [tableStyle]="{ 'min-width': '58rem' }"
         responsiveLayout="scroll"
       >
         <ng-template pTemplate="header">
           <tr>
             <th>Run</th>
             <th>Plan</th>
+            <th>Source</th>
             <th>Status</th>
             <th>Started</th>
             <th>Duration</th>
@@ -217,6 +226,16 @@
               <span class="plan-badge">
                 <i class="pi pi-file text-xs"></i>
                 {{ run.planFile ? run.planFile.replace('.jmx', '') : '—' }}
+              </span>
+            </td>
+            <td>
+              <span
+                class="source-badge"
+                [class.source-badge-default]="!run.source"
+                [title]="'Started by ' + displaySource(run.source)"
+              >
+                <i class="pi" [class.pi-desktop]="!run.source" [class.pi-send]="!!run.source"></i>
+                {{ displaySource(run.source) }}
               </span>
             </td>
             <td>

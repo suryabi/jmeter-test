@@ -973,11 +973,20 @@ function handleHtmlReport(runId, pathname, res) {
 // Run object shaping + lifecycle
 // ----------------------------
 
+function normalizeRunSource(value) {
+  if (value == null) return null;
+  const trimmed = String(value).trim();
+  if (!trimmed) return null;
+  // Keep tags short and URL/log-safe for callers like the terraform screen.
+  return trimmed.slice(0, 128);
+}
+
 function getRunSummary(run) {
   return {
     id: run.id,
     label: run.label || "",
     planFile: run.planFile || null,
+    source: run.source || null,
     status: run.status,
     pid: run.pid,
     startedAt: run.startedAt,
@@ -1041,6 +1050,7 @@ function hydrateRunFromDisk(id, runDirHint = null) {
     id: parsed.id || id,
     label: meta?.label || parsed.label || "",
     planFile: meta?.planFile || null,
+    source: normalizeRunSource(meta?.source),
     status,
     pid: null,
     startedAt: meta?.startedAt || fs.statSync(runDir).birthtime.toISOString(),
@@ -1279,9 +1289,10 @@ function ensureJmeterRuntimeReady() {
 }
 
 // Launch a JMeter non-GUI run with a per-run patched plan copy.
-function startRun({ props = {}, runLabel = "", planFile = null }) {
+function startRun({ props = {}, runLabel = "", planFile = null, source = null }) {
   const sourcePlanPath = resolvePlanPath(planFile);
   const resolvedPlanFile = planFile || path.basename(sourcePlanPath);
+  const runSource = normalizeRunSource(source);
 
   if (!ALLOW_CONCURRENT_RUNS && activeRunExists()) {
     throw new Error("A run is already in progress. Set ALLOW_CONCURRENT_RUNS=true to bypass.");
@@ -1310,6 +1321,7 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     id,
     label: runLabel,
     planFile: resolvedPlanFile,
+    source: runSource,
     props: parameterOverrides,
     startedAt
   });
@@ -1364,6 +1376,7 @@ function startRun({ props = {}, runLabel = "", planFile = null }) {
     id,
     label: runLabel,
     planFile: resolvedPlanFile,
+    source: runSource,
     status: "running",
     pid: child.pid,
     startedAt,
@@ -1663,7 +1676,8 @@ const server = http.createServer(async (req, res) => {
       const run = startRun({
         props: body.props || {},
         runLabel: body.label || "",
-        planFile: body.planFile || null
+        planFile: body.planFile || null,
+        source: body.source ?? null
       });
       return sendJson(res, 202, { run: getRunDetail(run, { logTailLines: 20 }) });
     }

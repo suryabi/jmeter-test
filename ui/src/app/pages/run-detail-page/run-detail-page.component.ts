@@ -20,6 +20,7 @@ import {
   SseLogEvent
 } from '../../core/models/runner.models';
 import { formatDurationMs } from '../../core/utils/format-duration';
+import { displayRunSource } from '../../core/utils/display-run-source';
 import { LogConsoleComponent } from '../../components/log-console/log-console.component';
 import { RunParametersPanelComponent } from '../../components/run-parameters-panel/run-parameters-panel.component';
 import { TopbarComponent } from '../../components/topbar/topbar.component';
@@ -60,6 +61,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly confirmation = inject(ConfirmationService);
   readonly runner = inject(RunnerService);
+  readonly displaySource = displayRunSource;
 
   runId = '';
   run: RunDetail | null = null;
