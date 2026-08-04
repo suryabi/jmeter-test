@@ -32,6 +32,11 @@ export interface ParameterDef {
   label?: string;
   /** Grid width on a 12-column layout (`COLS=4` default, `COLS=6` → 2 per row). */
   cols?: number;
+  /**
+   * From JMX `ENABLE_IF=field:value` — UI enables this field only when the
+   * named argument currently equals `value` (booleans compare as "true"/"false").
+   */
+  enableIf?: { field: string; value: string };
   kind?: ParameterKind;
   headerName?: string;
   apiConfig?: ApiFieldConfig;

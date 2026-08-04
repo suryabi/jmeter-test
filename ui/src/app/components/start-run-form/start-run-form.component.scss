@@ -196,6 +196,41 @@
   background: rgba(23, 16, 48, 0.35);
 }
 
+.field-cell-disabled {
+  opacity: 0.48;
+  pointer-events: none;
+}
+
+.field-cell-disabled .field-help {
+  opacity: 0.9;
+}
+
+.field-control-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.field-control-wrap.is-loading {
+  pointer-events: none;
+}
+
+.field-loading-indicator {
+  position: absolute;
+  right: 3.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+:host ::ng-deep .field-loading-spinner {
+  width: 1.1rem !important;
+  height: 1.1rem !important;
+}
+
 /* Side nav + fields two-card layout */
 .params-layout {
   display: grid;

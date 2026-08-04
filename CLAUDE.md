@@ -55,8 +55,12 @@ scripts/init.js     # setup helper
 - `DROPDOWN, API` / `DROPDOWN, API, MULTI` — BriefingIQ API dropdowns
 - `HIDE` — hidden in UI; still sent to JMeter
 - `LABEL=camelCase` — friendly UI label
+- `COLS=n` — grid width on a 12-column layout (`COLS=4` default)
+- `ENABLE_IF=field:value` — enable the field in the start-run UI only when another argument equals `value` (e.g. `ENABLE_IF=blockSlotFullDay:false`)
 
 API endpoint mappings go in the **`API Field Variables`** Arguments group.
+Option labels use `display=path` for a single field, or a backtick template to compose fields, e.g. `display=\`data.presenterName (data.primaryEmail)\``.
+`depends=` parents clear and re-fetch child options when they change.
 
 ### IfController pitfalls
 

@@ -67,10 +67,29 @@ function parseParameterCols(description) {
   return cols;
 }
 
+/**
+ * ENABLE_IF=fieldName:expectedValue — UI enables the field only when that
+ * argument's current value matches (string compare after normalize).
+ * Example: ENABLE_IF=blockSlotFullDay:false
+ */
+function parseEnableIf(description) {
+  const match = String(description || "").match(
+    /\bENABLE_IF=([a-zA-Z][a-zA-Z0-9_]*)(?::([^\s,]+))?/i
+  );
+  if (!match) return null;
+  const rawValue = match[2] != null ? match[2] : "true";
+  return {
+    field: match[1],
+    // Descriptions often continue with ". Next sentence…" — drop trailing punctuation.
+    value: rawValue.replace(/[.,;:]+$/g, "")
+  };
+}
+
 function cleanDescription(description) {
   return String(description || "")
     .replace(/\bLABEL=[a-zA-Z][a-zA-Z0-9_]*\s*[,.]?\s*/gi, "")
     .replace(/\bCOLS=\d+\s*[,.]?\s*/gi, "")
+    .replace(/\bENABLE_IF=[a-zA-Z][a-zA-Z0-9_]*(?::[^\s,]+)?\s*[,.]?\s*/gi, "")
     .replace(/\bHIDE\b\s*[,.]?\s*/gi, "")
     .replace(/,\s*,/g, ",")
     .replace(/^,\s*/, "")
@@ -84,11 +103,13 @@ function cleanDescription(description) {
 function parseApiFieldMapping(description) {
   const mapping = {};
   const requestHeaders = {};
-  for (const segment of String(description || "").trim().split(/\s+/)) {
-    const eq = segment.indexOf("=");
-    if (eq <= 0) continue;
-    const key = segment.slice(0, eq);
-    const value = segment.slice(eq + 1);
+  const text = String(description || "").trim();
+  // Support display=`path.path (path.other)` — backtick values may contain spaces.
+  const tokenRe = /([^\s=]+)=(`[^`]*`|[^\s]+)/g;
+  let match;
+  while ((match = tokenRe.exec(text)) !== null) {
+    const key = match[1];
+    const value = match[2];
     if (key.startsWith("header.")) {
       requestHeaders[key.slice("header.".length)] = value;
     } else {
@@ -235,6 +256,26 @@ function fieldFromItem(item, fieldPath) {
   return value == null ? "" : String(value);
 }
 
+/**
+ * Resolve the option label from `display=...`:
+ * - bare path (one field): display=data.primaryEmail
+ * - backtick template (compose fields): display=`data.presenterName (data.primaryEmail)`
+ *   Path-like tokens inside the backticks are looked up; everything else is literal.
+ */
+function formatItemLabel(item, displayField) {
+  const raw = String(displayField || "").trim();
+  if (!raw) return "";
+
+  if (raw.startsWith("`") && raw.endsWith("`") && raw.length >= 2) {
+    const template = raw.slice(1, -1);
+    return template.replace(/[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*/g, (path) => {
+      return fieldFromItem(item, path);
+    });
+  }
+
+  return fieldFromItem(item, raw);
+}
+
 function enrichParameter(param, apiFieldMap) {
   if (param.type !== "dropdown" && param.type !== "multiselect") return param;
   const apiConfig = apiFieldMap[param.name];
@@ -287,6 +328,7 @@ function parseArgumentsBlock(blockXml) {
     );
     const label = parseParameterLabel(description);
     const cols = parseParameterCols(description);
+    const enableIf = parseEnableIf(description);
     params.push({
       name,
       defaultValue,
@@ -296,6 +338,7 @@ function parseArgumentsBlock(blockXml) {
       hidden: isHiddenParameter(description),
       cols,
       ...(label ? { label } : {}),
+      ...(enableIf ? { enableIf } : {}),
       kind: "argument"
     });
   }
@@ -573,7 +616,7 @@ async function fetchApiFieldOptions(planPath, fieldName, props = {}) {
   const options = items
     .map((item) => {
       const value = fieldFromItem(item, apiConfig.valueField);
-      const label = fieldFromItem(item, apiConfig.displayField) || value;
+      const label = formatItemLabel(item, apiConfig.displayField) || value;
       return { label: String(label), value: String(value) };
     })
     .filter(
@@ -699,5 +742,7 @@ module.exports = {
   fetchApiFieldOptions,
   buildRequestHeaders,
   DEFAULT_PARAMETER_COLS,
-  parseParameterCols
+  parseParameterCols,
+  formatItemLabel,
+  parseApiFieldMapping
 };

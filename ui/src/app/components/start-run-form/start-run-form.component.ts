@@ -3,6 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   inject
@@ -16,6 +17,7 @@ import {
   Validators
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 import {
   FieldOption,
   ParameterDef,
@@ -55,13 +57,14 @@ import { MultiSelectModule } from 'primeng/multiselect';
   templateUrl: './start-run-form.component.html',
   styleUrl: './start-run-form.component.scss'
 })
-export class StartRunFormComponent implements OnInit {
+export class StartRunFormComponent implements OnInit, OnDestroy {
   @Input() priorRuns: RunSummary[] = [];
   @Output() start = new EventEmitter<{ label: string; planFile: string; props: RunProps }>();
 
   private readonly fb = inject(FormBuilder);
   private readonly runner = inject(RunnerService);
   private readonly cdr = inject(ChangeDetectorRef);
+  private enableIfSub?: Subscription;
 
   form: FormGroup = this.fb.group({
     label: this.fb.nonNullable.control('sample-run')
@@ -97,6 +100,10 @@ export class StartRunFormComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.enableIfSub?.unsubscribe();
   }
 
   onPlanChange(plan: PlanInfo | null): void {
@@ -184,6 +191,7 @@ export class StartRunFormComponent implements OnInit {
       }
     }
     this.loadDropdownOptions();
+    this.syncEnableIfStates();
   }
 
   priorRunOptions(): { label: string; value: string | null; run?: RunSummary }[] {
@@ -245,6 +253,7 @@ export class StartRunFormComponent implements OnInit {
     if (!this.propsLoadNotice) {
       this.propsLoadNotice = `Loaded parameters from “${sourceLabel}”. Review fields, then start the run.`;
     }
+    this.syncEnableIfStates();
     this.cdr.markForCheck();
   }
 
@@ -317,6 +326,15 @@ export class StartRunFormComponent implements OnInit {
     return parameterFieldColumnClass(param);
   }
 
+  /** True when ENABLE_IF is absent or the controlling field matches. */
+  isParamEnabled(param: ParameterDef): boolean {
+    const condition = param.enableIf;
+    if (!condition?.field) return true;
+    const current = this.normalizeEnableIfValue(this.form.get(condition.field)?.value);
+    const expected = this.normalizeEnableIfValue(condition.value);
+    return current === expected;
+  }
+
   isUiHiddenParam(param: ParameterDef): boolean {
     return !!param.hidden || param.kind === 'header';
   }
@@ -386,6 +404,40 @@ export class StartRunFormComponent implements OnInit {
     }
 
     this.form = this.fb.group(controls);
+    this.wireEnableIfSync();
+  }
+
+  private wireEnableIfSync(): void {
+    this.enableIfSub?.unsubscribe();
+    this.syncEnableIfStates();
+    this.enableIfSub = this.form.valueChanges.subscribe(() => {
+      this.syncEnableIfStates();
+    });
+  }
+
+  private syncEnableIfStates(): void {
+    for (const group of this.parameterGroups) {
+      for (const param of group.parameters) {
+        if (!param.enableIf) continue;
+        const control = this.form.get(param.name);
+        if (!control) continue;
+        const enabled = this.isParamEnabled(param);
+        if (enabled && control.disabled) {
+          control.enable({ emitEvent: false });
+        } else if (!enabled && control.enabled) {
+          control.disable({ emitEvent: false });
+        }
+      }
+    }
+  }
+
+  private normalizeEnableIfValue(value: unknown): string {
+    if (typeof value === 'boolean') {
+      return value ? 'true' : 'false';
+    }
+    return String(value ?? '')
+      .trim()
+      .toLowerCase();
   }
 
   private createControl(
@@ -410,6 +462,7 @@ export class StartRunFormComponent implements OnInit {
     this.applyPropsToForm(props);
     this.loadDropdownOptions();
     this.propsLoadNotice = `Loaded parameters from “${sourceLabel}”. Review fields, then start the run.`;
+    this.syncEnableIfStates();
     this.cdr.markForCheck();
   }
 
@@ -555,8 +608,10 @@ export class StartRunFormComponent implements OnInit {
 
     for (const name of dependents) {
       const param = this.findParam(name);
-      if (param) {
-        this.form.get(name)?.setValue(this.defaultControlValue(param), { emitEvent: false });
+      const control = this.form.get(name);
+      if (param && control) {
+        // Parent changed — wipe the selection (do not restore JMX defaults).
+        control.setValue(this.emptyControlValue(param), { emitEvent: false });
       }
       this.fieldOptions[name] = [];
       this.fieldOptionsError[name] = '';
@@ -569,6 +624,20 @@ export class StartRunFormComponent implements OnInit {
         this.loadFieldOptions(param);
       }
     }
+  }
+
+  /** Empty selection for a field after a parent dependency changes. */
+  private emptyControlValue(param: ParameterDef): string | boolean | string[] | null {
+    if (param.type === 'boolean') {
+      return false;
+    }
+    if (param.type === 'multiselect') {
+      return [];
+    }
+    if (param.type === 'dropdown' && !param.required) {
+      return null;
+    }
+    return '';
   }
 
   private collectDependents(fieldName: string): string[] {
@@ -677,16 +746,10 @@ export class StartRunFormComponent implements OnInit {
     param: ParameterDef,
     current: string | boolean | string[] | null | undefined
   ): string[] {
-    const tokens: string[] = [];
-    for (const value of [
-      ...this.valuesFromControl(param, current),
-      ...this.parseJmxDefaultValues(param)
-    ]) {
-      if (!tokens.includes(value)) {
-        tokens.push(value);
-      }
-    }
-    return tokens;
+    // Only preserve whatever is currently in the control (including the initial
+    // JMX default set at form build). Do not re-apply JMX defaults here — that
+    // would undo clearing dependents after a parent field change.
+    return this.valuesFromControl(param, current);
   }
 
   private valuesFromControl(
@@ -700,18 +763,6 @@ export class StartRunFormComponent implements OnInit {
     }
     const value = String(current ?? '').trim();
     return value ? [value] : [];
-  }
-
-  private parseJmxDefaultValues(param: ParameterDef): string[] {
-    const raw = param.defaultValue.trim();
-    if (!raw) return [];
-    if (param.type === 'multiselect') {
-      return raw
-        .split(',')
-        .map((part) => part.trim())
-        .filter(Boolean);
-    }
-    return [raw];
   }
 
   private matchOptionValues(options: FieldOption[], preferred: string[]): string[] {

@@ -163,7 +163,12 @@
               </div>
               <div class="field-grid grid grid-cols-12 gap-x-4 gap-y-[0.9rem]">
                 @for (param of visibleParameters(currentGroup); track param.name) {
-                  <div class="field-cell" [ngClass]="fieldColumnClass(param)" [class.field-cell-revealed-hidden]="isUiHiddenParam(param)">
+                  <div
+                    class="field-cell"
+                    [ngClass]="fieldColumnClass(param)"
+                    [class.field-cell-revealed-hidden]="isUiHiddenParam(param)"
+                    [class.field-cell-disabled]="!isParamEnabled(param)"
+                  >
                     @if (param.type === 'boolean') {
                       <span class="field-label-row">
                         {{ fieldLabel(param) }}
@@ -203,19 +208,33 @@
                           placeholder="yyyy-mm-dd"
                         />
                       } @else if (param.type === 'dropdown') {
-                        <p-select
-                          [inputId]="param.name"
-                          class="surface-select w-full"
-                          panelStyleClass="surface-select-panel"
-                          appendTo="body"
-                          [options]="dropdownOptions(param)"
-                          optionLabel="label"
-                          optionValue="value"
-                          [formControlName]="param.name"
-                          [loading]="fieldOptionsLoading[param.name]"
-                          [placeholder]="dropdownPlaceholder(param)"
-                          (onChange)="onDropdownChange(param.name)"
-                        />
+                        <div
+                          class="field-control-wrap"
+                          [class.is-loading]="fieldOptionsLoading[param.name]"
+                        >
+                          <p-select
+                            [inputId]="param.name"
+                            class="surface-select w-full"
+                            panelStyleClass="surface-select-panel"
+                            appendTo="body"
+                            [options]="dropdownOptions(param)"
+                            optionLabel="label"
+                            optionValue="value"
+                            [formControlName]="param.name"
+                            [loading]="fieldOptionsLoading[param.name]"
+                            [placeholder]="
+                              fieldOptionsLoading[param.name]
+                                ? 'Loading options…'
+                                : dropdownPlaceholder(param)
+                            "
+                            (onChange)="onDropdownChange(param.name)"
+                          />
+                          @if (fieldOptionsLoading[param.name]) {
+                            <span class="field-loading-indicator" aria-hidden="true">
+                              <p-progress-spinner styleClass="field-loading-spinner" strokeWidth="6" />
+                            </span>
+                          }
+                        </div>
                       } @else if (param.type === 'multiselect') {
                         @if (!dependenciesReady(param)) {
                           <input
@@ -225,37 +244,40 @@
                             disabled
                             [placeholder]="dropdownPlaceholder(param)"
                           />
-                        } @else if (fieldOptionsLoading[param.name]) {
-                          <input
-                            pInputText
-                            variant="outlined"
-                            class="surface-input w-full"
-                            disabled
-                            placeholder="Loading options…"
-                          />
-                        } @else if (dropdownOptions(param).length) {
-                          <p-multiselect
-                            [inputId]="param.name"
-                            class="surface-select w-full"
-                            panelStyleClass="surface-select-panel"
-                            appendTo="body"
-                            display="chip"
-                            [maxSelectedLabels]="null"
-                            [options]="dropdownOptions(param)"
-                            optionLabel="label"
-                            optionValue="value"
-                            [formControlName]="param.name"
-                            [placeholder]="dropdownPlaceholder(param)"
-                            (onChange)="onDropdownChange(param.name)"
-                          />
                         } @else {
-                          <input
-                            pInputText
-                            variant="outlined"
-                            class="surface-input w-full"
-                            disabled
-                            placeholder="No options available"
-                          />
+                          <div
+                            class="field-control-wrap"
+                            [class.is-loading]="fieldOptionsLoading[param.name]"
+                          >
+                            <p-multiselect
+                              [inputId]="param.name"
+                              class="surface-select w-full"
+                              panelStyleClass="surface-select-panel"
+                              appendTo="body"
+                              display="chip"
+                              [maxSelectedLabels]="null"
+                              [options]="dropdownOptions(param)"
+                              optionLabel="label"
+                              optionValue="value"
+                              [formControlName]="param.name"
+                              [placeholder]="
+                                fieldOptionsLoading[param.name]
+                                  ? 'Loading options…'
+                                  : dropdownOptions(param).length
+                                    ? dropdownPlaceholder(param)
+                                    : 'No options available'
+                              "
+                              (onChange)="onDropdownChange(param.name)"
+                            />
+                            @if (fieldOptionsLoading[param.name]) {
+                              <span class="field-loading-indicator" aria-hidden="true">
+                                <p-progress-spinner
+                                  styleClass="field-loading-spinner"
+                                  strokeWidth="6"
+                                />
+                              </span>
+                            }
+                          </div>
                         }
                       } @else {
                         <input

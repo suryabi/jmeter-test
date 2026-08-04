@@ -1,0 +1,2859 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="BIQ - EIQ" enabled="true">
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <stringProp name="TestPlan.comments"></stringProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="BIQ Presenter Management" enabled="true">
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="categoryType" elementType="Argument">
+              <stringProp name="Argument.name">categoryType</stringProp>
+              <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Select the category type to use</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="category" elementType="Argument">
+              <stringProp name="Argument.name">category</stringProp>
+              <stringProp name="Argument.value">de83BC6A-472E-41A0-BE2C-E0429C85D015</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Select the category to use</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="presenters" elementType="Argument">
+              <stringProp name="Argument.name">presenters</stringProp>
+              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=NoOfPresenters. REQUIRED. Min,max number of presenters to create</stringProp>
+            </elementProp>
+            <elementProp name="topicsPerPresenter" elementType="Argument">
+              <stringProp name="Argument.name">topicsPerPresenter</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Min,max topics to assign per presenter</stringProp>
+            </elementProp>
+            <elementProp name="emailDomain" elementType="Argument">
+              <stringProp name="Argument.name">emailDomain</stringProp>
+              <stringProp name="Argument.value">briefingiq.com</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=domainForEmails. Domain used for generated email addresses</stringProp>
+            </elementProp>
+            <elementProp name="blockFromDate" elementType="Argument">
+              <stringProp name="Argument.name">blockFromDate</stringProp>
+              <stringProp name="Argument.value">2026-11-01</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE. LABEL=blockStartDate. Start date of the blocked slot range (yyyy-MM-dd).</stringProp>
+            </elementProp>
+            <elementProp name="blockToDate" elementType="Argument">
+              <stringProp name="Argument.name">blockToDate</stringProp>
+              <stringProp name="Argument.value">2026-11-30</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE. LABEL=blockEndDate. End date of the blocked slot range (yyyy-MM-dd).</stringProp>
+            </elementProp>
+            <elementProp name="blockSlots" elementType="Argument">
+              <stringProp name="Argument.name">blockSlots</stringProp>
+              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=noOfBlockedDays. Min,max number of blocked days to create within the specified date range</stringProp>
+            </elementProp>
+            <elementProp name="blockSlotsPerDay" elementType="Argument">
+              <stringProp name="Argument.name">blockSlotsPerDay</stringProp>
+              <stringProp name="Argument.value">1,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=blockSlotsPerDay. Min,max number of blocked slots to create per day from configured blocked slots</stringProp>
+            </elementProp>
+            <elementProp name="blockSlotFullDay" elementType="Argument">
+              <stringProp name="Argument.name">blockSlotFullDay</stringProp>
+              <stringProp name="Argument.value">false</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN, LABEL=fullDayBlock. If true, each blocked slot spans the entire day; otherwise each blocked slot uses a random time &amp; duration.</stringProp>
+            </elementProp>
+            <elementProp name="blockTimes" elementType="Argument">
+              <stringProp name="Argument.name">blockTimes</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=blockStartTimes. ENABLE_IF=blockSlotFullDay:false. Comma-separated start times (HH:mm). Randomly selects one value. Leave blank for a random time. Ignored when fullDayBlock=true</stringProp>
+            </elementProp>
+            <elementProp name="blockDurations" elementType="Argument">
+              <stringProp name="Argument.name">blockDurations</stringProp>
+              <stringProp name="Argument.value">30, 60, 120, 150</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=blockDurations. ENABLE_IF=blockSlotFullDay:false. Comma-separated durations (minutes). Randomly selects one value. Leave blank to use 30,60 minutes. Ignored when fullDayBlock=true</stringProp>
+            </elementProp>
+            <elementProp name="isNewPresenter" elementType="Argument">
+              <stringProp name="Argument.name">isNewPresenter</stringProp>
+              <stringProp name="Argument.value">false</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN, REQUIRED, LABEL=createNewPresenters. true = create new presenters, topics, and blocked slots. false = add blocked slots to existing presenters that do not already have blocked slots within the specified date range</stringProp>
+            </elementProp>
+            <elementProp name="presenterEmails" elementType="Argument">
+              <stringProp name="Argument.name">presenterEmails</stringProp>
+              <stringProp name="Argument.value">brandy.chavez@briefingiq.com</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, LABEL=existingPresenters. ENABLE_IF=isNewPresenter:false. Used only when createNewPresenter=false. If presenters are selected, blocked slots are created only for those presenters. Leave blank to use all existing presenters</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Customer Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="user" elementType="Argument">
+              <stringProp name="Argument.name">user</stringProp>
+              <stringProp name="Argument.value">admin@allianceit.com</stringProp>
+              <stringProp name="Argument.desc">REQUIRED. User used to create presenters, topics, and blocked slots</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="clientTimeZone" elementType="Argument">
+              <stringProp name="Argument.name">clientTimeZone</stringProp>
+              <stringProp name="Argument.value">Asia/Calcutta</stringProp>
+              <stringProp name="Argument.desc">REQUIRED. User&apos;s time zone (e.g., Asia/Calcutta).</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Configuration Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="presenterResourceTypeId" elementType="Argument">
+              <stringProp name="Argument.name">presenterResourceTypeId</stringProp>
+              <stringProp name="Argument.value">f57aea4f-dc69-475b-b02d-96259c216699</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=presenterResourceType. Resource Type to be used for Presenter</stringProp>
+            </elementProp>
+            <elementProp name="topicResourceTypeId" elementType="Argument">
+              <stringProp name="Argument.name">topicResourceTypeId</stringProp>
+              <stringProp name="Argument.value">EFFCDABC-99FE-41E8-B65E-77B73CF46E60</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=topicResourceType. Resource Type to be used for Topic</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="topicMasterTypeId" elementType="Argument">
+              <stringProp name="Argument.name">topicMasterTypeId</stringProp>
+              <stringProp name="Argument.value">B147B2E9-053D-44F9-85F5-914B9F817FEA</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=topicMasterType. Master Type to be used for Topic</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Environment Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="protocol" elementType="Argument">
+              <stringProp name="Argument.name">protocol</stringProp>
+              <stringProp name="Argument.value">https</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. HTTP protocol</stringProp>
+            </elementProp>
+            <elementProp name="host" elementType="Argument">
+              <stringProp name="Argument.name">host</stringProp>
+              <stringProp name="Argument.value">briefings.briefingiq.com</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Server hostname</stringProp>
+            </elementProp>
+            <elementProp name="port" elementType="Argument">
+              <stringProp name="Argument.name">port</stringProp>
+              <stringProp name="Argument.value">443</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Server port number</stringProp>
+            </elementProp>
+            <elementProp name="contextname" elementType="Argument">
+              <stringProp name="Argument.name">contextname</stringProp>
+              <stringProp name="Argument.value">events</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Application context/root path</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">443</stringProp>
+        </Arguments>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkI1T08xc1haa19pOXljeFVFdVlqRDQxVjEwNmdSNExHaHFCU0E0ZjBpOFRDUUlKTmJMWEkzb3ZFc1VBY2Y0eW1UVlZMczZueERLSU5aSWRScllEYnF3IiwidHlwIjoiSldUIn0.eyJpc3MiOiJodHRwczovL29hdXRoLmJyaWVmaW5naXEuY29tL2FwcGxpY2F0aW9uL28vYmlxLWVpcS8iLCJzdWIiOiJhZG1pbkBicmllZmluZ2lxLmNvbSIsImF1ZCI6Im92SVB3U2l6MGx3VUNkeEVFUDhlUnVaRmZqSUhNT2M0Y2hnR1lSRTkiLCJleHAiOjE3ODQ4OTkyNTIsImlhdCI6MTc4NDg5ODk1MiwiYXV0aF90aW1lIjoxNzg0ODk4OTUwLCJhY3IiOiJnb2F1dGhlbnRpay5pby9wcm92aWRlcnMvb2F1dGgyL2RlZmF1bHQiLCJhbXIiOlsicHdkIl0sInNpZCI6IjQ4NDhlY2FlMmMzOTliMGQxZWNmODg1ZGE4ZWM3ZDhkNWFlMjc1ZDQyMDBmZTI0NzBjZTI1NDMwMGZlYzdjZjMiLCJqdGkiOiJ4M2dyRGdCNVNMa1NYUzJVNmE1UU8xOWVRSE1lWEtPTmY5ajhpeEdzIiwibmFtZSI6IkJJUSBBZG1pbiIsImdpdmVuX25hbWUiOiJCSVEgQWRtaW4iLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhZG1pbkBicmllZmluZ2lxLmNvbSIsIm5pY2tuYW1lIjoiYWRtaW5AYnJpZWZpbmdpcS5jb20iLCJncm91cHMiOltdLCJhenAiOiJvdklQd1NpejBsd1VDZHhFRVA4ZVJ1WkZmaklITU9jNGNoZ0dZUkU5IiwidWlkIjoiZDNHa0d2NGw0NVBuczI4TnN4RTNXTWVCZmhueEZrUTBNbkkyR2tBeiIsInNjb3BlIjoicHJvZmlsZSBvcGVuaWQifQ.vIVoJTEprD-HsVWf35RoYfVypm_WWhnY_mAGD8GQ5OV-5ZaPheOuAPBZK_CEOvVlnSB4J-B0kQJsUSBu__eoUlJYci58Rlu8bR3fE5tiDYl84OLMMYtsKJiS24hFVOlCSTZIVab72UgB9oyO1xrducXDO09eXSx8g96ofZ8lZu0WedpD-tefF4EK_-X7_G6Tdbl6n51O-DCWJi1YyI7FVEFuojvRdcxj93b1FZC55y2ljVEVGkpYRyLGjcQ1hlvcPGA26_20shigNCJuKPK_R8trpFkitUFPGmo63TN7Z7kXpKh82EOmUrcBCwIRQpgRvZY-NIApCqWb4igvRMhhn1EPoAwX8mD5dBgz-sfnBHxa0LcJj_22onKqpdtT85nswITHxamIKoRmmchMsfC99ygNxyh9DDFzrhldi0IcF2Lo6w6LrcewaGFxrRQp77B7GLAcSYb2AXO4Yz9BpNGeO0jOfdvl-Qu1UH8xJj2kiVDh8DwIEtfvQG9qiII3Ch6pHAfe1gSdZpwGmbuHhwUK4oM2g6TNK6dhdV0_kz-yfYVU-ELgFPFTu-vjPOrrDyRn8KjFQSkHfwZjCf_sfr2zpyXBPphqFuJDkmUqpA3AzfNNGJNOXfsU0L9V86drLXWRRNqx7U_bE0Ut7p8_DeWlB57AbSAtW2RNPR12sbfa1_0</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">x_cloud_user</stringProp>
+              <stringProp name="Header.value">${user}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${host}</stringProp>
+          <stringProp name="HTTPSampler.port">${port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${protocol}</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </ConfigTestElement>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="API Field Variables" enabled="false">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="categoryType" elementType="Argument">
+              <stringProp name="Argument.name">categoryType</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/categorytypes</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.categoryTypes display=categoryTypeName value=uniqueId ignore=CATEGORY_TYPE_EVENTS header.x-cloud-customerid=field:customerId</stringProp>
+            </elementProp>
+            <elementProp name="category" elementType="Argument">
+              <stringProp name="Argument.name">category</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/categorytypes/${categoryType}/categories?parent=CATEGORY_BRIEFINGS</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.categories display=categoryName value=uniqueId depends=categoryType ignore=A2D449A4-98D4-4C64-90AB-E46C1CBD7276 header.x-cloud-customerid=field:customerId</stringProp>
+            </elementProp>
+            <elementProp name="presenterResourceTypeId" elementType="Argument">
+              <stringProp name="Argument.name">presenterResourceTypeId</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/resourcetypes</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.resourceTypes display=name value=uniqueId header.x-cloud-customerid=field:customerId</stringProp>
+            </elementProp>
+            <elementProp name="topicResourceTypeId" elementType="Argument">
+              <stringProp name="Argument.name">topicResourceTypeId</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/resourcetypes</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.resourceTypes display=name value=uniqueId header.x-cloud-customerid=field:customerId</stringProp>
+            </elementProp>
+            <elementProp name="topicMasterTypeId" elementType="Argument">
+              <stringProp name="Argument.name">topicMasterTypeId</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/mastertypes</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.masterTypes display=name value=uniqueId header.x-cloud-customerid=field:customerId</stringProp>
+            </elementProp>
+            <elementProp name="presenterEmails" elementType="Argument">
+              <stringProp name="Argument.name">presenterEmails</stringProp>
+              <stringProp name="Argument.value">/${contextname}/api/resourcetypes/${presenterResourceTypeId}/resources</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">items=_embedded.resources display=`data.presenterName (data.primaryEmail)` value=data.primaryEmail depends=presenterResourceTypeId,category,categoryType multi=true header.x-cloud-customerid=field:customerId header.x-cloud-categoryid=field:category header.x-cloud-categorytypeid=field:categoryType</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Global Response Assertion" enabled="true">
+          <collectionProp name="Asserion.test_strings">
+            <stringProp name="49586">200</stringProp>
+          </collectionProp>
+          <stringProp name="Assertion.custom_message"></stringProp>
+          <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+          <intProp name="Assertion.test_type">16</intProp>
+          <boolProp name="Assertion.assume_success">false</boolProp>
+        </ResponseAssertion>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Common Function" enabled="true">
+          <stringProp name="script">SampleResult.setIgnore()
+
+// Fixes double-encoded non-breaking spaces in dropdown text pulled from API responses, then trims it.
+// Needed for reliable string comparison against option lists.
+def _fn_normalizeDropdownText = { String raw -&gt;
+    if (!raw) return raw
+    return raw.replace(&quot;\u00c2\u00a0&quot;, &quot;\u00a0&quot;).trim()
+}
+props.put(&quot;fn_normalizeDropdownText&quot;, _fn_normalizeDropdownText)
+
+
+// Converts a SNAKE_CASE lookup name (e.g. CUSTOMER_SECTOR) to camelCase (customerSector).
+// Used to build the variable name under which that lookup&apos;s values are stored.
+def _fn_lookupNameToCamelCase = { String lookupName -&gt;
+    if (!lookupName) return &quot;&quot;
+    def words = lookupName.toLowerCase().split(&apos;_&apos;)
+    return words[0] + words.drop(1).collect { it.capitalize() }.join(&apos;&apos;)
+}
+props.put(&quot;fn_lookupNameToCamelCase&quot;, _fn_lookupNameToCamelCase)
+
+
+// Normalizes a raw lookupContext string down to either &quot;category&quot; or &quot;tenant&quot;.
+// Reflects which scoped API endpoint originally supplied the lookup values.
+def _fn_normalizeLookupContext = { String lookupContext -&gt;
+    def normalized = lookupContext?.trim()?.toLowerCase()
+    if (normalized in [&quot;category&quot;, &quot;location&quot;]) return &quot;category&quot;
+    return &quot;tenant&quot;
+}
+props.put(&quot;fn_normalizeLookupContext&quot;, _fn_normalizeLookupContext)
+
+
+// Builds the base variable name for a lookup&apos;s stored values, combining context and name (e.g. customerSector).
+// Used as a prefix key when reading/writing lookup data in vars.
+def _fn_lookupVarBase = { String lookupName, String lookupContext -&gt;
+    def camel = props.get(&quot;fn_lookupNameToCamelCase&quot;)(lookupName)
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(lookupContext)
+    return ctx + &quot;_&quot; + camel
+}
+props.put(&quot;fn_lookupVarBase&quot;, _fn_lookupVarBase)
+
+
+// Gets a lookup row&apos;s own ID by checking id, uniqueId, or lookupValueId in that order, returning the first non-null one.
+// Used to identify a row when building parent/child chains.
+def _fn_resolveLookupRowId = { lookup -&gt;
+    def id = lookup?.id ?: lookup?.uniqueId ?: lookup?.lookupValueId
+    return id != null ? id.toString().trim() : null
+}
+props.put(&quot;fn_resolveLookupRowId&quot;, _fn_resolveLookupRowId)
+
+
+// Extracts the parent ID from a lookup row, checking parentId or nested parent.id/uniqueId.
+// Returns null if absent or the string &quot;null&quot; - guards against a common API quirk.
+def _fn_resolveLookupRowParentId = { lookup -&gt;
+    def pid = lookup?.parentId
+    if ((pid == null || pid.toString().trim() == &quot;&quot;) &amp;&amp; lookup?.parent instanceof Map) {
+        pid = lookup.parent.id ?: lookup.parent.uniqueId
+    }
+    if (pid == null || pid.toString().trim() == &quot;&quot; || pid.toString().equalsIgnoreCase(&quot;null&quot;)) return null
+    return pid.toString().trim()
+}
+props.put(&quot;fn_resolveLookupRowParentId&quot;, _fn_resolveLookupRowParentId)
+
+
+// Retrieves stored lookup rows (as parsed objects) from vars for a given lookup name and context.
+// Falls back to legacy unprefixed var names if the prefixed ones aren&apos;t found.
+def _fn_getLookupRows = { varsRef, lookupName, lookupContext -&gt;
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(lookupContext)
+    def base = props.get(&quot;fn_lookupVarBase&quot;)(lookupName, ctx)
+    def rowsJson = varsRef.get(base + &quot;_rows&quot;)
+    if (!rowsJson &amp;&amp; ctx == &quot;tenant&quot;) {
+        def legacy = props.get(&quot;fn_lookupNameToCamelCase&quot;)(lookupName)
+        rowsJson = varsRef.get(legacy + &quot;_rows&quot;)
+        if (!rowsJson) base = legacy
+    }
+    if (rowsJson) {
+        try {
+            return new groovy.json.JsonSlurper().parseText(rowsJson) ?: []
+        } catch (Exception ignored) { }
+    }
+    def countStr = varsRef.get(base + &quot;_count&quot;)
+    if (!(countStr &amp;&amp; countStr.isInteger() &amp;&amp; countStr.toInteger() &gt; 0)) return []
+    def count = countStr.toInteger()
+    return (1..count).collect { idx -&gt;
+        [id: null, parentId: null, value: varsRef.get(base + &quot;_&quot; + idx)]
+    }.findAll { it.value }
+}
+props.put(&quot;fn_getLookupRows&quot;, _fn_getLookupRows)
+
+
+// Parses a raw lookup values API response into vars: per lookup-type-code, stores an indexed list,
+// a _rows JSON blob (id/parentId/value), an _all CSV, and a _count. Skips inactive rows; for tenant-context
+// lookups, also mirrors everything under legacy unprefixed var names for backward compatibility.
+def _fn_storeLookupValues = { varsRef, lookupValuesList, contextKey, logRef -&gt;
+    def lookupMap = [:]
+    def rowsMap = [:]
+    def skippedInactive = 0
+    (lookupValuesList ?: []).each { lookup -&gt;
+        def active = lookup?.isActive
+        if (active == false || active?.toString()?.equalsIgnoreCase(&quot;false&quot;)) {
+            skippedInactive++
+            return
+        }
+        def code = lookup.lookupType?.code
+        def value = lookup.value
+        if (code &amp;&amp; value != null &amp;&amp; value.toString().trim() != &quot;&quot;) {
+            def normalizedValue = props.get(&quot;fn_normalizeDropdownText&quot;)(value.toString())
+            def rowId = props.get(&quot;fn_resolveLookupRowId&quot;)(lookup)
+            def rowParentId = props.get(&quot;fn_resolveLookupRowParentId&quot;)(lookup)
+            if (!lookupMap.containsKey(code)) lookupMap[code] = []
+            if (!rowsMap.containsKey(code)) rowsMap[code] = []
+            lookupMap[code].add(normalizedValue)
+            rowsMap[code].add([id: rowId, parentId: rowParentId, value: normalizedValue])
+        }
+    }
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(contextKey)
+    rowsMap.each { code, rows -&gt;
+        def values = lookupMap[code] ?: []
+        def base = props.get(&quot;fn_lookupVarBase&quot;)(code, ctx)
+        def rowsJson = groovy.json.JsonOutput.toJson(rows)
+        varsRef.put(base + &quot;_rows&quot;, rowsJson)
+        varsRef.put(base + &quot;_all&quot;, values.join(&quot;,&quot;))
+        varsRef.put(base + &quot;_count&quot;, String.valueOf(values.size()))
+        values.eachWithIndex { val, idx -&gt; varsRef.put(base + &quot;_&quot; + (idx + 1), val) }
+        // Backward compat: tenant lookups also mirror unprefixed vars (e.g. customerSector_count)
+        if (ctx == &quot;tenant&quot;) {
+            def camel = props.get(&quot;fn_lookupNameToCamelCase&quot;)(code)
+            varsRef.put(camel + &quot;_rows&quot;, rowsJson)
+            varsRef.put(camel + &quot;_all&quot;, values.join(&quot;,&quot;))
+            varsRef.put(camel + &quot;_count&quot;, String.valueOf(values.size()))
+            values.eachWithIndex { val, idx -&gt; varsRef.put(camel + &quot;_&quot; + (idx + 1), val) }
+        }
+    }
+    varsRef.put(ctx + &quot;LookupValues&quot;, groovy.json.JsonOutput.toJson(lookupMap))
+    if (skippedInactive &gt; 0) {
+        logRef.info(&quot;Stored ${lookupMap.size()} lookup type(s) for context &apos;${ctx}&apos; (skipped ${skippedInactive} inactive rows)&quot;)
+    }
+    return lookupMap
+}
+props.put(&quot;fn_storeLookupValues&quot;, _fn_storeLookupValues)
+
+// Picks one random value for a form field from its stored tenant lookup rows (or legacy indexed vars).
+// Presenter&apos;s lookup-bound fields (Designation -&gt; DESIGNATIONS, Code -&gt; PHONE_COUNTRY_CODE) are flat
+// dropdowns with no parent/child relationships, so this is a simple random pick from that lookup&apos;s rows.
+def _fn_pickLookupValue = { varsRef, lookupName, lookupContext, randRef, fieldName = null, logRef = null -&gt;
+    def logFn = logRef ?: log
+    def ctx = props.get(&quot;fn_normalizeLookupContext&quot;)(lookupContext)
+    def base = props.get(&quot;fn_lookupVarBase&quot;)(lookupName, ctx)
+    def allRows = props.get(&quot;fn_getLookupRows&quot;)(varsRef, lookupName, ctx)
+    if (!allRows &amp;&amp; ctx == &quot;tenant&quot;) {
+        def legacy = props.get(&quot;fn_lookupNameToCamelCase&quot;)(lookupName)
+        def legacyCount = varsRef.get(legacy + &quot;_count&quot;)
+        if (legacyCount &amp;&amp; legacyCount.isInteger() &amp;&amp; legacyCount.toInteger() &gt; 0) base = legacy
+    }
+    if (!allRows) {
+        def countStr = varsRef.get(base + &quot;_count&quot;)
+        if (!(countStr &amp;&amp; countStr.isInteger() &amp;&amp; countStr.toInteger() &gt; 0)) {
+            logFn.warn(&quot;fn_pickLookupValue: no values for lookupName=${lookupName} context=${ctx} field=${fieldName ?: &apos;n/a&apos;} (checked ${base}_count)&quot;)
+            return null
+        }
+        def count = countStr.toInteger()
+        return varsRef.get(base + &quot;_&quot; + (randRef.nextInt(count) + 1))
+    }
+    def pickedRow = allRows[randRef.nextInt(allRows.size())]
+    return pickedRow?.value
+}
+props.put(&quot;fn_pickLookupValue&quot;, _fn_pickLookupValue)
+
+
+// Generates a realistic 10-digit phone number starting with 7, 8, or 9.
+// Follows Indian mobile number conventions; used to fill PHONE-type form fields.
+def _fn_generatePhone = {
+    def rand = java.util.concurrent.ThreadLocalRandom.current()
+    def validStartDigits = [7, 8, 9]
+    def digit = validStartDigits[rand.nextInt(validStartDigits.size())]
+    def rest = rand.nextLong(100000000L, 1000000000L)
+    return String.valueOf(digit) + String.valueOf(rest)
+}
+props.put(&quot;fn_generatePhone&quot;, _fn_generatePhone)
+
+
+// Extracts the allowed email domain from the form&apos;s DOMAIN_EMAIL validator (e.g. allianceit.com).
+// Falls back to the emailDomain global variable if the form has no such validator
+// (field mappings never carry validator/domain info, so there&apos;s nothing to check there).
+def _fn_extractEmailDomain = { varsRef -&gt;
+    def emailDomain = varsRef.get(&quot;emailDomain&quot;) ?: &quot;gmail.com&quot;
+    try {
+        def formUIConfigStr = varsRef.get(&quot;currentFormUIConfig&quot;)
+        if (formUIConfigStr) {
+            def formUIConfig = new groovy.json.JsonSlurper().parseText(formUIConfigStr)
+            def configItems = formUIConfig.config ?: []
+            configItems.each { item -&gt;
+                if (item.validators) {
+                    item.validators.each { validator -&gt;
+                        if (validator.toString().startsWith(&quot;DOMAIN_EMAIL:&quot;)) {
+                            emailDomain = validator.toString().split(&quot;:&quot;)[1]
+                        }
+                    }
+                }
+            }
+        }
+    } catch (Exception e) {
+        log.warn(&quot;Error parsing formUIConfig for email domain: &quot; + e.message)
+    }
+    return emailDomain
+}
+props.put(&quot;fn_extractEmailDomain&quot;, _fn_extractEmailDomain)
+
+
+// Checks the _abortTest flag (set by fn_abortNotFound) and, if set, marks the current sampler as skipped/failed.
+// Called at the top of downstream samplers to short-circuit the rest of the test once an abort has been triggered.
+def _fn_checkAbort = { v, p -&gt;
+    if (v.get(&quot;_abortTest&quot;) == &quot;true&quot;) {
+        p.setSuccessful(false)
+        p.setResponseMessage(&quot;SKIPPED: Test aborting — &quot; + (v.get(&quot;_abortReason&quot;) ?: &quot;previous validation failed&quot;))
+        return true
+    }
+    return false
+}
+props.put(&quot;fn_checkAbort&quot;, _fn_checkAbort)
+
+
+// Logs a critical error and immediately stops the whole test run when a required API value
+// (e.g. category, customer) could not be found in a response. Also sets _abortTest so fn_checkAbort can short-circuit.
+def _fn_abortNotFound = { varsRef, prevRef, varName, value, available, ctxRef -&gt;
+    log.error(&quot;========================================&quot;)
+    log.error(&quot;${varName} &apos;${value}&apos; not found in API response&quot;)
+    log.error(&quot;Available: ${available}&quot;)
+    log.error(&quot;========================================&quot;)
+    prevRef.setSuccessful(false)
+    prevRef.setResponseMessage(&quot;ABORTING: ${varName} &apos;${value}&apos; not found. Available: ${available}&quot;)
+    varsRef.put(&quot;_abortTest&quot;, &quot;true&quot;)
+    varsRef.put(&quot;_abortReason&quot;, &quot;${varName} &apos;${value}&apos; not found in API response. Available: ${available}&quot;)
+    ctxRef.getEngine().stopTest()
+}
+props.put(&quot;fn_abortNotFound&quot;, _fn_abortNotFound)
+
+log.info(&quot;Common Utility Function Terminated&quot;)</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Common Function - Form Processing" enabled="true">
+          <stringProp name="script">SampleResult.setIgnore()
+
+def _fn_beautifyFormConfig = { varsRef, prevRef, logRef, targetVarName = &quot;currentFormUIConfig&quot; -&gt;
+
+// UI Config JSON Beautifier
+try {
+    def response = prevRef.getResponseDataAsString()
+    def json = new groovy.json.JsonSlurper().parseText(response)
+
+    // Parse the stringified formTemplate into actual JSON
+    if (json.formTemplate) {
+        if (json.formTemplate instanceof String) {
+            json.formTemplate = new groovy.json.JsonSlurper().parseText(json.formTemplate)
+        }
+        // Update the target variable (currentFormUIConfig by default; callers for other
+        // resourcetypes, e.g. Topic, pass their own var name so they don&apos;t clobber this one)
+        varsRef.put(targetVarName, groovy.json.JsonOutput.toJson(json.formTemplate))
+    }
+
+    // Beautify and store
+    def beautified = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json))
+    prevRef.setResponseData(beautified, &quot;UTF-8&quot;)
+
+} catch (Exception e) {
+    logRef.warn(&quot;Could not beautify JSON: &quot; + e.getMessage())
+}
+}
+props.put(&quot;fn_beautifyFormConfig&quot;, _fn_beautifyFormConfig)
+
+// Stores the raw field mappings API response in currentFieldMappings (or another target var, e.g.
+// currentTopicFieldMappings) for use by a payload builder to map attributeNames to their aliasNames.
+def _fn_fieldMappingsPostProcessor = { varsRef, prevRef, logRef, targetVarName = &quot;currentFieldMappings&quot; -&gt;
+
+// Parse and Store JSON Response
+def response = prevRef.getResponseDataAsString()
+varsRef.put(targetVarName, response)
+}
+props.put(&quot;fn_fieldMappingsPostProcessor&quot;, _fn_fieldMappingsPostProcessor)
+
+// Flattens all form fields from a formUIConfig JSON string into a single list — used by the
+// payload builder to resolve each field&apos;s lookupName dynamically instead of hardcoding it.
+def _fn_extractAllFields = { String fuiConfigStr -&gt;
+    def fuiConfig = new groovy.json.JsonSlurper().parseText(fuiConfigStr)
+    def fields = []
+    def items = fuiConfig.config ?: []
+    items.each { item -&gt;
+        if (item.type == &quot;SECTION&quot;) {
+            fields.addAll(item.formFields ?: [])
+        } else if (item.type == &quot;FORMFIELD&quot;) {
+            fields.add(item)
+        }
+    }
+    return fields
+}
+props.put(&quot;fn_extractAllFields&quot;, _fn_extractAllFields)
+
+log.info(&quot;Common Function - Form Processing initialized&quot;)</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Common Function - Payload &amp; PostProcessors" enabled="true">
+          <stringProp name="script">SampleResult.setIgnore()
+
+// Presenter Payload Builder — builds the dynamic Create Presenter POST body.
+def _fn_presenterPayloadBuilder = { varsRef, logRef -&gt;
+    def fmStr = varsRef.get(&quot;currentFieldMappings&quot;)
+    if (!fmStr) {
+        logRef.warn(&quot;Presenter payload: currentFieldMappings not found — skipping&quot;)
+        varsRef.put(&quot;dynamicPayload&quot;, &apos;{&quot;data&quot;:{}}&apos;)
+        return &apos;{&quot;data&quot;:{}}&apos;
+    }
+    def fmJson = new groovy.json.JsonSlurper().parseText(fmStr)
+    def mappings = fmJson._embedded?.fieldMappings ?: []
+
+    // Build attrName → lookupName map from the form&apos;s own field config (Get Form Fields),
+    // so lookup-bound fields (e.g. code, designation) are resolved dynamically instead of
+    // hardcoding specific lookup names — any future lookup-bound field is picked up automatically.
+    def formUIConfigStr = varsRef.get(&quot;currentFormUIConfig&quot;)
+    def fieldLookupInfo = [:]
+    if (formUIConfigStr) {
+        props.get(&quot;fn_extractAllFields&quot;)(formUIConfigStr).each { f -&gt;
+            def fn = f.dataMapping ?: f.formControlName
+            if (fn &amp;&amp; f.lookupName) fieldLookupInfo[fn] = f.lookupName
+        }
+    } else {
+        logRef.warn(&quot;Presenter payload: currentFormUIConfig not found — lookup-bound fields will be skipped&quot;)
+    }
+
+    def rand = java.util.concurrent.ThreadLocalRandom.current()
+
+    // ---- Pick the next random user from the pre-loaded pool (cycles if exhausted) ----
+    def totalUsers = (varsRef.get(&quot;randomUserCount&quot;) ?: &quot;50&quot;).toInteger()
+    def idx = (varsRef.get(&quot;randomUserIndex&quot;) ?: &quot;1&quot;).toInteger()
+    if (idx &gt; totalUsers || idx &lt; 1) idx = 1
+    def firstName = varsRef.get(&quot;randomUser_${idx}_firstName&quot;) ?: &quot;John&quot;
+    def lastName  = varsRef.get(&quot;randomUser_${idx}_lastName&quot;)  ?: &quot;Doe&quot;
+    varsRef.put(&quot;randomUserIndex&quot;, String.valueOf(idx + 1))
+
+    def emailDomain = props.get(&quot;fn_extractEmailDomain&quot;)(varsRef)
+    def handle = (firstName + &quot;.&quot; + lastName).toLowerCase().replaceAll(&quot;[^a-z.]&quot;, &quot;&quot;)
+    // Secondary handle: lastName.firstName (e.g. sanders.luke)
+    def secondaryHandle = (lastName + &quot;.&quot; + firstName).toLowerCase().replaceAll(&quot;[^a-z.]&quot;, &quot;&quot;)
+    // Assistant handle: first-initial.lastName (e.g. g.reynolds) — common real-world mailbox convention
+    def assistantHandle = (firstName.take(1) + &quot;.&quot; + lastName).toLowerCase().replaceAll(&quot;[^a-z.]&quot;, &quot;&quot;)
+
+    // ---- Precompute reusable values ----
+    def primaryEmail    = &quot;${handle}@${emailDomain}&quot;
+    def secondaryEmail  = &quot;${secondaryHandle}@${emailDomain}&quot;
+    def assistantEmail  = &quot;${assistantHandle}@${emailDomain}&quot;
+    def mobile          = props.get(&quot;fn_generatePhone&quot;)()
+    // Base Timezone ← pick fresh per presenter from the pool loaded by Get Timezones,
+    // so each presenter in the loop gets its own random timezone instead of sharing one.
+    def tzCount = (varsRef.get(&quot;timezoneCount&quot;) ?: &quot;0&quot;).toInteger()
+    def baseTimezoneVal = tzCount &gt; 0 ? (varsRef.get(&quot;tz_zoneName_&quot; + (rand.nextInt(tzCount) + 1)) ?: &quot;UTC&quot;) : &quot;UTC&quot;
+    // Persist this presenter&apos;s assigned timezone so the Blocked Slot payload builder
+    // (which runs later, after this presenter is created) can reuse the SAME zone
+    // instead of a separate/unrelated one.
+    varsRef.put(&quot;presenterSelectedTimezone&quot;, baseTimezoneVal)
+
+    def payload = [:]
+
+    mappings.each { mapping -&gt;
+        def attrName = mapping.columnAttribute?.attributeName
+        def alias    = mapping.aliasName
+        def dataType = (mapping.columnAttribute?.dataType ?: &quot;&quot;).toString().toUpperCase()
+        if (!attrName) return
+
+        // Skip server-computed fields (e.g. presenterName = firstName + lastName via dataExpression)
+        if (mapping.dataExpression) {
+            logRef.info(&quot;Presenter payload: skipping computed field &apos;${attrName}&apos; (has dataExpression)&quot;)
+            return
+        }
+
+        // Skip CLOB fields (e.g. textAreaField1/notes) — not rendered on the New Presenter
+        // form, so no value should be sent for them.
+        if (dataType.contains(&quot;CLOB&quot;)) {
+            logRef.info(&quot;Presenter payload: skipping CLOB field &apos;${attrName}&apos; (not on form)&quot;)
+            return
+        }
+
+        def value
+        // Normalize alias (strip everything but letters/digits, then lowercase) before matching -
+        // a mismatched case or stray whitespace/punctuation from the API (e.g. &quot;Is Executive&quot;
+        // instead of &quot;isExecutive&quot;) would silently fall through to the default branch below
+        // and could get force-set to true.
+        def aliasNorm = (alias ?: &quot;&quot;).toLowerCase().replaceAll(/[^a-z0-9]/, &quot;&quot;)
+        def knownAlias = true
+        switch (aliasNorm) {
+            case &quot;firstname&quot;:      value = firstName; break
+            case &quot;lastname&quot;:       value = lastName; break
+            case &quot;primaryemail&quot;:   value = primaryEmail; break
+            case &quot;secondaryemail&quot;: value = secondaryEmail; break
+            case &quot;assistantemail&quot;: value = assistantEmail; break
+            case &quot;mobile&quot;:         value = mobile; break
+            case &quot;basetimezone&quot;:   value = baseTimezoneVal; break
+            case &quot;isebdrequired&quot;:  value = rand.nextBoolean(); break
+            case &quot;isemailoptout&quot;:  value = rand.nextBoolean(); break
+            case &quot;isexecutive&quot;:    value = rand.nextBoolean(); break
+            default: knownAlias = false
+        }
+
+        if (!knownAlias) {
+            // Lookup-bound field (e.g. code → PHONE_COUNTRY_CODE, designation → DESIGNATIONS) —
+            // pick a real value from the tenant&apos;s own dropdown data. Only applies to fields NOT
+            // already handled by a known alias above, so a field the live form config happens to
+            // expose as lookup-bound (e.g. a Yes/No dropdown) can never silently override an
+            // explicitly-handled boolean/text field like isExecutive. If the tenant has no rows for
+            // this lookup, leave the field out of the payload entirely rather than sending static
+            // data that would never actually appear in that tenant&apos;s dropdown.
+            def lookupName = fieldLookupInfo[attrName]
+            if (lookupName) {
+                def lookupValue = props.get(&quot;fn_pickLookupValue&quot;)(varsRef, lookupName, &quot;tenant&quot;, rand, attrName, logRef)
+                if (lookupValue == null) {
+                    logRef.warn(&quot;Presenter payload: no &apos;${lookupName}&apos; lookup values for this tenant — leaving &apos;${attrName}&apos; out of payload&quot;)
+                    return
+                }
+                payload[attrName] = lookupValue
+                return
+            }
+
+            // No known alias (e.g. &quot;Is Active&quot; has none in the mapping) — fall back to
+            // attributeName / dataType so new/unmapped fields still get a sane value.
+            // NOTE: this &quot;isActive&quot; hardcode is meant for the generic entity active/inactive
+            // flag only - if a DIFFERENT boolean field (e.g. isExecutive) ends up here because
+            // its alias didn&apos;t match above, it will incorrectly always be forced to true.
+            if (attrName == &quot;isActive&quot;) {
+                value = true
+                if (aliasNorm) {
+                    logRef.warn(&quot;Presenter payload: field &apos;${attrName}&apos; (alias=&apos;${alias}&apos;) matched generic isActive fallback (forced true) instead of a known alias case - check for alias mismatch&quot;)
+                }
+            } else if (dataType.contains(&quot;BOOLEAN&quot;)) {
+                value = rand.nextBoolean()
+            } else if (dataType.contains(&quot;VARCHAR&quot;) || dataType.contains(&quot;CHAR&quot;)) {
+                value = &quot;&quot;
+            } else {
+                value = null
+            }
+        }
+        if (dataType.contains(&quot;BOOLEAN&quot;) || aliasNorm in [&quot;isexecutive&quot;, &quot;isebdrequired&quot;, &quot;isemailoptout&quot;]) {
+            logRef.info(&quot;Presenter payload: boolean field attrName=&apos;${attrName}&apos; alias=&apos;${alias}&apos; dataType=&apos;${dataType}&apos; -&gt; value=${value}&quot;)
+        }
+        payload[attrName] = value
+    }
+
+    def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([data: payload]))
+    varsRef.put(&quot;dynamicPayload&quot;, json)
+    logRef.info(&quot;Presenter payload built (randomUser idx=${idx}): &quot; + json)
+    return json
+}
+props.put(&quot;fn_presenterPayloadBuilder&quot;, _fn_presenterPayloadBuilder)
+
+// Topic Payload Builder — builds the dynamic &quot;Add Topic to Presenter&quot; POST body 
+def _fn_topicPayloadBuilder = { varsRef, selectedTopicMasterId, logRef -&gt;
+    def fmStr = varsRef.get(&quot;currentTopicFieldMappings&quot;)
+    if (!fmStr) {
+        logRef.warn(&quot;Topic payload: currentTopicFieldMappings not found — skipping&quot;)
+        varsRef.put(&quot;dynamicPayload&quot;, &apos;{&quot;data&quot;:{}}&apos;)
+        return &apos;{&quot;data&quot;:{}}&apos;
+    }
+    def fmJson = new groovy.json.JsonSlurper().parseText(fmStr)
+    def mappings = fmJson._embedded?.fieldMappings ?: []
+
+    // Find the attribute whose form-config field is a MASTER dropdown bound to our Topic
+    // topicMasterTypeId - that&apos;s the field the selected topic id should be written into.
+    def formUIConfigStr = varsRef.get(&quot;currentTopicFormUIConfig&quot;)
+    def topicMasterAttr = null
+    if (formUIConfigStr) {
+        def topicMasterTypeId = varsRef.get(&quot;topicMastertypeId&quot;)
+        props.get(&quot;fn_extractAllFields&quot;)(formUIConfigStr).each { f -&gt;
+            if (f.enumType == &quot;MASTER&quot; &amp;&amp; f.topicMasterTypeId == topicMasterTypeId) {
+                topicMasterAttr = f.dataMapping ?: f.formControlName
+            }
+        }
+    } else {
+        logRef.warn(&quot;Topic payload: currentTopicFormUIConfig not found — cannot identify the topic-select field&quot;)
+    }
+
+    def payload = [:]
+
+    mappings.each { mapping -&gt;
+        def attrName = mapping.columnAttribute?.attributeName
+        def dataType = (mapping.columnAttribute?.dataType ?: &quot;&quot;).toString().toUpperCase()
+        if (!attrName) return
+
+        // Skip server-computed fields
+        if (mapping.dataExpression) {
+            logRef.info(&quot;Topic payload: skipping computed field &apos;${attrName}&apos; (has dataExpression)&quot;)
+            return
+        }
+        // Skip CLOB fields — not rendered on the form
+        if (dataType.contains(&quot;CLOB&quot;)) {
+            logRef.info(&quot;Topic payload: skipping CLOB field &apos;${attrName}&apos; (not on form)&quot;)
+            return
+        }
+
+        def value
+        if (attrName == topicMasterAttr) {
+            value = selectedTopicMasterId
+        } else if (attrName == &quot;isActive&quot;) {
+            value = true
+        } else if (dataType.contains(&quot;BOOLEAN&quot;)) {
+            value = true
+        } else if (dataType.contains(&quot;VARCHAR&quot;) || dataType.contains(&quot;CHAR&quot;)) {
+            value = &quot;&quot;
+        } else {
+            // Unrecognized type (e.g. a newly added MASTER/LOOKUP field with a different
+            // topicMasterTypeId) — no safe generic default exists, so leave it out rather than
+            // send a wrong value; flag it so it doesn&apos;t fail silently.
+            logRef.warn(&quot;Topic payload: no default rule for field &apos;${attrName}&apos; (dataType=${dataType}) — leaving it out of the payload&quot;)
+            return
+        }
+        payload[attrName] = value
+    }
+
+    if (!topicMasterAttr) {
+        logRef.warn(&quot;Topic payload: no MASTER-type field bound to topicMastertypeId=${varsRef.get(&apos;topicMastertypeId&apos;)} was found on the Topic form — the topic selection will be missing from the payload&quot;)
+    }
+
+    def json = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([data: payload]))
+    varsRef.put(&quot;dynamicPayload&quot;, json)
+    logRef.info(&quot;Topic payload built: &quot; + json)
+    return json
+}
+props.put(&quot;fn_topicPayloadBuilder&quot;, _fn_topicPayloadBuilder)
+
+// Range Count Parser — shared by topicsPerPresenter and blockSlotsPerDay (create-flow
+// AND existing-flow all use the same &quot;fixed count OR min,max range&quot; format/semantics).
+// Returns a random int in [min,max] (or the fixed value if no comma), 0 if the param is
+// unset, and warns + returns 0 if min &gt; max.
+def _fn_parseRangeCount = { varsRef, logRef, paramName, presenterLabel -&gt;
+    def rangeStr = (varsRef.get(paramName) ?: &quot;0&quot;).trim()
+    def parts = rangeStr.split(&quot;,&quot;)*.trim()
+    int minVal = parts[0] as int
+    int maxVal = (parts.size() &gt; 1 ? parts[1] as int : parts[0] as int)
+    def rand = java.util.concurrent.ThreadLocalRandom.current()
+    int result
+    if (maxVal &lt; minVal) {
+        logRef.warn(&quot;Presenter &quot; + presenterLabel + &quot;: &quot; + paramName + &quot; &apos;&quot; + rangeStr + &quot;&apos; has min &gt; max — treating as disabled, value=0&quot;)
+        result = 0
+    } else {
+        result = minVal + rand.nextInt(maxVal - minVal + 1)
+    }
+    return result
+}
+props.put(&quot;fn_parseRangeCount&quot;, _fn_parseRangeCount)
+
+// Blocked Days Planner — called once per presenter created/processed this run.
+// blockSlots (fixed count or min,max range) = HOW MANY DISTINCT
+// DAYS, within blockFromDate..blockToDate, to block for this presenter (e.g.
+// blockFromDate=2026-12-01, blockToDate=2026-12-30, blockSlots=5,6 -&gt; 5 or 6 random
+// December days get chosen for this presenter). For EACH of those chosen days,
+// blockSlotsPerDay (fixed count or min,max range) is re-rolled INDEPENDENTLY to decide
+// how many blocked slots to create on that specific day (so one blocked day for a
+// presenter might get 1 slot while another gets 3). When blockSlotFullDay=true,
+// every chosen day gets exactly 1 slot (a full-day block already covers the whole day,
+// so more than one on the same day would just overlap itself). Stores the result as a
+// semicolon-separated &quot;blockedSlotDatesPlan&quot; UDV - one date entry per PLANNED SLOT, in
+// order (so the Nth entry is the target date for the Nth blocked-slot loop iteration) -
+// and returns the total slot count (sum across all chosen days). Logs one INFO line per
+// chosen day showing that day&apos;s resolved slot count, plus a final summary line with the
+// full day list and grand total.
+def _fn_planBlockedDays = { varsRef, logRef, presenterLabel -&gt;
+    def fmt = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+    def fromDateStr = (varsRef.get(&quot;blockFromDate&quot;) ?: &quot;&quot;).trim()
+    def toDateStr = (varsRef.get(&quot;blockToDate&quot;) ?: &quot;&quot;).trim()
+
+    if (!fromDateStr || !toDateStr) {
+        logRef.warn(&quot;Presenter &quot; + presenterLabel + &quot;: blockFromDate/blockToDate not set - skipping blocked day planning&quot;)
+        varsRef.put(&quot;blockedSlotDatesPlan&quot;, &quot;&quot;)
+        return 0
+    }
+
+    java.time.LocalDate rangeStart = java.time.LocalDate.parse(fromDateStr, fmt)
+    java.time.LocalDate rangeEnd = java.time.LocalDate.parse(toDateStr, fmt)
+    if (rangeEnd.isBefore(rangeStart)) {
+        def tmp = rangeStart; rangeStart = rangeEnd; rangeEnd = tmp
+    }
+    long totalDaysInRange = java.time.temporal.ChronoUnit.DAYS.between(rangeStart, rangeEnd) + 1
+
+    int daysToBlock = props.get(&quot;fn_parseRangeCount&quot;)(varsRef, logRef, &quot;blockSlots&quot;, presenterLabel)
+    if (daysToBlock &lt;= 0) {
+        varsRef.put(&quot;blockedSlotDatesPlan&quot;, &quot;&quot;)
+        logRef.info(&quot;Presenter &quot; + presenterLabel + &quot;: blockSlots is 0/unset - no blocked days planned&quot;)
+        return 0
+    }
+    if (daysToBlock &gt; totalDaysInRange) {
+        logRef.warn(&quot;Presenter &quot; + presenterLabel + &quot;: blockSlots requested &quot; + daysToBlock + &quot; day(s) but blockFromDate..blockToDate only spans &quot; + totalDaysInRange + &quot; day(s) - capping to &quot; + totalDaysInRange)
+        daysToBlock = (int) totalDaysInRange
+    }
+
+    def blockFullDayFlag = (varsRef.get(&quot;blockSlotFullDay&quot;) ?: &quot;false&quot;).trim().equalsIgnoreCase(&quot;true&quot;)
+
+    // Pick daysToBlock DISTINCT day-offsets at random out of the range, then sort them
+    // chronologically (purely cosmetic - so log/plan order reads earliest-to-latest).
+    def allOffsets = (0..&lt;(int) totalDaysInRange).toList()
+    Collections.shuffle(allOffsets, new Random())
+    def chosenDates = allOffsets.take(daysToBlock).sort().collect { rangeStart.plusDays(it).format(fmt) }
+
+    def plan = []
+    chosenDates.each { d -&gt;
+        int slotsThisDay = blockFullDayFlag ? 1 : props.get(&quot;fn_parseRangeCount&quot;)(varsRef, logRef, &quot;blockSlotsPerDay&quot;, presenterLabel + &quot; on &quot; + d)
+        slotsThisDay.times { plan &lt;&lt; d }
+        logRef.info(&quot;Presenter &quot; + presenterLabel + &quot;: &quot; + d + &quot; -&gt; &quot; + slotsThisDay + &quot; slot(s)&quot;)
+    }
+
+    varsRef.put(&quot;blockedSlotDatesPlan&quot;, plan.join(&quot;;&quot;))
+    logRef.info(&quot;Presenter &quot; + presenterLabel + &quot;: will block &quot; + chosenDates.size() + &quot; day(s) [&quot; + chosenDates.join(&quot;, &quot;) + &quot;] with &quot; + plan.size() + &quot; total blocked slot(s)&quot;)
+    return plan.size()
+}
+props.put(&quot;fn_planBlockedDays&quot;, _fn_planBlockedDays)
+
+// Blocked Slot Payload Builder — shared by the create-flow&apos;s &quot;Build Presenter Blocked
+// Slot Payload&quot; and the existing-flow&apos;s &quot;Build Existing Presenter Blocked Slot Payload&quot;.
+// When forcedDateStr is provided (the normal case - see fn_planBlockedDays, which decides
+// WHICH day each blocked-slot loop iteration belongs to), that exact date is used;
+// otherwise (backward-compat / no plan available) a random date inside
+// blockFromDate..blockToDate is picked. Builds ONE blocked-slot JSON payload. The
+// blockSlotFullDay UDV controls whether the whole day is blocked (00:00:00 -
+// 23:59:59) or a partial time window is used instead - in the partial case, the start
+// time comes from blockTimes (or a random :00/:30 time if blockTimes is empty) and the
+// duration comes from blockDurations (or 30/60 min default if empty). When multiple
+// slots are created for the SAME presenter (including multiple slots on the SAME day via
+// blockSlotsPerDay &gt; 1), each new slot is retried (up to 30 attempts, varying time/
+// duration - the date stays fixed when forcedDateStr is set) against that presenter&apos;s
+// previously assigned slots (tracked via the &quot;presenterBlockedIntervals&quot; UDV, reset per
+// presenter by the callers) so two slots for one presenter never overlap, even on the
+// same day. Comments are picked randomly from a small rotating pool. Sets dynamicPayload
+// and returns it.
+def _fn_buildBlockedSlotPayload = { varsRef, logRef, presenterLabel, forcedDateStr = null -&gt;
+    def fmt = java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+    def fromDateStr = (varsRef.get(&quot;blockFromDate&quot;) ?: &quot;&quot;).trim()
+    def toDateStr = (varsRef.get(&quot;blockToDate&quot;) ?: &quot;&quot;).trim()
+
+    if (!fromDateStr || !toDateStr) {
+        logRef.warn(&quot;Presenter &quot; + presenterLabel + &quot;: blockFromDate/blockToDate not set - skipping blocked slot creation&quot;)
+        varsRef.put(&quot;dynamicPayload&quot;, &quot;{}&quot;)
+        return &quot;{}&quot;
+    }
+
+    java.time.LocalDate rangeStart = java.time.LocalDate.parse(fromDateStr, fmt)
+    java.time.LocalDate rangeEnd = java.time.LocalDate.parse(toDateStr, fmt)
+    if (rangeEnd.isBefore(rangeStart)) {
+        def tmp = rangeStart; rangeStart = rangeEnd; rangeEnd = tmp
+    }
+
+    def rand = java.util.concurrent.ThreadLocalRandom.current()
+    long totalDays = java.time.temporal.ChronoUnit.DAYS.between(rangeStart, rangeEnd) + 1
+
+    // blockSlotFullDay flag: if true, EVERY blocked slot is a full-day block, and
+    // blockTimes/blockDurations are irrelevant (the whole day is already blocked).
+    def blockFullDayFlag = (varsRef.get(&quot;blockSlotFullDay&quot;) ?: &quot;false&quot;).trim().equalsIgnoreCase(&quot;true&quot;)
+    boolean blockAllDay = blockFullDayFlag
+
+    // Existing blocked intervals already created for THIS presenter earlier in the same
+    // run (reset to empty by the caller at the start of each presenter&apos;s blocking loop -
+    // see &quot;presenterBlockedIntervals&quot; in Build Presenter Payload / Load Next Existing
+    // Presenter). Format: &quot;yyyy-MM-dd|startSecondOfDay|endSecondOfDay;...&quot;. Used below so a
+    // second/third slot for the same presenter never overlaps a slot already assigned to
+    // them, even if it lands on the same day.
+    def existingIntervals = (varsRef.get(&quot;presenterBlockedIntervals&quot;) ?: &quot;&quot;).split(&quot;;&quot;)*.trim().findAll { it }.collect { entry -&gt;
+        def p = entry.split(/\|/)
+        [date: p[0], startSec: p[1].toInteger(), endSec: p[2].toInteger()]
+    }
+
+    java.time.LocalDate blockDate
+    String dateStr
+    String startTime, endTime
+    int startSec, endSec
+
+    if (blockAllDay) {
+        // Full-day block - always exactly 1 slot per chosen day (enforced by the
+        // callers), so there is nothing else for it to overlap with on that day.
+        blockDate = forcedDateStr ? java.time.LocalDate.parse(forcedDateStr, fmt) : rangeStart.plusDays(rand.nextInt((int) totalDays))
+        dateStr = blockDate.format(fmt)
+        startTime = &quot;00:00:00&quot;
+        endTime = &quot;23:59:59&quot;
+        startSec = 0
+        endSec = 24 * 3600
+    } else {
+        int maxAttempts = 30
+        boolean found = false
+        for (int attempt = 1; attempt &lt;= maxAttempts &amp;&amp; !found; attempt++) {
+            blockDate = forcedDateStr ? java.time.LocalDate.parse(forcedDateStr, fmt) : rangeStart.plusDays(rand.nextInt((int) totalDays))
+            dateStr = blockDate.format(fmt)
+
+            // ===== Pick a start time =====
+            // blockTimes: comma-separated HH:mm values to pick from at random. If empty,
+            // generate a random time between 00:00 and 23:30, snapped to the :00/:30 mark
+            // only (never arbitrary minutes like :02 or :04).
+            def blockTimesStr = (varsRef.get(&quot;blockTimes&quot;) ?: &quot;&quot;).trim()
+            java.time.LocalTime startLt
+            if (blockTimesStr) {
+                def timeOptions = blockTimesStr.split(&quot;,&quot;)*.trim().findAll { it }
+                def chosenTime = timeOptions[rand.nextInt(timeOptions.size())]
+                try {
+                    startLt = java.time.LocalTime.parse(chosenTime, java.time.format.DateTimeFormatter.ofPattern(&quot;H:mm&quot;))
+                } catch (Exception e) {
+                    logRef.warn(&quot;Presenter &quot; + presenterLabel + &quot;: blockTimes entry &apos;&quot; + chosenTime + &quot;&apos; is not a valid HH:mm time - falling back to a random :00/:30 time&quot;)
+                    startLt = null
+                }
+            }
+            if (startLt == null) {
+                int totalHalfHourSlots = 48 // 00:00, 00:30, ... 23:30
+                int slot = rand.nextInt(totalHalfHourSlots)
+                startLt = java.time.LocalTime.of(slot.intdiv(2), (slot % 2) * 30)
+            }
+            // Snap to :00 or :30 regardless of source, so blockTimes entries like 11:02 or
+            // 03:04 never slip through - only :00 or :30 minutes are ever used.
+            int snappedMinute = (startLt.getMinute() &lt; 30) ? 0 : 30
+            startLt = java.time.LocalTime.of(startLt.getHour(), snappedMinute)
+
+            // ===== Pick a duration =====
+            // blockDurations: comma-separated minute values to pick from at random. If
+            // empty, default to a mix of 30 and 60 minute blocks.
+            def blockDurationsStr = (varsRef.get(&quot;blockDurations&quot;) ?: &quot;&quot;).trim()
+            def durationOptions = blockDurationsStr ?
+                blockDurationsStr.split(&quot;,&quot;)*.trim().findAll { it }.findResults { it.isInteger() ? it.toInteger() : null } :
+                []
+            if (!durationOptions) {
+                if (blockDurationsStr) {
+                    logRef.warn(&quot;Presenter &quot; + presenterLabel + &quot;: blockDurations &apos;&quot; + blockDurationsStr + &quot;&apos; had no valid integers - defaulting to 30,60&quot;)
+                }
+                durationOptions = [30, 60]
+            }
+            int durationMinutes = durationOptions[rand.nextInt(durationOptions.size())]
+
+            java.time.LocalDateTime startLdt = java.time.LocalDateTime.of(blockDate, startLt)
+            java.time.LocalDateTime endLdt = startLdt.plusMinutes(durationMinutes)
+            startTime = startLdt.toLocalTime().toString() + &quot;:00&quot;
+            endTime = (endLdt.toLocalDate() == blockDate ? endLdt.toLocalTime().toString() + &quot;:00&quot; : &quot;23:59:59&quot;)
+            startSec = startLt.toSecondOfDay()
+            endSec = (endLdt.toLocalDate() == blockDate) ? endLdt.toLocalTime().toSecondOfDay() : 24 * 3600
+
+            // Only intervals on the SAME date can possibly overlap. Standard interval
+            // overlap test: two ranges [s1,e1) and [s2,e2) overlap iff s1 &lt; e2 AND s2 &lt; e1.
+            boolean overlaps = existingIntervals.any { it.date == dateStr &amp;&amp; startSec &lt; it.endSec &amp;&amp; it.startSec &lt; endSec }
+            if (!overlaps) {
+                found = true
+            }
+        }
+        if (!found) {
+            logRef.warn(&quot;Presenter &quot; + presenterLabel + &quot;: could not find a non-overlapping date/time after &quot; + maxAttempts + &quot; attempts - proceeding with the last candidate (it may overlap an earlier slot for this presenter)&quot;)
+        }
+    }
+
+    // Remember this interval so the NEXT blocked slot for this same presenter (if any) is
+    // checked against it too.
+    varsRef.put(&quot;presenterBlockedIntervals&quot;,
+        ((varsRef.get(&quot;presenterBlockedIntervals&quot;) ?: &quot;&quot;) + (varsRef.get(&quot;presenterBlockedIntervals&quot;) ? &quot;;&quot; : &quot;&quot;) + dateStr + &quot;|&quot; + startSec + &quot;|&quot; + endSec))
+
+    // Rotating pool of realistic comments - one is picked at random per blocked slot.
+    def comments = [
+    &quot;Vacation&quot;,
+    &quot;Annual Leave&quot;,
+    &quot;Sick Leave&quot;,
+    &quot;Medical Appointment&quot;,
+    &quot;Training&quot;,
+    &quot;Client Meeting&quot;,
+    &quot;Conference Attendance&quot;,
+    &quot;Internal Meeting&quot;,
+    &quot;Team Offsite&quot;,
+    &quot;Travel&quot;,
+    &quot;Company Event&quot;,
+    &quot;Family Emergency&quot;
+    ]
+    def comment = comments[rand.nextInt(comments.size())]
+
+    // Use the SAME timezone assigned to this presenter (falls back to clientTimeZone,
+    // then UTC, if for some reason it wasn&apos;t set).
+    def zone = varsRef.get(&quot;presenterSelectedTimezone&quot;) ?: varsRef.get(&quot;clientTimeZone&quot;) ?: &quot;UTC&quot;
+
+    def payload = &quot;{\n&quot; +
+        &quot;    \&quot;zone\&quot;: \&quot;&quot; + zone + &quot;\&quot;,\n&quot; +
+        &quot;    \&quot;calendarFromDate\&quot;: { \&quot;isoDate\&quot;: \&quot;&quot; + dateStr + &quot;T00:00:00\&quot; },\n&quot; +
+        &quot;    \&quot;calendarStartTime\&quot;: { \&quot;isoDate\&quot;: \&quot;&quot; + dateStr + &quot;T&quot; + startTime + &quot;\&quot; },\n&quot; +
+        &quot;    \&quot;calendarEndTime\&quot;: { \&quot;isoDate\&quot;: \&quot;&quot; + dateStr + &quot;T&quot; + endTime + &quot;\&quot; },\n&quot; +
+        &quot;    \&quot;calendarToDate\&quot;: { \&quot;isoDate\&quot;: \&quot;&quot; + dateStr + &quot;T00:00:00\&quot; },\n&quot; +
+        &quot;    \&quot;blockAllDay\&quot;: &quot; + blockAllDay + &quot;,\n&quot; +
+        &quot;    \&quot;calendarType\&quot;: \&quot;MAINTENANCE\&quot;,\n&quot; +
+        &quot;    \&quot;comments\&quot;: \&quot;&quot; + comment + &quot;\&quot;\n&quot; +
+        &quot;}&quot;
+
+    varsRef.put(&quot;dynamicPayload&quot;, payload)
+    logRef.info(&quot;Presenter &quot; + presenterLabel + &quot;: blocked slot date=&quot; + dateStr + &quot; allDay=&quot; + blockAllDay + &quot; comment=&quot; + comment)
+    return payload
+}
+props.put(&quot;fn_buildBlockedSlotPayload&quot;, _fn_buildBlockedSlotPayload)</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Validate Variables" enabled="true">
+          <stringProp name="script">import java.time.*
+import java.time.format.DateTimeFormatter
+
+def dateFormatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;)
+
+// ===== VALIDATION: Check required Presenter UDV variables =====
+def errors = []
+def presentersStr          = vars.get(&quot;presenters&quot;)?.trim()
+def user                   = vars.get(&quot;user&quot;)?.trim()
+def clientTimeZone         = vars.get(&quot;clientTimeZone&quot;)?.trim()
+def categoryTypeStr        = vars.get(&quot;categoryType&quot;)?.trim()
+def categoryStr            = vars.get(&quot;category&quot;)?.trim()
+def topicsPerPresenterStr = vars.get(&quot;topicsPerPresenter&quot;)?.trim()
+def blockSlotsPerDayStr = vars.get(&quot;blockSlotsPerDay&quot;)?.trim()
+def blockSlotsStr = vars.get(&quot;blockSlots&quot;)?.trim()
+def blockFromDate          = vars.get(&quot;blockFromDate&quot;)?.trim()
+def blockToDate            = vars.get(&quot;blockToDate&quot;)?.trim()
+def blockSlotFullDay       = vars.get(&quot;blockSlotFullDay&quot;)?.trim()
+def blockTimesStr          = vars.get(&quot;blockTimes&quot;)?.trim()
+def blockDurationsStr      = vars.get(&quot;blockDurations&quot;)?.trim()
+def isNewPresenterStr      = vars.get(&quot;isNewPresenter&quot;)?.trim()
+
+// ===== Abort helper =====
+def abort = { String msg, String responseMsg = &quot;&quot; -&gt;
+    log.error(&quot;========================================&quot;)
+    log.error(msg)
+    log.error(&quot;Please fix these variables in User Defined Variables before running the test.&quot;)
+    log.error(&quot;========================================&quot;)
+    vars.put(&quot;presenters&quot;, &quot;0&quot;)
+    vars.put(&quot;presentersToCreate&quot;, &quot;0&quot;)
+    SampleResult.setResponseData(msg, &quot;UTF-8&quot;)
+    SampleResult.setResponseCode(&quot;400&quot;)
+    if (responseMsg) SampleResult.setResponseMessage(responseMsg)
+    SampleResult.setSuccessful(false)
+    SampleResult.setStopTestNow(true)
+}
+
+// ===== Required field presence checks =====
+[
+    [presentersStr,   &quot;presenters is empty&quot;],
+    [user,            &quot;user is empty&quot;],
+    [clientTimeZone,  &quot;clientTimeZone is empty&quot;],
+    [categoryTypeStr, &quot;categoryType is required&quot;],
+    [categoryStr,     &quot;Category is required&quot;],
+    [isNewPresenterStr, &quot;isNewPresenter is empty&quot;]
+].each { val, msg -&gt; if (!val) errors.add(msg) }
+
+if (user) {
+    if (user.contains(&quot;,&quot;)) {
+        errors.add(&quot;user must be a single email — multiple comma-separated values are not supported&quot;)
+    } else if (!(user ==~ /^[^@]+@[^@]+\.[^@]+$/)) {
+        errors.add(&quot;user has invalid format: &apos;${user}&apos; — expected format user@domain.com&quot;)
+    }
+}
+
+if (clientTimeZone) {
+    try { ZoneId.of(clientTimeZone) }
+    catch (Exception e) { errors.add(&quot;clientTimeZone &apos;${clientTimeZone}&apos; is not a valid IANA zone id (e.g. Asia/Calcutta)&quot;) }
+}
+
+if (isNewPresenterStr) {
+    if (!(isNewPresenterStr.equalsIgnoreCase(&quot;true&quot;) || isNewPresenterStr.equalsIgnoreCase(&quot;false&quot;))) {
+        errors.add(&quot;isNewPresenter &apos;${isNewPresenterStr}&apos; is invalid — must be exactly &apos;true&apos; or &apos;false&apos;&quot;)
+    } else {
+        vars.put(&quot;isNewPresenter&quot;, isNewPresenterStr.toLowerCase())
+    }
+}
+
+// ===== presenters: required — fixed positive integer OR positive min,max range =====
+// Unlike topicsPerPresenter/blockSlots (which may legitimately be disabled), presenters
+// is required, so a reversed range (min &gt; max) is a validation error here, not a silent 0.
+if (presentersStr) {
+    def presentersParts = presentersStr.split(&quot;,&quot;)*.trim()
+    if (!presentersParts.every { it.isInteger() }) {
+        errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — expected a positive integer (e.g. 5) or a min,max range (e.g. 2,5)&quot;)
+    } else if (presentersParts.size() &gt; 2) {
+        errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — expected a single value (e.g. 5) or a range (e.g. 2,5)&quot;)
+    } else {
+        int presentersMin = presentersParts[0].toInteger()
+        int presentersMax = (presentersParts.size() &gt; 1 ? presentersParts[1].toInteger() : presentersMin)
+        if (presentersMin &lt;= 0 || presentersMax &lt;= 0) {
+            errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — values must be positive (at least 1)&quot;)
+        } else if (presentersMin &gt; presentersMax) {
+            errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — min (${presentersMin}) cannot be greater than max (${presentersMax})&quot;)
+        }
+    }
+}
+
+// ===== Shared min,max range validator (&quot;0&quot;/empty = feature disabled, no error) =====
+def validateRange = { String varName, String raw, String exampleRange -&gt;
+    if (!raw || raw == &quot;0&quot;) return [0, 0]
+    def parts = raw.split(&quot;,&quot;)*.trim()
+    if (!parts.every { it.isInteger() }) {
+        errors.add(&quot;${varName} &apos;${raw}&apos; is invalid — must be positive integers, e.g. ${exampleRange}&quot;)
+        return null
+    }
+    if (parts.any { it.toInteger() &lt; 0 }) {
+        errors.add(&quot;${varName} &apos;${raw}&apos; is invalid — negative values not allowed&quot;)
+        return null
+    }
+    if (parts.size() &gt; 2) {
+        errors.add(&quot;${varName} &apos;${raw}&apos; is invalid — expected a single value (e.g. 2) or a range (e.g. 1,3)&quot;)
+        return null
+    }
+    int min = parts[0].toInteger()
+    int max = (parts.size() &gt; 1 ? parts[1].toInteger() : min)
+    if (min &gt; max) {
+        log.warn(&quot;${varName} &apos;${raw}&apos; has min (${min}) &gt; max (${max}) — treating as disabled (feature will be skipped), not aborting&quot;)
+        return [0, 0]
+    }
+    return [min, max]
+}
+
+def topicsRange = validateRange(&quot;topicsPerPresenter&quot;, topicsPerPresenterStr, &quot;1,3&quot;)
+def blockRange  = validateRange(&quot;blockSlotsPerDay&quot;, blockSlotsPerDayStr, &quot;1,3&quot;)
+def blockSlotsRange = validateRange(&quot;blockSlots&quot;, blockSlotsStr, &quot;2,4&quot;)
+
+// Blocked slots are only actually created when BOTH a non-zero pool of presenters is
+// requested (blockSlots) AND a non-zero per-presenter slot count is requested
+// (blockSlotsPerDay). Either one being 0/disabled means no blocking happens this run.
+def blockedSlotsRequested = (blockRange != null &amp;&amp; blockRange[1] &gt; 0 &amp;&amp; blockSlotsRange != null &amp;&amp; blockSlotsRange[1] &gt; 0)
+if (blockedSlotsRequested) {
+    def validateDate = { String val, String name -&gt;
+        if (!val) {
+            errors.add(&quot;${name} is empty — required when blockSlotsPerDay is set (format: yyyy-MM-dd, e.g. 2026-08-01)&quot;)
+        } else if (!(val ==~ /\d{4}-\d{2}-\d{2}/)) {
+            errors.add(&quot;${name} has invalid format: &apos;${val}&apos; (expected: yyyy-MM-dd, e.g. 2026-08-01)&quot;)
+        } else {
+            try { LocalDate.parse(val, dateFormatter) }
+            catch (Exception e) { errors.add(&quot;${name} is not a valid date: &apos;${val}&apos; (${e.message})&quot;) }
+        }
+    }
+    validateDate(blockFromDate, &quot;blockFromDate&quot;)
+    validateDate(blockToDate, &quot;blockToDate&quot;)
+}
+
+// ===== blockSlotFullDay: optional boolean flag. When true, blockSlotsPerDay&apos;s
+// count is irrelevant (see &quot;Build Presenter Payload&quot;/&quot;Load Next Existing Presenter&quot;),
+// and blockTimes/blockDurations are skipped entirely since each slot already spans the whole day. =====
+if (blockSlotFullDay &amp;&amp; !(blockSlotFullDay.equalsIgnoreCase(&quot;true&quot;) || blockSlotFullDay.equalsIgnoreCase(&quot;false&quot;))) {
+    errors.add(&quot;blockSlotFullDay &apos;${blockSlotFullDay}&apos; is invalid — expected true or false&quot;)
+}
+def blockFullDayRequested = blockSlotFullDay?.equalsIgnoreCase(&quot;true&quot;)
+
+// ===== blockTimes: optional comma-separated HH:mm list (minutes must be :00 or :30). Ignored when full-day blocking is on. =====
+if (blockTimesStr &amp;&amp; !blockFullDayRequested) {
+    def badTimes = blockTimesStr.split(&quot;,&quot;)*.trim().findAll { it }.findAll { t -&gt;
+        !(t ==~ /^([01]?\d|2[0-3]):(00|30)$/)
+    }
+    if (badTimes) {
+        errors.add(&quot;blockTimes &apos;${blockTimesStr}&apos; is invalid — each entry must be HH:mm with minutes 00 or 30 (e.g. 11:00, 03:30), got invalid: ${badTimes.join(&apos;, &apos;)}&quot;)
+    }
+}
+
+// ===== blockDurations: optional comma-separated list of positive integer minutes. Ignored when full-day blocking is on. =====
+if (blockDurationsStr &amp;&amp; !blockFullDayRequested) {
+    def durParts = blockDurationsStr.split(&quot;,&quot;)*.trim().findAll { it }
+    if (!durParts.every { it.isInteger() &amp;&amp; it.toInteger() &gt; 0 }) {
+        errors.add(&quot;blockDurations &apos;${blockDurationsStr}&apos; is invalid — must be a comma-separated list of positive integer minutes, e.g. 30,60&quot;)
+    }
+}
+
+// ===== Abort on validation errors =====
+if (errors.size() &gt; 0) {
+    def errorMsg = &quot;ABORTING: Validation failed:\n&quot; + errors.collect { &quot;  ✗ ${it}&quot; }.join(&quot;\n&quot;)
+    errors.each { log.error(&quot;✗ ${it}&quot;) }
+    abort(errorMsg)
+    return
+}
+
+// ===== Resolve presenters range to a concrete count for this run (once, not per-presenter) =====
+int presentersToCreate = props.get(&quot;fn_parseRangeCount&quot;)(vars, log, &quot;presenters&quot;, &quot;overall&quot;)
+vars.put(&quot;presentersToCreate&quot;, presentersToCreate.toString())
+
+// ===== Build summary =====
+def sb = new StringBuilder()
+sb.append(&quot;========================================\n&quot;)
+sb.append(&quot;PRESENTER RUN SUMMARY\n&quot;)
+sb.append(&quot;========================================\n&quot;)
+sb.append(&quot;Presenters to create    : ${presentersStr} -&gt; ${presentersToCreate} this run\n&quot;)
+sb.append(&quot;Topics per presenter    : ${topicsPerPresenterStr ?: &apos;0 (disabled)&apos;}\n&quot;)
+sb.append(&quot;Block days (per pres.)  : ${blockSlotsStr ?: &apos;0 (disabled)&apos;}\n&quot;)
+sb.append(&quot;Blocked slots/presenter : ${blockSlotsPerDayStr ?: &apos;0 (disabled)&apos;}\n&quot;)
+if (blockedSlotsRequested) {
+    sb.append(&quot;Block date range        : ${blockFromDate} to ${blockToDate}\n&quot;)
+}
+sb.append(&quot;Block full day          : ${blockSlotFullDay ?: &apos;false&apos;}\n&quot;)
+if (!blockFullDayRequested) {
+    sb.append(&quot;Block times             : ${blockTimesStr ?: &apos;random :00/:30&apos;}\n&quot;)
+    sb.append(&quot;Block durations (min)   : ${blockDurationsStr ?: &apos;30,60 (default)&apos;}\n&quot;)
+}
+sb.append(&quot;========================================\n&quot;)
+
+log.info(sb.toString())
+
+SampleResult.setResponseData(sb.toString(), &quot;UTF-8&quot;)
+SampleResult.setResponseCode(&quot;200&quot;)
+SampleResult.setResponseMessage(&quot;Validation passed — ${presentersToCreate} presenter(s) will be created (presenters=${presentersStr})&quot;)
+SampleResult.setSuccessful(true)
+SampleResult.setIgnore()</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Active Customer" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="verbose" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.value">false</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">verbose</stringProp>
+              </elementProp>
+              <elementProp name="active" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.value">true</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">active</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/tenants</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Active Customer PostProcessor" enabled="true">
+            <stringProp name="script">def tenant = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())._embedded?.tenants?.getAt(0)
+
+vars.put(&quot;customerId&quot;, tenant?.uniqueId ?: &quot;&quot;)
+vars.put(&quot;activeCustomer&quot;, tenant?.customerName ?: &quot;&quot;)
+
+// Update sampler label with selected customer
+def customerName = vars.get(&quot;activeCustomer&quot;) ?: &quot;&quot;
+if (customerName) {
+	prev.setSampleLabel(prev.getSampleLabel() + &quot; - &quot; + customerName)
+}
+
+log.info(&quot;Customer: ${customerName} | ID: ${vars.get(&apos;customerId&apos;)}&quot;)
+
+log.info(&quot;----- Terminated: Extracted Active Customer -----&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get CategoryTypes" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/categorytypes</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Category Type PostProcessor" enabled="true">
+            <stringProp name="script">// Parse JSON response
+def response = prev.getResponseDataAsString()
+def json = new groovy.json.JsonSlurper().parseText(response)
+
+// Extract category types from response
+def categoryTypes = json._embedded?.categoryTypes ?: []
+
+// Validate category types exist
+if (categoryTypes.isEmpty()) {
+    log.error(&quot;No category types found!&quot;)
+    return
+}
+
+// Get preferred category type from User Defined Variables
+def preferredCategoryType = vars.get(&quot;categoryType&quot;)?.trim()
+def selectedCategoryType = null
+
+// Search for preferred category type if specified
+if (preferredCategoryType) {
+    selectedCategoryType = categoryTypes.find {
+        it.uniqueId?.equalsIgnoreCase(preferredCategoryType)
+    }
+
+    if (selectedCategoryType) {
+        log.info(&quot;Category type: &quot; + preferredCategoryType)
+    } else {
+        def availableTypes = categoryTypes.collect { it.uniqueId + &quot; (&quot; + (it.categoryTypeName ?: &quot;&quot;) + &quot;)&quot; }.join(&quot;, &quot;)
+        props.get(&quot;fn_abortNotFound&quot;)(vars, prev, &quot;categoryType&quot;, preferredCategoryType, availableTypes, ctx)
+        return
+    }
+}
+
+// Use selected category type (already validated)
+// Store selected category type in JMeter variables
+vars.put(&quot;categoryTypeId&quot;, selectedCategoryType.uniqueId ?: &quot;&quot;)
+vars.put(&quot;categoryTypeName&quot;, selectedCategoryType.categoryTypeName ?: &quot;&quot;)
+
+// Update sampler label with selected category type
+def categoryTypeName = vars.get(&quot;categoryTypeName&quot;) ?: &quot;&quot;
+if (categoryTypeName) {
+    prev.setSampleLabel(prev.getSampleLabel() + &quot; - &quot; + categoryTypeName)
+}
+
+log.info(&quot;----- Terminated: Category Type PostProcessor -----&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Categories" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="parent" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                <stringProp name="Argument.value">CATEGORY_BRIEFINGS</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+                <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                <stringProp name="Argument.name">parent</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/categorytypes/${categoryTypeId}/categories</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                <stringProp name="Header.value">CATEGORY_BRIEFINGS</stringProp>
+              </elementProp>
+              <elementProp name="x_cloud_user" elementType="Header">
+                <stringProp name="Header.name">x_cloud_user</stringProp>
+                <stringProp name="Header.value">${user}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                <stringProp name="Header.value">${categoryTypeId}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Category PostProcessor" enabled="true">
+            <stringProp name="script">// Check if test is aborting due to previous validation failure
+if (props.get(&quot;fn_checkAbort&quot;)(vars, prev)) return
+
+// Parse JSON response
+def response = prev.getResponseDataAsString()
+def json = new groovy.json.JsonSlurper().parseText(response)
+
+// Extract categories from response
+// Real shape: uniqueId, isActive, categoryName, description, sortOrder,
+// categoryType{uniqueId,categoryTypeName,description}, parent{uniqueId,categoryName,description}, identifier
+def categories = json._embedded?.categories ?: []
+
+// Only consider active categories
+categories = categories.findAll { it.isActive != false }
+
+// Validate categories exist
+if (categories.isEmpty()) {
+    log.error(&quot;No active categories found under parent Category=&quot; + vars.get(&quot;category&quot;))
+    props.get(&quot;fn_abortNotFound&quot;)(vars, prev, &quot;Category&quot;, vars.get(&quot;category&quot;) ?: &quot;&quot;, &quot;&quot;, ctx)
+    return
+}
+
+// &quot;Category&quot; (Global Variable, the location dropdown, desc=&quot;UniqueId of category&quot;) tells us
+// which specific one of these results to select. Falls back to lowest sortOrder if left blank.
+def preferredCategoryId = vars.get(&quot;category&quot;)?.trim()
+def selectedCategory
+
+if (preferredCategoryId) {
+    selectedCategory = categories.find { it.uniqueId?.equalsIgnoreCase(preferredCategoryId) }
+    if (selectedCategory) {
+        log.info(&quot;Category matched Global Variable &apos;Category&apos;: &quot; + selectedCategory.categoryName)
+    } else {
+        def availableCategories = categories.collect { it.uniqueId + &quot; (&quot; + (it.categoryName ?: &quot;&quot;) + &quot;)&quot; }.join(&quot;, &quot;)
+        props.get(&quot;fn_abortNotFound&quot;)(vars, prev, &quot;category&quot;, preferredCategoryId, availableCategories, ctx)
+        return
+    }
+} else {
+    selectedCategory = categories.sort { it.sortOrder ?: 0 }[0]
+    log.info(&quot;No Category specified — defaulting to lowest sortOrder: &quot; + selectedCategory.categoryName)
+}
+
+// Store selected category variables
+vars.put(&quot;categoryId&quot;, selectedCategory.uniqueId ?: &quot;&quot;)
+vars.put(&quot;categoryName&quot;, selectedCategory.categoryName ?: &quot;&quot;)
+vars.put(&quot;categoryIdentifier&quot;, selectedCategory.identifier ?: &quot;&quot;)
+vars.put(&quot;categoryTypeName&quot;, selectedCategory.categoryType?.categoryTypeName ?: vars.get(&quot;categoryTypeName&quot;) ?: &quot;&quot;)
+
+// Update sampler label with selected category so it shows in View Results Tree
+def selectedCatName = vars.get(&quot;categoryName&quot;) ?: &quot;&quot;
+if (selectedCatName) {
+    prev.setSampleLabel(prev.getSampleLabel() + &quot; - &quot; + selectedCatName)
+}
+
+// Logging for debugging
+log.info(&quot;Selected Category ID: &quot; + vars.get(&quot;categoryId&quot;))
+log.info(&quot;Selected Category Name: &quot; + vars.get(&quot;categoryName&quot;))
+log.info(&quot;Category Identifier: &quot; + vars.get(&quot;categoryIdentifier&quot;))
+
+log.info(&quot;----- Terminated: Category PostProcessor -----&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Tenant Lookup Values" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/lookupvalues</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Tenant Lookup Values PostProcessor" enabled="true">
+            <stringProp name="script">def response = prev.getResponseDataAsString()
+if (!response || response.trim().isEmpty()) {
+    log.warn(&quot;Tenant Lookup Values PostProcessor: empty or no response (HTTP ${prev.getResponseCode()}) — skipping JSON parse&quot;)
+    log.info(&quot;----- Terminated: Tenant Lookup Values PostProcessor -----&quot;)
+    return
+}
+try {
+    def json = new groovy.json.JsonSlurper().parseText(response)
+    def lookupValues = json._embedded?.lookupValues ?: []
+    def lookupMap = props.get(&quot;fn_storeLookupValues&quot;)(vars, lookupValues, &quot;tenant&quot;, log)
+    log.info(&quot;Tenant lookups: HTTP ${prev.getResponseCode()} | rows=${lookupValues.size()} | types=${lookupMap?.size() ?: 0}&quot;)
+} catch (Exception e) {
+    log.warn(&quot;Tenant Lookup Values PostProcessor: failed to parse response — ${e.message}&quot;)
+}
+log.info(&quot;----- Terminated: Tenant Lookup Values PostProcessor -----&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Timezones" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/timezones</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Timezone PostProcessor" enabled="true">
+            <stringProp name="script">log.info(&quot;----- Started: Timezone PostProcessor -----&quot;)
+
+// Parse JSON response
+def response = prev.getResponseDataAsString()
+def json = new groovy.json.JsonSlurper().parseText(response)
+
+// Extract timezone models from response
+def timezones = json._embedded?.timeZoneCodeModels ?: []
+
+if (timezones.isEmpty()) {
+    log.error(&quot;No timezones found in response!&quot;)
+    return
+}
+
+log.info(&quot;Total timezones found: &quot; + timezones.size())
+
+// Store each timezone&apos;s key, value, and zoneName as indexed variables
+// Also build a lookup map by zoneName for quick access
+def tzMap = [:]  // zoneName -&gt; [key, value]
+
+timezones.eachWithIndex { tz, idx -&gt;
+    def tzKey = tz.key ?: &quot;&quot;
+    def tzValue = tz.value ?: &quot;&quot;
+    def tzZoneName = tz.zoneName ?: &quot;&quot;
+
+    // Store as indexed variables (1-based): tz_key_1, tz_value_1, tz_zoneName_1, etc.
+    def index = (idx + 1).toString()
+    vars.put(&quot;tz_key_&quot; + index, tzKey)
+    vars.put(&quot;tz_value_&quot; + index, tzValue)
+    vars.put(&quot;tz_zoneName_&quot; + index, tzZoneName)
+
+    // Build lookup map by zoneName
+    if (tzZoneName) {
+        tzMap[tzZoneName] = [key: tzKey, value: tzValue]
+    }
+}
+
+// Store the timezone map as a JMeter property for cross-thread access
+props.put(&quot;timezoneMap&quot;, tzMap)
+
+// Store total count so each presenter created later can pick its own fresh random timezone
+// from this pool (instead of the whole batch sharing one timezone selected here).
+vars.put(&quot;timezoneCount&quot;, timezones.size().toString())
+
+// Pick a representative timezone here only for logging / sample label purposes
+def rand = java.util.concurrent.ThreadLocalRandom.current()
+def randomIndex = rand.nextInt(timezones.size())
+def selectedTz = timezones[randomIndex]
+
+def requestTimeZone = selectedTz.zoneName ?: &quot;&quot;
+def requestTimeZoneKey = selectedTz.key ?: &quot;&quot;
+
+def requestTimeZoneCountry = selectedTz.country ?: &quot;&quot;
+log.info(&quot;Sample requestTimeZone: &quot; + requestTimeZoneCountry + &quot; (&quot; + requestTimeZone + &quot;) | key=&quot; + requestTimeZoneKey)
+
+log.info(&quot;Timezone PostProcessor: Stored &quot; + timezones.size() + &quot; timezones (tz_key_N, tz_value_N, tz_zoneName_N)&quot;)
+log.info(&quot;----- Terminated: Timezone PostProcessor -----&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Fetch Random Data" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">https://randomuser.me/api/?nat=us&amp;results=500</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Store Random User Data" enabled="true">
+            <stringProp name="script">def fallbackUsers = [
+    [first:&quot;James&quot;, last:&quot;Anderson&quot;, gender:&quot;male&quot;],
+    [first:&quot;Sarah&quot;, last:&quot;Mitchell&quot;, gender:&quot;female&quot;],
+    [first:&quot;Robert&quot;, last:&quot;Thompson&quot;, gender:&quot;male&quot;],
+    [first:&quot;Emily&quot;, last:&quot;Carter&quot;, gender:&quot;female&quot;],
+    [first:&quot;Michael&quot;, last:&quot;Rodriguez&quot;, gender:&quot;male&quot;],
+    [first:&quot;Jessica&quot;, last:&quot;Patel&quot;, gender:&quot;female&quot;],
+    [first:&quot;David&quot;, last:&quot;Nakamura&quot;, gender:&quot;male&quot;],
+    [first:&quot;Ashley&quot;, last:&quot;O&apos;Brien&quot;, gender:&quot;female&quot;],
+    [first:&quot;Christopher&quot;, last:&quot;Kim&quot;, gender:&quot;male&quot;],
+    [first:&quot;Amanda&quot;, last:&quot;Johansson&quot;, gender:&quot;female&quot;],
+    [first:&quot;Daniel&quot;, last:&quot;Morales&quot;, gender:&quot;male&quot;],
+    [first:&quot;Lauren&quot;, last:&quot;Chen&quot;, gender:&quot;female&quot;],
+    [first:&quot;Matthew&quot;, last:&quot;Williams&quot;, gender:&quot;male&quot;],
+    [first:&quot;Stephanie&quot;, last:&quot;Gupta&quot;, gender:&quot;female&quot;],
+    [first:&quot;Andrew&quot;, last:&quot;Sullivan&quot;, gender:&quot;male&quot;],
+    [first:&quot;Nicole&quot;, last:&quot;Fernandez&quot;, gender:&quot;female&quot;],
+    [first:&quot;Joshua&quot;, last:&quot;Park&quot;, gender:&quot;male&quot;],
+    [first:&quot;Rachel&quot;, last:&quot;Schmidt&quot;, gender:&quot;female&quot;],
+    [first:&quot;Ryan&quot;, last:&quot;Takahashi&quot;, gender:&quot;male&quot;],
+    [first:&quot;Megan&quot;, last:&quot;Kowalski&quot;, gender:&quot;female&quot;]
+]
+
+def users = []
+def source = &quot;fallback&quot;
+
+try {
+    def response = prev.getResponseDataAsString()
+    def json = new groovy.json.JsonSlurper().parseText(response)
+    def apiUsers = json.results ?: []
+
+    if (apiUsers.size() &gt; 0) {
+        apiUsers.each { user -&gt;
+            users.add([
+                first: user.name?.first ?: &quot;John&quot;,
+                last: user.name?.last ?: &quot;Doe&quot;,
+                gender: user.gender ?: &quot;male&quot;
+            ])
+        }
+        source = &quot;API (${apiUsers.size()} users)&quot;
+    }
+} catch (Exception e) {
+    log.warn(&quot;Random User API parse error: ${e.message}&quot;)
+}
+
+// Fallback if API returned nothing
+if (users.isEmpty()) {
+    users = fallbackUsers
+    Collections.shuffle(users)
+    source = &quot;fallback (${fallbackUsers.size()} built-in users)&quot;
+    log.warn(&quot;Random User API failed - using built-in fallback dataset&quot;)
+}
+
+// Store each user as separate variables
+users.eachWithIndex { user, index -&gt;
+    def i = index + 1
+    vars.put(&quot;randomUser_${i}_firstName&quot;, user.first)
+    vars.put(&quot;randomUser_${i}_lastName&quot;, user.last)
+    vars.put(&quot;randomUser_${i}_gender&quot;, user.gender)
+}
+
+vars.put(&quot;randomUserCount&quot;, users.size().toString())
+vars.put(&quot;randomUserIndex&quot;, &quot;1&quot;)
+
+log.info(&quot;Loaded ${users.size()} random users [${source}]&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Presenter Field Mappings" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${presenterResourceTypeId}/fieldmappings</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x_cloud_user</stringProp>
+                <stringProp name="Header.value">${user}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Field Mappings PostProcessor" enabled="true">
+            <stringProp name="script">props.get(&quot;fn_fieldMappingsPostProcessor&quot;)(vars, prev, log)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Presenter Form Fields" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${presenterResourceTypeId}</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x_cloud_user</stringProp>
+                <stringProp name="Header.value">${user}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="UI Config Extractor" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">currentFormUIConfig</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.formTemplate</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Beautify Form Config PostProcessor" enabled="true">
+            <stringProp name="script">props.get(&quot;fn_beautifyFormConfig&quot;)(vars, prev, log)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Topics" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/mastertypes/${topicMasterTypeId}/masters?hierarchy=true</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                <stringProp name="Header.value">${categoryTypeId}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                <stringProp name="Header.value">${category}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">X_cloud_user</stringProp>
+                <stringProp name="Header.value">${user}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Topics PostProcessor" enabled="true">
+            <stringProp name="script">// Parse Get Topics response (mastertypes/{id}/masters) into topicId_N / topicName_N vars.
+// Runs once (this sampler sits outside the Presenter Loop Controller), so the full
+// topic list is fetched a single time and reused for every presenter.
+def response = prev.getResponseDataAsString()
+
+if (!response || response.trim().isEmpty()) {
+    log.warn(&quot;Get Topics: empty response - no topics found&quot;)
+    vars.put(&quot;topicId_count&quot;, &quot;0&quot;)
+    return
+}
+
+def json = new groovy.json.JsonSlurper().parseText(response)
+
+// Supports multiple response formats:
+//   - HAL format:    { _embedded: { masters: [...] } }
+//   - Simple format: { masters: [...] }
+//   - Array format:  [...]
+// With ?hierarchy=true the API returns ALL levels (L1...L6) flattened into
+// this single list - each master carries its own parent.uniqueId, same as BIQ.jmx.
+def topics = json._embedded?.masters ?: json.masters ?: (json instanceof List ? json : [])
+
+def count = 0
+topics.each { topic -&gt;
+    def data = topic.data ?: topic
+    // FIX (mirrors BIQ.jmx): uniqueId is always at the TOP-LEVEL master object,
+    // never inside data. Checking data first previously returned wrong/null ids
+    // and made parent-child linking impossible.
+    def uniqueId = (topic.uniqueId ?: topic.id ?: data.uniqueId ?: data.id)?.toString()?.trim()
+    if (!uniqueId) {
+        return
+    }
+    count++
+    def displayName = (topic.metaData?.searchDisplayText ?:
+                      data.searchDisplayText ?:
+                      data.displayName ?:
+                      data.masterName ?:
+                      data.name ?:
+                      topic.displayName ?:
+                      topic.name ?:
+                      uniqueId)?.toString()?.trim()
+
+    // Parent id identifies where this topic sits in the hierarchy - a topic whose
+    // id never shows up as another topic&apos;s parentId is a leaf (deepest level).
+    def parentId = (topic?.parent?.uniqueId ?: topic?.parent?.id)?.toString()?.trim() ?: &quot;&quot;
+
+    vars.put(&quot;topicId_&quot; + count, uniqueId)
+    vars.put(&quot;topicName_&quot; + count, displayName)
+    vars.put(&quot;topicParentId_&quot; + count, parentId)
+}
+
+vars.put(&quot;topicId_count&quot;, count.toString())
+log.info(&quot;Get Topics: loaded &quot; + count + &quot; topic(s) across all hierarchy levels&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Topic Field Mappings" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${topicResourceTypeId}/fieldmappings</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x_cloud_user</stringProp>
+                <stringProp name="Header.value">${user}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Topic Field Mappings PostProcessor" enabled="true">
+            <stringProp name="script">props.get(&quot;fn_fieldMappingsPostProcessor&quot;)(vars, prev, log, &quot;currentTopicFieldMappings&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Topic Form Fields" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${topicResourceTypeId}</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                <stringProp name="Header.value">${customerId}</stringProp>
+              </elementProp>
+              <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                <stringProp name="Header.value">${clientTimeZone}</stringProp>
+              </elementProp>
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">x_cloud_user</stringProp>
+                <stringProp name="Header.value">${user}</stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Topic UI Config Extractor" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">currentTopicFormUIConfig</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.formTemplate</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Beautify Topic Form Config PostProcessor" enabled="true">
+            <stringProp name="script">props.get(&quot;fn_beautifyFormConfig&quot;)(vars, prev, log, &quot;currentTopicFormUIConfig&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+          <hashTree/>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If isNewPresenter == true" enabled="true">
+          <stringProp name="IfController.condition">&quot;${isNewPresenter}&quot; == &quot;true&quot;</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
+        <hashTree>
+          <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Presenter Loop Controller" enabled="true">
+            <stringProp name="WhileController.condition">${__javaScript(parseInt(vars.get(&quot;presenterCounter&quot;) || 0) &lt; parseInt(vars.get(&quot;presentersToCreate&quot;) || 0))}</stringProp>
+          </WhileController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="----- 👤 Create Presenter -----" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">${dynamicPayload}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${presenterResourceTypeId}/resources</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+              <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Build Presenter Payload" enabled="true">
+                <stringProp name="script">def presenterNum = (vars.get(&quot;presenterCounter&quot;) ?: &quot;0&quot;).toInteger() + 1
+vars.put(&quot;presenterCounter&quot;, presenterNum.toString())
+vars.put(&quot;topicIterCounter&quot;, &quot;0&quot;)
+def presenterName = sampler.getName()
+sampler.setName(&quot;${presenterName} #${presenterNum}&quot;)
+props.get(&quot;fn_presenterPayloadBuilder&quot;)(vars, log)
+
+// topicsPerPresenter supports either a fixed count (e.g. &quot;3&quot;) or a range &quot;min,max&quot;
+// (e.g. &quot;1,3&quot;) - a random count in [min,max] is picked once per presenter here,
+// so every presenter can end up with a different number of topics.
+int topicsForThisPresenter = props.get(&quot;fn_parseRangeCount&quot;)(vars, log, &quot;topicsPerPresenter&quot;, &quot;#&quot; + presenterNum)
+vars.put(&quot;topicsForThisPresenter&quot;, topicsForThisPresenter.toString())
+log.info(&quot;Presenter #&quot; + presenterNum + &quot;: will be assigned &quot; + topicsForThisPresenter + &quot; topic(s) (range &quot; + (vars.get(&quot;topicsPerPresenter&quot;) ?: &quot;0&quot;) + &quot;)&quot;)
+
+// Every presenter created this run gets blocked days planned. fn_planBlockedDays picks
+// blockSlots DISTINCT days within blockFromDate..blockToDate for THIS presenter, then
+// independently rolls blockSlotsPerDay for each of those days (see Blocked Slot Loop
+// Controller below, which iterates over the resulting flat per-slot day plan).
+vars.put(&quot;presenterBlockedIntervals&quot;, &quot;&quot;) // reset per-presenter overlap tracker used by fn_buildBlockedSlotPayload
+int blockSlotsForThisPresenter = props.get(&quot;fn_planBlockedDays&quot;)(vars, log, &quot;#&quot; + presenterNum)
+vars.put(&quot;blockSlotsForThisPresenter&quot;, blockSlotsForThisPresenter.toString())
+vars.put(&quot;blockSlotIterCounter&quot;, &quot;0&quot;)
+log.info(&quot;Presenter #&quot; + presenterNum + &quot;: will be assigned &quot; + blockSlotsForThisPresenter + &quot; blocked slot(s) total across its blocked day(s)&quot;)</stringProp>
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+              </JSR223PreProcessor>
+              <hashTree/>
+              <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Presenter Id Extractor" enabled="true">
+                <stringProp name="JSONPostProcessor.referenceNames">presenterId</stringProp>
+                <stringProp name="JSONPostProcessor.jsonPathExprs">$.uniqueId</stringProp>
+                <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+              </JSONPostProcessor>
+              <hashTree/>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                    <stringProp name="Header.value">${customerId}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                    <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                    <stringProp name="Header.value">${category}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                    <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X_cloud_user</stringProp>
+                    <stringProp name="Header.value">${user}</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+              <hashTree/>
+            </hashTree>
+            <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Topic Loop Controller" enabled="true">
+              <stringProp name="WhileController.condition">${__javaScript(parseInt(vars.get(&quot;topicIterCounter&quot;) || 0) &lt; parseInt(vars.get(&quot;topicsForThisPresenter&quot;) || 0))}</stringProp>
+            </WhileController>
+            <hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Add Topic to Presenter" enabled="true">
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">${dynamicPayload}</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain"></stringProp>
+                <stringProp name="HTTPSampler.port"></stringProp>
+                <stringProp name="HTTPSampler.protocol"></stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${topicResourceTypeId}/resources</stringProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Build Topic Presenter Payload" enabled="true">
+                  <stringProp name="script">// Runs once per loop iteration (Topic Loop Controller loops = topicsForThisPresenter) - picks ONE
+// random topic from the list loaded once by Topics PostProcessor, and creates ONE Topic
+// resource (child of the presenter just created) per call, using the Topic resourcetype&apos;s
+// own form/field-mappings (fn_topicPayloadBuilder) so the payload shape always matches the
+// live form template - e.g. { &quot;data&quot;: { &quot;textField1&quot;: &quot;&lt;topicMasterId&gt;&quot;, &quot;isActive&quot;: true } }.
+def presenterNum = vars.get(&quot;presenterCounter&quot;) ?: &quot;?&quot;
+
+int topicIterNum = (vars.get(&quot;topicIterCounter&quot;) ?: &quot;0&quot;).toInteger() + 1
+vars.put(&quot;topicIterCounter&quot;, topicIterNum.toString())
+
+def totalDesired = vars.get(&quot;topicsForThisPresenter&quot;) ?: &quot;?&quot;
+def requestName = sampler.getName()
+// sampler.setName(&quot;${requestName} (${topicIterNum}/${totalDesired})&quot;)
+sampler.setName(&quot;${requestName} #${topicIterNum}&quot;)
+
+int totalTopics = (vars.get(&quot;topicId_count&quot;) ?: &quot;0&quot;) as int
+
+if (totalTopics == 0) {
+    vars.put(&quot;dynamicPayload&quot;, &apos;{&quot;data&quot;:{}}&apos;)
+    log.warn(&quot;Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: no topics available - sending empty payload&quot;)
+} else {
+    // FIX: the flat list now contains every hierarchy level (thanks to ?hierarchy=true
+    // on Get Topics), so a plain random index over 1..totalTopics would often land on
+    // a mid-level/root node instead of a fully specified multi-level topic. Mirrors
+    // BIQ.jmx&apos;s leaf-first approach: a leaf is any topic whose id never appears as
+    // another topic&apos;s parentId - i.e. the deepest node in its branch. The single
+    // Topic field only needs that one leaf id; the API resolves the ancestor chain.
+    def allParentIds = (1..totalTopics).collect { vars.get(&quot;topicParentId_&quot; + it) ?: &quot;&quot; }.findAll { it }.toSet()
+    def leafIndices = (1..totalTopics).findAll { idx -&gt;
+        def id = vars.get(&quot;topicId_&quot; + idx)
+        id &amp;&amp; !allParentIds.contains(id)
+    }
+
+    def rand = java.util.concurrent.ThreadLocalRandom.current()
+    int pickIdx
+    if (leafIndices) {
+        pickIdx = leafIndices[rand.nextInt(leafIndices.size())]
+    } else {
+        // Data gap fallback: no leaves resolvable (e.g. parentId missing on every
+        // row) - fall back to picking from the full flat list rather than failing.
+        log.warn(&quot;Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: no leaf-level topic found - falling back to full list&quot;)
+        pickIdx = rand.nextInt(totalTopics) + 1
+    }
+
+    def selectedTopicId = vars.get(&quot;topicId_&quot; + pickIdx)
+    def selectedTopicName = vars.get(&quot;topicName_&quot; + pickIdx) ?: selectedTopicId
+
+    vars.put(&quot;selectedTopicId&quot;, selectedTopicId)
+    vars.put(&quot;selectedTopicName&quot;, selectedTopicName)
+
+    props.get(&quot;fn_topicPayloadBuilder&quot;)(vars, selectedTopicId, log)
+}</stringProp>
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                </JSR223PreProcessor>
+                <hashTree/>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                      <stringProp name="Header.value">${customerId}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                      <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                      <stringProp name="Header.value">${category}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">X_cloud_user</stringProp>
+                      <stringProp name="Header.value">${user}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-parentid</stringProp>
+                      <stringProp name="Header.value">${presenterId}</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+                <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Added Topics Extractor" enabled="true">
+                  <stringProp name="script">def presenterNum = vars.get(&quot;presenterCounter&quot;) ?: &quot;?&quot;
+def topicIterNum = vars.get(&quot;topicIterCounter&quot;) ?: &quot;?&quot;
+def totalDesired = vars.get(&quot;topicsForThisPresenter&quot;) ?: &quot;?&quot;
+def responseCode = prev.getResponseCode()
+
+if (responseCode != &quot;200&quot; &amp;&amp; responseCode != &quot;201&quot;) {
+    log.warn(&quot;Add Topic to Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: failed with response code &quot; + responseCode)
+} else {
+    def topicName = vars.get(&quot;selectedTopicName&quot;) ?: &quot;&quot;
+    log.info(&quot;Add Topic to Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: &apos;&quot; + topicName + &quot;&apos; added successfully&quot;)
+}</stringProp>
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                </JSR223PostProcessor>
+                <hashTree/>
+                <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+            <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Blocked Time Slot Loop Controller" enabled="true">
+              <stringProp name="WhileController.condition">${__javaScript(parseInt(vars.get(&quot;blockSlotIterCounter&quot;) || 0) &lt; parseInt(vars.get(&quot;blockSlotsForThisPresenter&quot;) || 0))}</stringProp>
+            </WhileController>
+            <hashTree>
+              <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Blocked Time Slot" enabled="true">
+                <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="" elementType="HTTPArgument">
+                      <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                      <stringProp name="Argument.value">${dynamicPayload}</stringProp>
+                      <stringProp name="Argument.metadata">=</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+                <stringProp name="HTTPSampler.domain"></stringProp>
+                <stringProp name="HTTPSampler.port"></stringProp>
+                <stringProp name="HTTPSampler.protocol"></stringProp>
+                <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                <stringProp name="HTTPSampler.path">/${contextname}/api/resources/${presenterId}/calendars</stringProp>
+                <stringProp name="HTTPSampler.method">POST</stringProp>
+                <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+              </HTTPSamplerProxy>
+              <hashTree>
+                <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Build Presenter Blocked Slot Payload" enabled="true">
+                  <stringProp name="script">// Runs once per loop iteration (Blocked Slot Loop Controller loops = blockSlotsForThisPresenter,
+// the total slot count returned by fn_planBlockedDays in Build Presenter Payload).
+// blockedSlotDatesPlan (set by fn_planBlockedDays) has one date entry per planned slot,
+// in order, so the Nth iteration here targets the Nth entry - this is what makes
+// blockSlots (days) and blockSlotsPerDay (slots per day) actually line up, instead of
+// every slot landing on an independently random day. Delegates the actual time/duration
+// picking and payload assembly to the shared fn_buildBlockedSlotPayload function (also
+// used by the existing-flow&apos;s &quot;Build Existing Presenter Blocked Slot Payload&quot;) - this
+// preprocessor only handles the create-flow-specific loop counter, date lookup, and
+// sampler naming.
+def presenterNum = vars.get(&quot;presenterCounter&quot;) ?: &quot;?&quot;
+
+int blockIterNum = (vars.get(&quot;blockSlotIterCounter&quot;) ?: &quot;0&quot;).toInteger() + 1
+vars.put(&quot;blockSlotIterCounter&quot;, blockIterNum.toString())
+def totalDesired = vars.get(&quot;blockSlotsForThisPresenter&quot;) ?: &quot;?&quot;
+
+def plannedDates = (vars.get(&quot;blockedSlotDatesPlan&quot;) ?: &quot;&quot;).split(&quot;;&quot;)*.trim().findAll { it }
+def forcedDate = (blockIterNum &gt;= 1 &amp;&amp; blockIterNum &lt;= plannedDates.size()) ? plannedDates[blockIterNum - 1] : null
+
+def blockedTimeSlotName = sampler.getName()
+def requestName = sampler.getName()
+//sampler.setName(&quot;${requestName} (${blockIterNum}/${totalDesired})&quot;)
+sampler.setName(&quot;${requestName} #${blockIterNum}&quot;)
+
+props.get(&quot;fn_buildBlockedSlotPayload&quot;)(vars, log, &quot;#&quot; + presenterNum + &quot;, blocked slot &quot; + blockIterNum + &quot;/&quot; + totalDesired, forcedDate)</stringProp>
+                  <stringProp name="scriptLanguage">groovy</stringProp>
+                  <stringProp name="parameters"></stringProp>
+                  <stringProp name="filename"></stringProp>
+                  <stringProp name="cacheKey">true</stringProp>
+                </JSR223PreProcessor>
+                <hashTree/>
+                <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                  <collectionProp name="HeaderManager.headers">
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                      <stringProp name="Header.value">${customerId}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                      <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                      <stringProp name="Header.value">${category}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-requested-timezone</stringProp>
+                      <stringProp name="Header.value">${presenterSelectedTimezone}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">X_cloud_user</stringProp>
+                      <stringProp name="Header.value">${user}</stringProp>
+                    </elementProp>
+                    <elementProp name="" elementType="Header">
+                      <stringProp name="Header.name">x-cloud-parentid</stringProp>
+                      <stringProp name="Header.value">${presenterId}</stringProp>
+                    </elementProp>
+                    <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                      <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                      <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </HeaderManager>
+                <hashTree/>
+                <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                <hashTree/>
+              </hashTree>
+            </hashTree>
+          </hashTree>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If isNewPresenter == false" enabled="true">
+          <stringProp name="IfController.condition">&quot;${isNewPresenter}&quot; == &quot;false&quot;</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Presenters" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/${contextname}/api/resourcetypes/${presenterResourceTypeId}/resources</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+            <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                  <stringProp name="Header.value">${customerId}</stringProp>
+                </elementProp>
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                  <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                </elementProp>
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                  <stringProp name="Header.value">${category}</stringProp>
+                </elementProp>
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                  <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                </elementProp>
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">X_cloud_user</stringProp>
+                  <stringProp name="Header.value">${user}</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Presenter List Extractor" enabled="true">
+              <stringProp name="script">import groovy.json.JsonSlurper
+
+// Parses the presenter list response and stores each presenter&apos;s id + baseTimezone
+// as indexed variables (presenterList_id_1, presenterList_tz_1, presenterList_name_1, ...)
+// so the Existing Presenter Loop Controller below can iterate over them one at a time,
+// the same counter-driven pattern already used by the Presenter/Topic/Blocked Slot loops.
+def responseCode = prev.getResponseCode()
+vars.put(&quot;existingPresenterCount&quot;, &quot;0&quot;)
+vars.put(&quot;existingPresenterIterCounter&quot;, &quot;0&quot;)
+
+if (responseCode != &quot;200&quot;) {
+    log.warn(&quot;Get Presenters failed with response code &quot; + responseCode + &quot; - no presenters loaded, existing-presenter flow will do nothing&quot;)
+} else {
+    def json = new JsonSlurper().parseText(prev.getResponseDataAsString())
+    def resources = json._embedded?.resources ?: []
+
+    // presenterEmails: optional comma-separated list of presenter primary emails. If set,
+    // only those presenters are kept for this run; everyone else from Get Presenters is
+    // dropped before the indexed presenterList_* variables are built below.
+    def presenterEmailsStr = (vars.get(&quot;presenterEmails&quot;) ?: &quot;&quot;).trim()
+    if (presenterEmailsStr) {
+        def selectedEmails = presenterEmailsStr.split(&quot;,&quot;)*.trim().findAll { it }.collect { it.toLowerCase() } as Set
+        def beforeCount = resources.size()
+        resources = resources.findAll { r -&gt;
+            def email = (r.data?.primaryEmail ?: &quot;&quot;).trim().toLowerCase()
+            email &amp;&amp; selectedEmails.contains(email)
+        }
+        log.info(&quot;Existing Presenter Flow: presenterEmails filter applied - &quot; + resources.size() + &quot; of &quot; + beforeCount + &quot; presenter(s) matched &quot; + selectedEmails.size() + &quot; selected email(s)&quot;)
+        def matchedEmails = resources.collect { (it.data?.primaryEmail ?: &quot;&quot;).trim().toLowerCase() } as Set
+        def unmatchedEmails = selectedEmails - matchedEmails
+        if (unmatchedEmails) {
+            log.warn(&quot;Existing Presenter Flow: presenterEmails entries not found among existing presenters: &quot; + unmatchedEmails.join(&quot;, &quot;))
+        }
+    }
+
+    resources.eachWithIndex { r, i -&gt;
+        def idx = i + 1
+        vars.put(&quot;presenterList_id_&quot; + idx, r.uniqueId ?: &quot;&quot;)
+        vars.put(&quot;presenterList_tz_&quot; + idx, r.data?.baseTimezone ?: &quot;&quot;)
+        vars.put(&quot;presenterList_name_&quot; + idx, r.data?.presenterName ?: (r.uniqueId ?: &quot;&quot;))
+    }
+    vars.put(&quot;existingPresenterCount&quot;, resources.size().toString())
+
+    def totalPages = json.page?.totalPages ?: 1
+    if (totalPages &gt; 1) {
+        log.warn(&quot;Get Presenters: response has &quot; + totalPages + &quot; page(s) but this request only fetches page 0 (size=1000) - only the first 1000 presenters will be processed. Increase page size or add pagination handling if you expect more.&quot;)
+    }
+    log.info(&quot;Existing Presenter Flow: loaded &quot; + resources.size() + &quot; presenter(s) from Get Presenters&quot;)
+}</stringProp>
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+            <hashTree/>
+          </hashTree>
+          <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Existing Presenter Loop Controller" enabled="true">
+            <stringProp name="WhileController.condition">${__javaScript(parseInt(vars.get(&quot;existingPresenterIterCounter&quot;) || 0) &lt; parseInt(vars.get(&quot;existingPresenterCount&quot;) || 0))}</stringProp>
+          </WhileController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Blocked Time Slots" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="fromDate" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                    <stringProp name="Argument.value">${blockFromDate}T00:00:00</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                    <stringProp name="Argument.name">fromDate</stringProp>
+                  </elementProp>
+                  <elementProp name="toDate" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                    <stringProp name="Argument.value">${blockToDate}T00:00:00</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                    <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                    <stringProp name="Argument.name">toDate</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/${contextname}/api/resources/${presenterId}/calendars</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+              <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Load Next Existing Presenter" enabled="true">
+                <stringProp name="script">// Runs once per loop iteration (Existing Presenter Loop Controller loops = existingPresenterCount).
+// Pulls the next presenter&apos;s id/timezone loaded earlier by Presenter List Extractor,
+// sets presenterId + presenterSelectedTimezone (reused by the header managers and the
+// payload builder below, same variables the create-flow already relies on), and resets
+// targetMonthSlotExists so a previous presenter&apos;s result never leaks into this iteration.
+int idx = (vars.get(&quot;existingPresenterIterCounter&quot;) ?: &quot;0&quot;).toInteger() + 1
+vars.put(&quot;existingPresenterIterCounter&quot;, idx.toString())
+
+def pid = vars.get(&quot;presenterList_id_&quot; + idx) ?: &quot;&quot;
+def ptz = vars.get(&quot;presenterList_tz_&quot; + idx) ?: (vars.get(&quot;clientTimeZone&quot;) ?: &quot;UTC&quot;)
+def pname = vars.get(&quot;presenterList_name_&quot; + idx) ?: pid
+
+vars.put(&quot;presenterId&quot;, pid)
+vars.put(&quot;presenterSelectedTimezone&quot;, ptz)
+vars.put(&quot;targetMonthSlotExists&quot;, &quot;false&quot;)
+
+// Every existing presenter processed this run gets blocked days planned. fn_planBlockedDays
+// picks blockSlots DISTINCT days within blockFromDate..blockToDate for THIS presenter, then
+// independently rolls blockSlotsPerDay for each of those days (only actually created below
+// when this presenter has none yet in the target range - see Existing Presenter Blocked
+// Slot Loop Controller / &quot;If No Blocked Time Slots Exists&quot; below).
+vars.put(&quot;presenterBlockedIntervals&quot;, &quot;&quot;) // reset per-presenter overlap tracker used by fn_buildBlockedSlotPayload
+int blockSlotsForThisPresenter = props.get(&quot;fn_planBlockedDays&quot;)(vars, log, pid)
+vars.put(&quot;blockSlotsForThisPresenter&quot;, blockSlotsForThisPresenter.toString())
+vars.put(&quot;blockSlotIterCounter&quot;, &quot;0&quot;)
+
+def total = vars.get(&quot;existingPresenterCount&quot;) ?: &quot;?&quot;
+def requestName = sampler.getName()
+sampler.setName(&quot;${requestName} | 👤 ${pname} (${idx}/${total})&quot;)
+log.info(&quot;Existing Presenter Flow: processing presenter &quot; + idx + &quot;/&quot; + total + &quot; id=&quot; + pid + &quot; tz=&quot; + ptz + &quot; - will create up to &quot; + blockSlotsForThisPresenter + &quot; blocked slot(s) if none exist in range&quot;)</stringProp>
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+              </JSR223PreProcessor>
+              <hashTree/>
+              <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                <collectionProp name="HeaderManager.headers">
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                    <stringProp name="Header.value">${customerId}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                    <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                    <stringProp name="Header.value">${category}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-requested-timezone</stringProp>
+                    <stringProp name="Header.value">${presenterSelectedTimezone}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X_cloud_user</stringProp>
+                    <stringProp name="Header.value">${user}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">x-cloud-parentid</stringProp>
+                    <stringProp name="Header.value">${presenterId}</stringProp>
+                  </elementProp>
+                  <elementProp name="" elementType="Header">
+                    <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                    <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </HeaderManager>
+              <hashTree/>
+              <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Check Target Month Slot Exists" enabled="true">
+                <stringProp name="script">import groovy.json.JsonSlurper
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+// Decides whether this presenter already has a blocked slot inside
+// blockFromDate..blockToDate (the SAME variables the create-flow uses - just point them
+// at whichever month you&apos;re targeting, e.g. 2026-09-01/2026-09-30 for September), using
+// ONLY calendarFromDate (per requirement) - any existing slot whose calendarFromDate.zoneDate
+// falls within that range counts as &quot;already exists&quot;, regardless of topics or anything
+// else about the presenter.
+def presenterId = vars.get(&quot;presenterId&quot;) ?: &quot;?&quot;
+def fromStr = (vars.get(&quot;blockFromDate&quot;) ?: &quot;&quot;).trim()
+def toStr = (vars.get(&quot;blockToDate&quot;) ?: &quot;&quot;).trim()
+vars.put(&quot;targetMonthSlotExists&quot;, &quot;false&quot;)
+
+if (!fromStr || !toStr) {
+    log.warn(&quot;Presenter &quot; + presenterId + &quot;: blockFromDate/blockToDate not set - cannot check, defaulting to not-found (will attempt create)&quot;)
+} else {
+    def fmt = DateTimeFormatter.ISO_LOCAL_DATE
+    LocalDate targetFrom = LocalDate.parse(fromStr, fmt)
+    LocalDate targetTo = LocalDate.parse(toStr, fmt)
+    if (targetTo.isBefore(targetFrom)) {
+        def tmp = targetFrom; targetFrom = targetTo; targetTo = tmp
+    }
+
+    def responseCode = prev.getResponseCode()
+    if (responseCode != &quot;200&quot;) {
+        log.warn(&quot;Presenter &quot; + presenterId + &quot;: Get Presenter Blocked Slots failed with response code &quot; + responseCode + &quot; - skipping exists-check, defaulting to not-found&quot;)
+    } else {
+        def json = new JsonSlurper().parseText(prev.getResponseDataAsString())
+        def slots = json._embedded?.resourceCalendars ?: []
+
+        boolean found = slots.any { slot -&gt;
+            def zoneDateStr = slot.calendarFromDate?.zoneDate
+            if (!zoneDateStr || zoneDateStr.length() &lt; 10) return false
+            LocalDate slotDate = LocalDate.parse(zoneDateStr.substring(0, 10), fmt)
+            return !slotDate.isBefore(targetFrom) &amp;&amp; !slotDate.isAfter(targetTo)
+        }
+
+        vars.put(&quot;targetMonthSlotExists&quot;, found.toString())
+        log.info(&quot;Presenter &quot; + presenterId + &quot;: &quot; + slots.size() + &quot; existing slot(s) found, target range &quot; + fromStr + &quot; to &quot; + toStr + &quot; -&gt; already blocked = &quot; + found)
+    }
+}</stringProp>
+                <stringProp name="scriptLanguage">groovy</stringProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="cacheKey">true</stringProp>
+              </JSR223PostProcessor>
+              <hashTree/>
+              <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+              <hashTree/>
+            </hashTree>
+            <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If No Blocked Time Slots Exists" enabled="true">
+              <stringProp name="IfController.condition">&quot;${targetMonthSlotExists}&quot; == &quot;false&quot;</stringProp>
+              <boolProp name="IfController.evaluateAll">false</boolProp>
+            </IfController>
+            <hashTree>
+              <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="Existing Blocked Time Slot Loop Controller" enabled="true">
+                <stringProp name="WhileController.condition">${__javaScript(parseInt(vars.get(&quot;blockSlotIterCounter&quot;) || 0) &lt; parseInt(vars.get(&quot;blockSlotsForThisPresenter&quot;) || 0))}</stringProp>
+              </WhileController>
+              <hashTree>
+                <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Blocked Time Slot" enabled="true">
+                  <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+                  <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                    <collectionProp name="Arguments.arguments">
+                      <elementProp name="" elementType="HTTPArgument">
+                        <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                        <stringProp name="Argument.value">${dynamicPayload}</stringProp>
+                        <stringProp name="Argument.metadata">=</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </elementProp>
+                  <stringProp name="HTTPSampler.domain"></stringProp>
+                  <stringProp name="HTTPSampler.port"></stringProp>
+                  <stringProp name="HTTPSampler.protocol"></stringProp>
+                  <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+                  <stringProp name="HTTPSampler.path">/${contextname}/api/resources/${presenterId}/calendars</stringProp>
+                  <stringProp name="HTTPSampler.method">POST</stringProp>
+                  <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+                  <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+                  <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+                  <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+                  <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+                  <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+                </HTTPSamplerProxy>
+                <hashTree>
+                  <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Build Existing Presenter Blocked Slot Payload" enabled="true">
+                    <stringProp name="script">// Same shared payload builder as the create-flow&apos;s &quot;Build Presenter Blocked Slot
+// Payload&quot; (fn_buildBlockedSlotPayload), reusing the SAME blockFromDate..blockToDate/
+// blockSlotFullDay/blockTimes/blockDurations variables (just point them at
+// whichever month you&apos;re targeting, e.g. September dates). Runs once per loop
+// iteration (Existing Presenter Blocked Slot Loop Controller loops =
+// blockSlotsForThisPresenter, the total slot count returned by fn_planBlockedDays in
+// Load Next Existing Presenter) - only entered at all when the exists-check above found
+// this presenter has no blocked slot yet in the target range. blockedSlotDatesPlan has
+// one date entry per planned slot, in order, so the Nth iteration targets the Nth entry -
+// this is what makes blockSlots (days) and blockSlotsPerDay (slots per day) line up.
+// This preprocessor only handles the existing-flow-specific loop counter, date lookup,
+// and sampler naming.
+def presenterId = vars.get(&quot;presenterId&quot;) ?: &quot;?&quot;
+
+int blockIterNum = (vars.get(&quot;blockSlotIterCounter&quot;) ?: &quot;0&quot;).toInteger() + 1
+vars.put(&quot;blockSlotIterCounter&quot;, blockIterNum.toString())
+def totalDesired = vars.get(&quot;blockSlotsForThisPresenter&quot;) ?: &quot;?&quot;
+
+def plannedDates = (vars.get(&quot;blockedSlotDatesPlan&quot;) ?: &quot;&quot;).split(&quot;;&quot;)*.trim().findAll { it }
+def forcedDate = (blockIterNum &gt;= 1 &amp;&amp; blockIterNum &lt;= plannedDates.size()) ? plannedDates[blockIterNum - 1] : null
+
+def requestName = sampler.getName()
+//sampler.setName(&quot;${requestName} (${blockIterNum}/${totalDesired})&quot;)
+sampler.setName(&quot;${requestName} #${blockIterNum}&quot;)
+
+props.get(&quot;fn_buildBlockedSlotPayload&quot;)(vars, log, presenterId + &quot;, blocked slot &quot; + blockIterNum + &quot;/&quot; + totalDesired, forcedDate)</stringProp>
+                    <stringProp name="scriptLanguage">groovy</stringProp>
+                    <stringProp name="parameters"></stringProp>
+                    <stringProp name="filename"></stringProp>
+                    <stringProp name="cacheKey">true</stringProp>
+                  </JSR223PreProcessor>
+                  <hashTree/>
+                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                    <collectionProp name="HeaderManager.headers">
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                        <stringProp name="Header.value">${customerId}</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                        <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                        <stringProp name="Header.value">${category}</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">x-cloud-requested-timezone</stringProp>
+                        <stringProp name="Header.value">${presenterSelectedTimezone}</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">X_cloud_user</stringProp>
+                        <stringProp name="Header.value">${user}</stringProp>
+                      </elementProp>
+                      <elementProp name="" elementType="Header">
+                        <stringProp name="Header.name">x-cloud-parentid</stringProp>
+                        <stringProp name="Header.value">${presenterId}</stringProp>
+                      </elementProp>
+                      <elementProp name="X-Cloud-Client-Timezone" elementType="Header">
+                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                      </elementProp>
+                    </collectionProp>
+                  </HeaderManager>
+                  <hashTree/>
+                  <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
+                  <hashTree/>
+                </hashTree>
+              </hashTree>
+            </hashTree>
+          </hashTree>
+        </hashTree>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

@@ -324,6 +324,8 @@ Parameters are parsed from JMX — no backend code change needed when adding fie
 | `DROPDOWN, API, MULTI` | API-backed multiselect |
 | `HIDE` | Hidden from UI by default (value still sent to JMeter) |
 | `LABEL=camelCase` | UI display label (e.g. `LABEL=requestType`) |
+| `COLS=n` | Grid width on a 12-column layout (`COLS=4` default, `COLS=6` → 2 per row) |
+| `ENABLE_IF=field:value` | Enable the field only when another argument equals `value` (e.g. `ENABLE_IF=blockSlotFullDay:false`). Booleans compare as `true` / `false`. |
 
 ### API Field Variables group
 
@@ -333,7 +335,21 @@ Dropdown API wiring lives in the **`API Field Variables`** `Arguments` block:
 items=_embedded.categories display=name value=uniqueId depends=categoryType header.x-cloud-customerid=field:customerId
 ```
 
+| Token | Purpose |
+|-------|---------|
+| `items=` | JSON path to the options array |
+| `display=` | Single field path for the option label, e.g. `display=data.primaryEmail` |
+| `display=\`…\`` | Backtick template to compose multiple fields, e.g. `` display=`data.presenterName (data.primaryEmail)` `` — path-like tokens are looked up; other text is literal |
+| `value=` | Field path stored as the option value (and sent in `props`) |
+| `depends=` | Comma-separated parent fields; options clear and re-fetch when parents change |
+| `ignore=` | Comma-separated values to omit from the UI list |
+| `multi=true` | Multiselect (also implied by `DROPDOWN, API, MULTI` on the form field) |
+| `header.<Name>=field:<arg>` | Forward another form field as a request header |
+| `header.<Name>=literal:<text>` | Forward a fixed header value |
+
 The runner substitutes `${contextname}`, `${fieldName}`, etc., and forwards request headers to BriefingIQ.
+
+When a parent in `depends=` changes, dependent dropdown/multiselect selections are **cleared** (not reset to JMX defaults) and options are reloaded.
 
 ### HTTP headers
 
@@ -504,8 +520,8 @@ curl -X DELETE http://localhost:5050/runs/<run-id>
 
 - Owns `plans/*.jmx` — **primary: `plans/BIQ.jmx`**
 - Add parameters under existing `Arguments` groups with `Argument.name`, `Argument.value`, `Argument.desc`
-- Use `LABEL=`, `HIDE`, `DROPDOWN, API` tags as needed
-- API dropdown mappings go in **API Field Variables**
+- Use `LABEL=`, `HIDE`, `COLS=`, `ENABLE_IF=`, `DROPDOWN, API` tags as needed
+- API dropdown mappings go in **API Field Variables** (`items` / `display` / `value` / `depends` / headers; use backtick `display=` for multi-field labels)
 - Smoke test: upload or replace plan → refresh UI → launch run → verify logs + samples
 
 No API/UI code change is required for new plain text/boolean/date parameters.
