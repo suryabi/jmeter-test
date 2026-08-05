@@ -42,4 +42,4 @@ For multi-arg logic, register a **single-arg** closure in common functions (e.g.
 
 ## Plugins
 
-Plans use `com.atlantbh.jmeter.plugins` JSON elements — requires **jpgc-json** in JMeter.
+Plans use `com.atlantbh.jmeter.plugins` JSON elements — requires **jpgc-json** in JMeter (`npm run install:jmeter-plugins`). JMeter needs Java 11+ (17+ on Windows); use `JMETER_JAVA_HOME` when system `JAVA_HOME` is Java 8.

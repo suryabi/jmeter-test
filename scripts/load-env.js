@@ -28,4 +28,50 @@ function loadEnvFile(envPath = path.join(__dirname, "..", ".env")) {
   }
 }
 
-module.exports = { loadEnvFile };
+function formatEnvValue(value) {
+  const text = String(value ?? "");
+  if (/[\s#]/.test(text)) return `"${text}"`;
+  return text;
+}
+
+/** Create or update keys in project-root `.env` (preserves other lines and comments). */
+function upsertEnvFile(envPath = path.join(__dirname, "..", ".env"), updates = {}) {
+  let lines = [];
+  if (fs.existsSync(envPath)) {
+    lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/);
+  }
+
+  const remaining = new Set(Object.keys(updates));
+  const out = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      out.push(line);
+      continue;
+    }
+
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) {
+      out.push(line);
+      continue;
+    }
+
+    const key = trimmed.slice(0, eq).trim();
+    if (remaining.has(key)) {
+      out.push(`${key}=${formatEnvValue(updates[key])}`);
+      remaining.delete(key);
+    } else {
+      out.push(line);
+    }
+  }
+
+  for (const key of remaining) {
+    out.push(`${key}=${formatEnvValue(updates[key])}`);
+  }
+
+  const body = out.join("\n");
+  fs.writeFileSync(envPath, body ? `${body}\n` : "", "utf8");
+}
+
+module.exports = { loadEnvFile, upsertEnvFile, formatEnvValue };

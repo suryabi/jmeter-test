@@ -23,6 +23,9 @@ This tool is primarily used for **data population / workflow automation**, not c
 | `ui/` | Angular 21 SPA (PrimeNG + Tailwind) |
 | `runs/` | Per-run artifacts (gitignored) |
 | `scripts/init.js` | First-time dependency install + prerequisite checks |
+| `scripts/setup-jmeter-java.js` | Detect or configure Java for JMeter only (`JMETER_JAVA_HOME`) |
+| `.jdk/` | Optional portable Temurin JDK for JMeter (gitignored; created by `npm run install:jmeter-java`) |
+| `.env` | Local overrides — `JMETER_HOME`, `JMETER_JAVA_HOME` (gitignored; copy from `.env.example`) |
 
 ### High-level flow
 
@@ -44,7 +47,7 @@ Install and verify everything below **before** running `npm run init` or `npm ru
 |-------------|-----------------|
 | **Node.js** | **20.19+** or **22.12+** (required by Angular 21 CLI). Node 18 is not supported for the UI build. |
 | **npm** | **10+** (ships with Node 20/22) |
-| **Java (JRE/JDK)** | **8+** minimum; **11 or 17** recommended for JMeter 5.4.x. The runner prefers Java from JMeter's own launcher (`jmeter.bat` / `setenv.bat`) over system `JAVA_HOME`. |
+| **Java (JRE/JDK)** | **8+** minimum; **11 or 17** recommended for JMeter 5.4.x. Use **`JMETER_JAVA_HOME`** in `.env` when system `JAVA_HOME` must stay on Java 8 for backend work. Run `npm run setup:jmeter-java` to auto-detect an installed JDK, or `npm run install:jmeter-java` to download portable Temurin 17 into `.jdk/` (no admin). |
 | **Apache JMeter** | **5.4+** (plans are saved for JMeter 5.4.1). Must be on `PATH` as `jmeter`, or set `JMETER_BIN`. |
 
 ### JMeter plugins
@@ -63,7 +66,38 @@ Manual alternative: install via [Plugins Manager](https://jmeter-plugins.org/ins
 
 If a run fails at compile time with unknown element classes under `com.atlantbh.jmeter.plugins...`, run `npm run install:jmeter-plugins` and retry.
 
-### Network access
+### Java for JMeter (when `JAVA_HOME` must stay on Java 8)
+
+Backend work may require **Java 8** as system `JAVA_HOME`. JMeter 5.4+ with jpgc-json plugins needs **64-bit Java 11+** (17+ recommended on Windows). The runner uses a **separate Java only for JMeter** — your global `JAVA_HOME` is not changed.
+
+**Resolution order** (see `scripts/validate.js`):
+
+1. `JMETER_JAVA_HOME` in `.env` (highest priority)
+2. `JAVA_HOME` in JMeter's `bin/setenv.bat` / `jmeter.bat`
+3. System `JAVA_HOME`
+4. On **Windows**, if the above is Java 8, auto-discover a newer 64-bit JDK under `Program Files`
+5. Project-local `.jdk/temurin-17/` if present
+
+**Setup commands:**
+
+```bash
+# Detect an installed JDK 11+ and write JMETER_JAVA_HOME to .env
+npm run setup:jmeter-java
+
+# No suitable JDK? Download portable Eclipse Temurin 17 into .jdk/ (~180 MB, no admin)
+npm run install:jmeter-java
+```
+
+Copy `.env.example` → `.env` and set `JMETER_HOME` if JMeter is not on PATH:
+
+```env
+JMETER_HOME="D:\Softwares\Jmeter 5.4\Jmeter 5.4"
+JMETER_JAVA_HOME="D:\path\to\repo\.jdk\temurin-17\jdk-17.0.x+xx"
+```
+
+After changing `.env`, restart the API (`npm run dev` or `npm start`) and run `npm run validate`. In `runs/<id>/launcher.log`, confirm `javaHomeSource=JMETER_JAVA_HOME env` (not `jdk-1.8`).
+
+Temurin is used for portable installs because it provides **license-free OpenJDK zip archives** suitable for extraction without a system installer.
 
 - The runner machine needs outbound HTTPS to your BriefingIQ host (`host` / `protocol` / `port` in the plan) when:
   - Executing JMeter runs
@@ -101,7 +135,14 @@ Validate only (no install):
 npm run validate
 ```
 
-Checks: Node 20.19+/22.12+, npm, Java (JMeter launcher vs JAVA_HOME vs PATH), JMeter (`JMETER_BIN` or PATH), jpgc-json plugins, `node_modules`, plans in `./plans`, writable `./runs`.
+Checks: Node 20.19+/22.12+, npm, Java for JMeter (`JMETER_JAVA_HOME` / launcher / auto-discovery), JMeter (`JMETER_BIN` or PATH), jpgc-json plugins, `node_modules`, plans in `./plans`, writable `./runs`.
+
+Configure Java for JMeter only:
+
+```bash
+npm run setup:jmeter-java      # use an installed JDK 11+
+npm run install:jmeter-java    # or download Temurin 17 into .jdk/
+```
 
 Install vendored JMeter plugins only:
 
@@ -367,6 +408,8 @@ Ensure JMeter saves: `label`, `success`, `responseCode`, `responseMessage`, `fai
 |----------|---------|---------|
 | `PORT` | `5050` | API listen port |
 | `JMETER_BIN` | `jmeter` | JMeter executable |
+| `JMETER_HOME` | — | Apache JMeter install directory |
+| `JMETER_JAVA_HOME` | — | Java for JMeter runs only (overrides `JAVA_HOME`; use when backend needs Java 8) |
 | `PLANS_DIR` | `./plans` | Directory containing `.jmx` plans |
 | `JMETER_TEST_PLAN` | — | Legacy single-plan path override |
 | `RUNS_DIR` | `./runs` | Run artifacts directory |
@@ -382,10 +425,14 @@ Example:
 ```bash
 PORT=5051 \
 JMETER_BIN=/opt/jmeter/bin/jmeter \
+JMETER_HOME=/opt/apache-jmeter-5.4.1 \
+JMETER_JAVA_HOME=/opt/jmeter-jdk-17 \
 PLANS_DIR=/srv/biq/plans \
 BIQ_DEBUG_API_FIELDS=true \
 npm start
 ```
+
+On Windows with Java 8 for backend, prefer a project `.env` file (see `.env.example`) instead of changing system `JAVA_HOME`.
 
 ---
 
@@ -469,6 +516,24 @@ server {
 - Open the failed run in the UI — the red **Run failed** banner shows `launcher.log` output
 - Inspect `runs/<id>/launcher.log` and `jmeter.log`
 
+### JVM crash on Windows (`exit code 3221225477`)
+
+Symptom: `JVM crashed (Windows access violation)` and `launcher.log` shows `java.exe` from `jdk-1.8` / `javaHomeSource=JAVA_HOME env`.
+
+Cause: JMeter 5.4+ with jpgc-json on **Java 8** often crashes on Windows (`0xC0000005` access violation).
+
+Fix (keeps `JAVA_HOME` on Java 8 for backend):
+
+```cmd
+npm run install:jmeter-java
+npm run install:jmeter-plugins
+npm run validate
+```
+
+Restart the API, retry the run. Confirm `launcher.log` uses Java 17+ and `javaHomeSource=JMETER_JAVA_HOME env`.
+
+If auto-download is blocked (proxy/firewall), install [Temurin 17](https://adoptium.net/temurin/releases/?version=17) manually, then run `npm run setup:jmeter-java`.
+
 ### API dropdowns empty or 401
 
 - Ensure `header__Authorization` (or `BIQ_AUTHORIZATION`) is valid
@@ -492,6 +557,8 @@ server {
 ```bash
 npm run init              # first-time setup
 npm run validate          # check prerequisites only
+npm run setup:jmeter-java # detect JDK 11+ and set JMETER_JAVA_HOME in .env
+npm run install:jmeter-java   # download portable Temurin 17 into .jdk/ (no admin)
 npm run install:jmeter-plugins  # copy vendored jpgc-json into JMeter
 npm run dev               # API + UI (dev)
 npm start                 # API only

@@ -29,6 +29,7 @@ const result = runValidation();
 
 if (!result.ok) {
   console.log("\nSetup installed dependencies, but validation failed.");
+  console.log("On Windows with Java 8 for backend work, run: npm run install:jmeter-java");
   console.log("Resolve the errors above, then re-run: npm run validate\n");
   process.exit(1);
 }

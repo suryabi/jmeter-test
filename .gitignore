@@ -13,3 +13,7 @@ ui/.angular/
 # Optional local env/secrets
 .env
 .env.*
+!.env.example
+
+# Portable Temurin JDK downloaded for JMeter (npm run setup:jmeter-java -- --install)
+.jdk/

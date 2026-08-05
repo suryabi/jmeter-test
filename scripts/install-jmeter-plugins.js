@@ -89,7 +89,7 @@ function installJmeterPlugins(options = {}) {
   const compat = assessPluginBundleJavaCompatibility(manifest, javaInfo.major);
   if (compat.level === "error") {
     console.error(`✗  ${compat.message}`);
-    console.error(`   Vendored plugins need Java ${compat.min}+. Configure Java ${compat.recommended}+ in jmeter.bat / setenv.bat.\n`);
+    console.error(`   Vendored plugins need Java ${compat.min}+. Set JMETER_JAVA_HOME (npm run setup:jmeter-java) or Java ${compat.recommended}+ in jmeter.bat / setenv.bat.\n`);
     return { ok: false, reason: "java-incompatible", jmeterHome, javaInfo, compat };
   }
   if (compat.level === "warn") {

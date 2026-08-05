@@ -8,8 +8,30 @@ alwaysApply: false
 
 ## Modules
 
-- `server.js` — HTTP routes, run lifecycle, plans CRUD, logs/SSE, JTL
+- `server.js` — HTTP routes, run lifecycle, plans CRUD, logs/SSE, JTL, JMeter launch (`buildJmeterLaunch`)
 - `jmx-parameters.js` — parse JMX groups, patch overrides, `fetchApiFieldOptions`
+- `scripts/validate.js` — prerequisites, `resolveJavaHomeForJmeter`, plugin checks
+- `scripts/setup-jmeter-java.js` / `scripts/install-portable-jmeter-java.js` — JMeter-only Java setup
+- `scripts/load-env.js` — load/upsert project `.env`
+
+## JMeter launch
+
+- Prefers `java -jar $JMETER_HOME/bin/ApacheJMeter.jar` (avoids Windows `jmeter.bat` pause/shell issues)
+- Java resolution order: `JMETER_JAVA_HOME` → `setenv.bat`/`jmeter.bat` → `JAVA_HOME` → Windows auto-discovery → `.jdk/temurin-17/`
+- Sets `env.JAVA_HOME` on the spawned process only — does not mutate the user's shell `JAVA_HOME`
+- Failure hints for Windows access violation: `server.js` → `buildFailureHint()`
+
+## Env vars (runner)
+
+| Variable | Purpose |
+|----------|---------|
+| `JMETER_HOME` | Apache JMeter install directory |
+| `JMETER_JAVA_HOME` | Java for JMeter runs only (override when backend needs Java 8) |
+| `JMETER_BIN` | JMeter executable (default `jmeter`) |
+| `BIQ_DEBUG_API_FIELDS` | Verbose field-option logging |
+| `BIQ_AUTHORIZATION` | Optional Bearer override for field-options |
+
+Restart API after `jmx-parameters.js` or `.env` changes; JMX-only changes need UI refresh only.
 
 ## Plans
 
@@ -34,5 +56,3 @@ alwaysApply: false
 
 - New plain JMX parameters need **no** backend change if they follow the `Argument.desc` contract
 - New API dropdowns need an entry in **API Field Variables** in the JMX + optional `AUTO_RESOLVE_FIELDS` in `jmx-parameters.js`
-
-Restart API after `jmx-parameters.js` changes; JMX-only changes need UI refresh only.

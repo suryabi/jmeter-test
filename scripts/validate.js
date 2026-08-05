@@ -235,8 +235,25 @@ function resolveJavaHomeFromJmeterWrapper(jmeterBin) {
   return readJavaHomeFromScriptFile(wrapper);
 }
 
-// Prefer Java bundled/configured with JMeter (jmeter.bat / setenv.bat) over system JAVA_HOME (e.g. Java 8 on PATH).
-function resolveJavaHomeForJmeter(jmeterBin, jmeterHome) {
+const JMETER_JAVA_MIN_MAJOR = 11;
+const JMETER_JAVA_PREFERRED_MAJORS = [21, 17, 11];
+
+function is64BitJava(versionLine = "") {
+  return /64-Bit|64-bit|amd64|x86_64/i.test(versionLine);
+}
+
+function getJavaMajorFromHome(javaHome) {
+  const javaExe = javaExecutableForHome(javaHome);
+  if (!javaExe) return null;
+  const info = javaVersionFromBin(javaExe);
+  return info ? parseJavaMajor(info.versionLine) : null;
+}
+
+function minStableJavaMajorForPlatform() {
+  return process.platform === "win32" ? JMETER_JAVA_MIN_MAJOR : 8;
+}
+
+function resolveJavaHomeFromJmeterScripts(jmeterBin, jmeterHome) {
   const scriptCandidates = [];
 
   let wrapper = jmeterBin;
@@ -263,8 +280,158 @@ function resolveJavaHomeForJmeter(jmeterBin, jmeterHome) {
     }
   }
 
-  if (process.env.JAVA_HOME && javaExecutableForHome(process.env.JAVA_HOME)) {
-    return { javaHome: process.env.JAVA_HOME, source: "JAVA_HOME env" };
+  return null;
+}
+
+function considerJmeterJavaHome(javaHome, seen, homes, minMajor) {
+  if (!javaHome) return;
+  const resolved = path.resolve(javaHome);
+  if (seen.has(resolved)) return;
+
+  const javaExe = javaExecutableForHome(javaHome);
+  if (!javaExe) return;
+
+  const info = javaVersionFromBin(javaExe);
+  if (!info) return;
+
+  const major = parseJavaMajor(info.versionLine);
+  if (major == null || major < minMajor) return;
+  if (process.platform === "win32" && !is64BitJava(info.versionLine)) return;
+
+  seen.add(resolved);
+  homes.push({
+    home: javaHome,
+    major,
+    versionLine: info.versionLine,
+    label: path.basename(javaHome.replace(/[/\\]$/, ""))
+  });
+}
+
+function scanWindowsJavaInstallDirs(addHome) {
+  const programFiles = process.env.ProgramFiles || "C:\\Program Files";
+  const programFilesX86 = process.env["ProgramFiles(x86)"] || "C:\\Program Files (x86)";
+
+  for (const base of [programFiles, programFilesX86]) {
+    for (const vendor of ["Java", "Eclipse Adoptium", "Microsoft", "Amazon Corretto", "Zulu"]) {
+      const vendorDir = path.join(base, vendor);
+      if (!fs.existsSync(vendorDir)) continue;
+
+      try {
+        for (const entry of fs.readdirSync(vendorDir)) {
+          addHome(path.join(vendorDir, entry));
+        }
+      } catch {
+        // ignore unreadable directories
+      }
+    }
+  }
+}
+
+/** Find installed JDK/JRE homes suitable for JMeter (Java 11+; 64-bit on Windows). */
+function discoverJmeterJavaHomes(options = {}) {
+  const minMajor = options.minMajor ?? JMETER_JAVA_MIN_MAJOR;
+  const homes = [];
+  const seen = new Set();
+
+  function addHome(javaHome) {
+    considerJmeterJavaHome(javaHome, seen, homes, minMajor);
+  }
+
+  if (process.env.JMETER_JAVA_HOME) addHome(process.env.JMETER_JAVA_HOME);
+
+  for (const major of JMETER_JAVA_PREFERRED_MAJORS) {
+    const portableRoot = path.join(root, ".jdk", `temurin-${major}`);
+    if (fs.existsSync(portableRoot)) {
+      addHome(portableRoot);
+      try {
+        for (const entry of fs.readdirSync(portableRoot)) {
+          addHome(path.join(portableRoot, entry));
+        }
+      } catch {
+        // ignore unreadable directories
+      }
+    }
+  }
+
+  if (process.platform === "darwin") {
+    for (const major of JMETER_JAVA_PREFERRED_MAJORS) {
+      const result = runCommand("/usr/libexec/java_home", ["-v", String(major)]);
+      if (result.status === 0) addHome(firstLine(result.stdout));
+    }
+    const list = runCommand("/usr/libexec/java_home", ["-V"]);
+    if (list.status === 0) {
+      for (const line of list.stderr.split(/\r?\n/)) {
+        const match = line.match(/^\s+(\S.+?\S)\s+\(/);
+        if (match) addHome(match[1].trim());
+      }
+    }
+  }
+
+  if (process.platform === "win32") {
+    scanWindowsJavaInstallDirs(addHome);
+  }
+
+  if (process.env.JAVA_HOME) addHome(process.env.JAVA_HOME);
+
+  homes.sort((a, b) => {
+    const prefA = JMETER_JAVA_PREFERRED_MAJORS.indexOf(a.major);
+    const prefB = JMETER_JAVA_PREFERRED_MAJORS.indexOf(b.major);
+    const rankA = prefA === -1 ? 99 : prefA;
+    const rankB = prefB === -1 ? 99 : prefB;
+    if (rankA !== rankB) return rankA - rankB;
+    return b.major - a.major;
+  });
+
+  return homes;
+}
+
+function pickBestJmeterJavaHome(options = {}) {
+  const exclude = new Set((options.exclude || []).map((home) => path.resolve(home)));
+  return discoverJmeterJavaHomes(options).find((entry) => !exclude.has(path.resolve(entry.home))) || null;
+}
+
+// JMETER_JAVA_HOME (.env) overrides system JAVA_HOME so backend devs can keep Java 8 globally.
+// On Windows, when only Java 8 is configured, auto-discover a newer 64-bit JDK if installed.
+function resolveJavaHomeForJmeter(jmeterBin, jmeterHome, options = {}) {
+  const allowAutoDiscover = options.allowAutoDiscover !== false;
+  const minStableMajor = minStableJavaMajorForPlatform();
+
+  if (process.env.JMETER_JAVA_HOME && javaExecutableForHome(process.env.JMETER_JAVA_HOME)) {
+    return { javaHome: process.env.JMETER_JAVA_HOME, source: "JMETER_JAVA_HOME env" };
+  }
+
+  let resolved = resolveJavaHomeFromJmeterScripts(jmeterBin, jmeterHome);
+  if (!resolved && process.env.JAVA_HOME && javaExecutableForHome(process.env.JAVA_HOME)) {
+    resolved = { javaHome: process.env.JAVA_HOME, source: "JAVA_HOME env" };
+  }
+
+  if (resolved?.javaHome) {
+    const major = getJavaMajorFromHome(resolved.javaHome);
+    if (major != null && major >= minStableMajor) {
+      return resolved;
+    }
+
+    if (allowAutoDiscover) {
+      const better = pickBestJmeterJavaHome({ exclude: [resolved.javaHome] });
+      if (better) {
+        return {
+          javaHome: better.home,
+          source: `auto-discovered Java ${better.major} (${better.label}); skipped ${resolved.source} (Java ${major ?? "?"})`
+        };
+      }
+    }
+
+    return resolved;
+  }
+
+  if (allowAutoDiscover) {
+    const discovered = pickBestJmeterJavaHome();
+    if (discovered) {
+      return {
+        javaHome: discovered.home,
+        source: `auto-discovered Java ${discovered.major} (${discovered.label})`
+      };
+    }
   }
 
   return { javaHome: null, source: null };
@@ -486,10 +653,14 @@ class Validator {
         this.pass("Java (JMeter uses)", `${jmeterJava.versionLine} — ${source}`);
         const parsed = parseVersion(jmeterJava.versionLine);
         if (parsed && (parsed.major < 11 || (parsed.major === 1 && parsed.minor <= 8))) {
+          const fix =
+            process.platform === "win32"
+              ? "Install Java 17/21 and run: npm run setup:jmeter-java  (sets JMETER_JAVA_HOME in .env; keeps JAVA_HOME on Java 8 for backend)"
+              : "Prefer Java 11, 17, or 21 — set JMETER_JAVA_HOME in .env or jmeter.bat / bin/setenv.bat";
           this.warn(
             "Java (JMeter)",
             `${parsed.raw} is older than recommended for JMeter 5.4+`,
-            "Prefer Java 11, 17, or 21 in jmeter.bat or bin/setenv.bat"
+            fix
           );
         }
       } else {
@@ -503,7 +674,7 @@ class Validator {
       this.warn(
         "Java (JMeter uses)",
         "could not resolve from jmeter.bat / setenv.bat",
-        "Set JMETER_HOME and ensure bin/jmeter.bat or bin/setenv.bat defines JAVA_HOME"
+        "Set JMETER_JAVA_HOME in .env (npm run setup:jmeter-java), or configure JMETER_HOME/bin/setenv.bat"
       );
     }
 
@@ -542,13 +713,13 @@ class Validator {
       this.fail(
         "Java",
         "not found for JMeter or on PATH",
-        "Install a JRE/JDK (11, 17, or 21) and configure JMETER_HOME/bin/jmeter.bat or setenv.bat"
+        "Install a JRE/JDK (11, 17, or 21) and run: npm run setup:jmeter-java"
       );
     } else if (!jmeterJavaOk && !pathJava) {
       this.fail(
         "Java",
         "no runnable Java found for population runs",
-        "Set JMETER_HOME and JAVA_HOME in bin/setenv.bat, or fix system JAVA_HOME"
+        "Set JMETER_JAVA_HOME in .env (npm run setup:jmeter-java), or fix system JAVA_HOME"
       );
     }
   }
@@ -602,7 +773,7 @@ class Validator {
       this.fail(
         "Plugin bundle + Java",
         compat.message,
-        `Point jmeter.bat / setenv.bat at Java ${compat.recommended}+ before npm run install:jmeter-plugins`
+        `Set JMETER_JAVA_HOME in .env (npm run setup:jmeter-java), or Java ${compat.recommended}+ in jmeter.bat / setenv.bat`
       );
       return;
     }
@@ -736,10 +907,15 @@ module.exports = {
   hasJsonPlugins,
   planRequiresJsonPlugins,
   resolveJavaHomeFromJmeterWrapper,
+  resolveJavaHomeFromJmeterScripts,
   resolveJavaHomeForJmeter,
   javaExecutableForHome,
   loadPluginManifest,
   getJmeterJavaInfo,
   assessPluginBundleJavaCompatibility,
-  parseJavaMajor
+  parseJavaMajor,
+  discoverJmeterJavaHomes,
+  pickBestJmeterJavaHome,
+  getJavaMajorFromHome,
+  minStableJavaMajorForPlatform
 };

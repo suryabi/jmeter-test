@@ -992,7 +992,7 @@ function buildFailureHint(run) {
 
   if (isWindowsJvmCrash(run.exitCode, launcherText)) {
     parts.unshift(
-      "JVM crashed (Windows access violation). Use 64-bit Java 17 or 21, set JMETER_HOME to your Apache JMeter folder, run npm run install:jmeter-plugins, then retry."
+      "JVM crashed (Windows access violation). Keep JAVA_HOME on Java 8 if needed; run npm run install:jmeter-java to download Temurin 17 into .jdk/, or npm run setup:jmeter-java to use an existing JDK. Set JMETER_HOME, run npm run install:jmeter-plugins, restart the API, then retry."
     );
   }
 

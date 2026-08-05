@@ -12,24 +12,31 @@ Data-population runner (not load testing): Node API + Angular UI execute JMeter 
 - `plans/*.jmx` — **active test plans** (primary: `plans/BIQ.jmx`)
 - `BIQ.jmx` (repo root) — legacy; do not edit unless explicitly asked
 - `server.js` + `jmx-parameters.js` — API, parsing, field-options proxy
+- `scripts/validate.js`, `scripts/setup-jmeter-java.js` — prerequisites + JMeter-only Java config
 - `ui/` — Angular 21 SPA
 - `runs/` — gitignored run artifacts; analyze logs there when debugging runs
+- `.jdk/`, `.env` — gitignored local JDK + env overrides (see `.env.example`)
 
 ## Dev commands
 
 ```bash
-npm run init    # first-time setup
-npm run validate # prerequisite check only
-npm run dev     # API :5050 + UI :4200
+npm run init                 # first-time setup
+npm run validate             # prerequisite check only
+npm run setup:jmeter-java    # detect JDK 11+ → JMETER_JAVA_HOME in .env
+npm run install:jmeter-java  # download portable Temurin 17 into .jdk/
+npm run install:jmeter-plugins  # copy vendored jpgc-json into JMeter
+npm run dev                  # API :5050 + UI :4200
 ```
 
 ## Change discipline
 
 - Minimize scope; match existing patterns in the file you touch
-- Do not commit `runs/`, `.env`, or Bearer tokens
+- Do not commit `runs/`, `.env`, `.jdk/`, or Bearer tokens
 - Do not create git commits or PRs unless the user asks
-- README is the source of truth for prerequisites (Node 20.19+, JMeter 5.4+, jpgc-json in `vendor/jmeter-plugins/`)
+- README is the source of truth for prerequisites (Node 20.19+, JMeter 5.4+, jpgc-json in `vendor/jmeter-plugins/`, JMeter Java 11+ / 17+ on Windows)
 
 ## Debugging runs
 
-When the user gives a run ID, inspect `runs/<id>__<label>/jmeter.log`, `result.jtl`, and `run.meta.json` before guessing.
+When the user gives a run ID, inspect `runs/<id>__<label>/launcher.log` first (Java command + exit code), then `jmeter.log`, `result.jtl`, and `run.meta.json`.
+
+**Windows JVM crash (`3221225477`):** almost always Java 8 for JMeter — suggest `npm run install:jmeter-java` (keeps system `JAVA_HOME` on Java 8). Confirm fix via `javaHomeSource=JMETER_JAVA_HOME env` in `launcher.log`.

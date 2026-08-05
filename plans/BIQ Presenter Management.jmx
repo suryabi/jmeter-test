@@ -320,19 +320,19 @@
               <stringProp name="Argument.name">topicOpen</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=scope_open entity=topic parent=presenter link.index=$1 match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): &apos;(.+)&apos; added successfully` index=$2 total=$3 status=created</stringProp>
+              <stringProp name="Argument.desc">kind=scope_open entity=topic parent=presenter link.index=$1 match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): '(.+)' added successfully` index=$2 total=$3 status=created</stringProp>
             </elementProp>
             <elementProp name="topicNameField" elementType="Argument">
               <stringProp name="Argument.name">topicNameField</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=field entity=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): &apos;(.+)&apos; added successfully` set=topicName group=4 link.index=$1</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): '(.+)' added successfully` set=topicName group=4 link.index=$1</stringProp>
             </elementProp>
             <elementProp name="stepTopicAdded" elementType="Argument">
               <stringProp name="Argument.name">stepTopicAdded</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): &apos;(.+)&apos; added successfully` link.index=$1 label=`Topic $index/$total: $topicName added` status=success</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): '(.+)' added successfully` link.index=$1 label=`Topic $index/$total: $topicName added` status=success</stringProp>
             </elementProp>
             <elementProp name="stepTopicFailed" elementType="Argument">
               <stringProp name="Argument.name">stepTopicFailed</stringProp>
