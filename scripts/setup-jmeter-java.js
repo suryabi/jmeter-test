@@ -6,9 +6,13 @@ const { installPortableJmeterJava } = require("./install-portable-jmeter-java");
 const {
   resolveJmeterBin,
   resolveJmeterHome,
-  discoverJmeterJavaHomes,
+  pickBestJmeterJavaHome,
   getJmeterJavaInfo,
-  minStableJavaMajorForPlatform
+  getJmeterVersionInfo,
+  minStableJavaMajorForPlatform,
+  maxJavaMajorForJmeter,
+  recommendedPortableJavaMajor,
+  assessJmeterRuntimeJavaCompatibility
 } = require("./validate");
 
 loadEnvFile();
@@ -20,14 +24,19 @@ function wantsInstall(argv = process.argv.slice(2)) {
   return argv.includes("--install") || argv.includes("-i");
 }
 
-function printInstallHint() {
-  console.error("No suitable Java found for JMeter (need 64-bit Java 11+ on Windows, 17+ recommended).");
+function printInstallHint(jmeterVersion) {
+  const portableMajor = recommendedPortableJavaMajor(jmeterVersion);
+  console.error("No suitable Java found for JMeter.");
   console.error("");
+  if (jmeterVersion && maxJavaMajorForJmeter(jmeterVersion) < 17) {
+    console.error(`JMeter ${jmeterVersion.raw} requires Java 11 (not 17 — Groovy 3.0.x breaks JSR223 scripts on Java 17).`);
+    console.error("");
+  }
   console.error("Options:");
-  console.error("  1. Auto-download Temurin 17 into .jdk/ (no admin, keeps JAVA_HOME on Java 8):");
-  console.error("       npm run setup:jmeter-java -- --install");
+  console.error(`  1. Auto-download Temurin ${portableMajor} into .jdk/ (no admin, keeps JAVA_HOME on Java 8):`);
+  console.error("       npm run install:jmeter-java");
   console.error("  2. Install manually, then re-run setup:");
-  console.error("       https://adoptium.net/temurin/releases/?version=17");
+  console.error(`       https://adoptium.net/temurin/releases/?version=${portableMajor}`);
 }
 
 function writeEnv(javaHome, jmeterHome) {
@@ -52,10 +61,23 @@ async function main() {
 
   const jmeterBin = resolveJmeterBin();
   const jmeterHome = process.env.JMETER_HOME || resolveJmeterHome(jmeterBin);
+  const jmeterVersion = getJmeterVersionInfo(jmeterBin);
+  const recommendedMajor = recommendedPortableJavaMajor(jmeterVersion);
+  const maxJavaMajor = maxJavaMajorForJmeter(jmeterVersion);
   const current = getJmeterJavaInfo(jmeterBin, jmeterHome);
   const minStable = minStableJavaMajorForPlatform();
+  const runtimeCompat = assessJmeterRuntimeJavaCompatibility(jmeterVersion, current.major);
 
-  if (current.javaHome && current.major != null && current.major >= minStable) {
+  if (jmeterVersion) {
+    console.log(`Detected JMeter ${jmeterVersion.raw} — use Java 11${maxJavaMajor >= 17 ? " or 17+" : ""} for JMeter\n`);
+  }
+
+  if (
+    current.javaHome &&
+    current.major != null &&
+    current.major >= minStable &&
+    runtimeCompat.ok
+  ) {
     console.log(`JMeter already uses Java ${current.major}:`);
     console.log(`  ${current.versionLine}`);
     console.log(`  ${current.javaHome}`);
@@ -64,11 +86,17 @@ async function main() {
     return;
   }
 
-  let chosen = discoverJmeterJavaHomes()[0] || null;
+  if (!runtimeCompat.ok) {
+    console.warn(`⚠  ${runtimeCompat.message}\n`);
+  }
 
-  if (!chosen && wantsInstall()) {
-    console.log("No suitable system JDK found — downloading portable Temurin 17...\n");
-    const installed = await installPortableJmeterJava({ root });
+  let chosen = pickBestJmeterJavaHome({ maxMajor: maxJavaMajor });
+
+  const shouldInstall = wantsInstall() || (!runtimeCompat.ok && current.major != null);
+
+  if (!chosen && shouldInstall) {
+    console.log(`Downloading portable Temurin ${recommendedMajor} for JMeter ${jmeterVersion?.raw || "5.4.x"}...\n`);
+    const installed = await installPortableJmeterJava({ root, major: recommendedMajor });
     chosen = {
       home: installed.home,
       major: installed.major,
@@ -78,7 +106,7 @@ async function main() {
   }
 
   if (!chosen) {
-    printInstallHint();
+    printInstallHint(jmeterVersion);
     process.exit(1);
   }
 

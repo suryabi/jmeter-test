@@ -992,8 +992,17 @@ function buildFailureHint(run) {
 
   if (isWindowsJvmCrash(run.exitCode, launcherText)) {
     parts.unshift(
-      "JVM crashed (Windows access violation). Keep JAVA_HOME on Java 8 if needed; run npm run install:jmeter-java to download Temurin 17 into .jdk/, or npm run setup:jmeter-java to use an existing JDK. Set JMETER_HOME, run npm run install:jmeter-plugins, restart the API, then retry."
+      "JVM crashed (Windows access violation). Keep JAVA_HOME on Java 8 if needed; run npm run install:jmeter-java to download Temurin 11 into .jdk/ (JMeter 5.4.x), or upgrade JMeter to 5.5+ for Java 17. Set JMETER_HOME, run npm run install:jmeter-plugins, restart the API, then retry."
     );
+  }
+
+  if (fs.existsSync(run.logFile || "")) {
+    const jmeterLog = fs.readFileSync(run.logFile, "utf-8");
+    if (/Unsupported class file major version 61|GroovyBugError.*major version 61/i.test(jmeterLog)) {
+      parts.unshift(
+        "Groovy/JSR223 failed on Java 17 with JMeter 5.4.x (bundled Groovy 3.0.7). Run npm run install:jmeter-java to switch to Temurin 11 in .jdk/, or upgrade JMeter to 5.5+."
+      );
+    }
   }
 
   if (/Press any key to continue/i.test(launcherText)) {

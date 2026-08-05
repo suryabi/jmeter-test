@@ -4,7 +4,7 @@ const { spawnSync } = require("child_process");
 const { javaExecutableForHome, javaVersionFromBin, parseJavaMajor } = require("./validate");
 
 const ADOPTIUM_API = "https://api.adoptium.net/v3/assets/latest";
-const DEFAULT_MAJOR = 17;
+const DEFAULT_MAJOR = 11;
 
 function adoptiumPlatform() {
   const os = { win32: "windows", darwin: "mac", linux: "linux" }[process.platform];
@@ -157,7 +157,7 @@ function existingPortableJavaHome(jdkRoot, major = DEFAULT_MAJOR) {
 }
 
 /**
- * Download Eclipse Temurin into a project-local folder (default: .jdk/temurin-17).
+ * Download Eclipse Temurin into a project-local folder (default: .jdk/temurin-11 for JMeter 5.4.x).
  * Does not modify system JAVA_HOME or install a global JDK.
  */
 async function installPortableJmeterJava(options = {}) {

@@ -16,6 +16,7 @@ const MIN_NODE = [
   { major: 22, minor: 12 }
 ];
 const MIN_JMETER = { major: 5, minor: 4 };
+const MIN_JMETER_FOR_JAVA_17 = { major: 5, minor: 5, patch: 0 };
 
 function parseVersion(versionText) {
   const match = (versionText || "").match(/(\d+)\.(\d+)(?:\.(\d+))?/);
@@ -385,9 +386,57 @@ function discoverJmeterJavaHomes(options = {}) {
   return homes;
 }
 
+function getJmeterVersionInfo(jmeterBin = resolveJmeterBin()) {
+  const result = runCommand(jmeterBin, ["--version"]);
+  const combinedOutput = `${result.stdout || ""}\n${result.stderr || ""}`;
+  if (result.status !== 0 && !/Version\s+\d+\.\d+/i.test(combinedOutput)) return null;
+  return extractJmeterVersion(combinedOutput);
+}
+
+/** JMeter 5.4.x ships Groovy 3.0.7 — JSR223 scripts fail on Java 17+ (class file major version 61). */
+function maxJavaMajorForJmeter(jmeterVersion) {
+  if (!jmeterVersion) return 11;
+  if (compareVersion(jmeterVersion, MIN_JMETER_FOR_JAVA_17) >= 0) return 21;
+  return 11;
+}
+
+function recommendedPortableJavaMajor(jmeterVersion) {
+  return maxJavaMajorForJmeter(jmeterVersion) >= 17 ? 17 : 11;
+}
+
+function assessJmeterRuntimeJavaCompatibility(jmeterVersion, javaMajor) {
+  if (javaMajor == null) {
+    return { ok: true, level: "unknown", message: "Could not determine Java major version" };
+  }
+
+  const maxMajor = maxJavaMajorForJmeter(jmeterVersion);
+  if (javaMajor > maxMajor) {
+    const jmeterLabel = jmeterVersion ? jmeterVersion.raw : "5.4.x";
+    return {
+      ok: false,
+      level: "error",
+      maxMajor,
+      message:
+        `Java ${javaMajor} is incompatible with JMeter ${jmeterLabel} — bundled Groovy 3.0.x cannot compile JSR223 scripts (Unsupported class file major version 61). Use Java 11, or upgrade JMeter to 5.5+`
+    };
+  }
+
+  return {
+    ok: true,
+    level: "pass",
+    maxMajor,
+    message: `Java ${javaMajor} is compatible with JMeter ${jmeterVersion ? jmeterVersion.raw : "unknown"}`
+  };
+}
+
 function pickBestJmeterJavaHome(options = {}) {
   const exclude = new Set((options.exclude || []).map((home) => path.resolve(home)));
-  return discoverJmeterJavaHomes(options).find((entry) => !exclude.has(path.resolve(entry.home))) || null;
+  const maxMajor = options.maxMajor ?? 21;
+  return (
+    discoverJmeterJavaHomes(options).find(
+      (entry) => !exclude.has(path.resolve(entry.home)) && entry.major <= maxMajor
+    ) || null
+  );
 }
 
 // JMETER_JAVA_HOME (.env) overrides system JAVA_HOME so backend devs can keep Java 8 globally.
@@ -395,9 +444,27 @@ function pickBestJmeterJavaHome(options = {}) {
 function resolveJavaHomeForJmeter(jmeterBin, jmeterHome, options = {}) {
   const allowAutoDiscover = options.allowAutoDiscover !== false;
   const minStableMajor = minStableJavaMajorForPlatform();
+  const jmeterVersion = options.jmeterVersion ?? getJmeterVersionInfo(jmeterBin);
+  const maxJavaMajor = options.maxJavaMajor ?? maxJavaMajorForJmeter(jmeterVersion);
+  const pickOptions = { maxMajor: maxJavaMajor };
 
   if (process.env.JMETER_JAVA_HOME && javaExecutableForHome(process.env.JMETER_JAVA_HOME)) {
-    return { javaHome: process.env.JMETER_JAVA_HOME, source: "JMETER_JAVA_HOME env" };
+    const major = getJavaMajorFromHome(process.env.JMETER_JAVA_HOME);
+    if (major != null && major <= maxJavaMajor) {
+      return { javaHome: process.env.JMETER_JAVA_HOME, source: "JMETER_JAVA_HOME env" };
+    }
+    if (major != null && major > maxJavaMajor && allowAutoDiscover) {
+      const better = pickBestJmeterJavaHome(pickOptions);
+      if (better) {
+        return {
+          javaHome: better.home,
+          source: `auto-discovered Java ${better.major} (${better.label}); JMETER_JAVA_HOME had Java ${major} (too new for JMeter ${jmeterVersion?.raw || "5.4.x"})`
+        };
+      }
+    }
+    if (process.env.JMETER_JAVA_HOME) {
+      return { javaHome: process.env.JMETER_JAVA_HOME, source: "JMETER_JAVA_HOME env" };
+    }
   }
 
   let resolved = resolveJavaHomeFromJmeterScripts(jmeterBin, jmeterHome);
@@ -412,7 +479,7 @@ function resolveJavaHomeForJmeter(jmeterBin, jmeterHome, options = {}) {
     }
 
     if (allowAutoDiscover) {
-      const better = pickBestJmeterJavaHome({ exclude: [resolved.javaHome] });
+      const better = pickBestJmeterJavaHome({ ...pickOptions, exclude: [resolved.javaHome] });
       if (better) {
         return {
           javaHome: better.home,
@@ -425,7 +492,7 @@ function resolveJavaHomeForJmeter(jmeterBin, jmeterHome, options = {}) {
   }
 
   if (allowAutoDiscover) {
-    const discovered = pickBestJmeterJavaHome();
+    const discovered = pickBestJmeterJavaHome(pickOptions);
     if (discovered) {
       return {
         javaHome: discovered.home,
@@ -587,23 +654,33 @@ function discoverJava(jmeterBin) {
 
 function javaSetupSteps(options = {}) {
   const minMajor = minStableJavaMajorForPlatform();
+  const jmeterVersion = options.jmeterVersion ?? null;
+  const portableMajor = recommendedPortableJavaMajor(jmeterVersion);
   const steps = [];
 
   if (options.intro !== false) {
+    const jmeterNote =
+      jmeterVersion && compareVersion(jmeterVersion, MIN_JMETER_FOR_JAVA_17) < 0
+        ? `JMeter ${jmeterVersion.raw} needs Java 11 (not 17 — Groovy 3.0.x breaks on Java 17).`
+        : "JMeter needs Java 11+ (17 recommended for JMeter 5.5+).";
     steps.push(
       process.platform === "win32"
-        ? "JMeter needs 64-bit Java 11+ (17+ recommended). System JAVA_HOME can stay on Java 8 for backend work."
-        : "JMeter needs Java 11+ (17 recommended). Use JMETER_JAVA_HOME so system JAVA_HOME is unchanged."
+        ? `${jmeterNote} System JAVA_HOME can stay on Java 8 for backend work.`
+        : `${jmeterNote} Use JMETER_JAVA_HOME so system JAVA_HOME is unchanged.`
     );
   }
 
-  steps.push("npm run install:jmeter-java — download portable Temurin 17 into .jdk/ (no admin, all platforms)");
+  steps.push(
+    `npm run install:jmeter-java — download portable Temurin ${portableMajor} into .jdk/ (no admin, all platforms)`
+  );
   steps.push("npm run setup:jmeter-java — or detect an installed JDK and write JMETER_JAVA_HOME to .env");
-  steps.push("Manual install: https://adoptium.net/temurin/releases/?version=17 then re-run npm run setup:jmeter-java");
+  steps.push(
+    `Manual install: https://adoptium.net/temurin/releases/?version=${portableMajor} then re-run npm run setup:jmeter-java`
+  );
   steps.push("Copy .env.example → .env and set JMETER_HOME if JMeter is not on PATH");
 
   if (process.platform === "win32" && minMajor >= 11) {
-    steps.push("After setup, restart npm run dev and confirm launcher.log shows javaHomeSource=JMETER_JAVA_HOME env (not jdk-1.8)");
+    steps.push("After setup, restart npm run dev and confirm launcher.log shows Java 11+ (not jdk-1.8)");
   }
 
   return steps;
@@ -625,7 +702,7 @@ function jmeterSetupSteps() {
   return steps;
 }
 
-function printSetupGuide(setupHints) {
+function printSetupGuide(setupHints, options = {}) {
   if (!setupHints || setupHints.size === 0) return;
 
   console.log("\n--- Setup help ---");
@@ -638,7 +715,9 @@ function printSetupGuide(setupHints) {
 
   if (setupHints.has("java")) {
     console.log("\nJava for JMeter:");
-    javaSetupSteps().forEach((line, index) => console.log(`  ${index + 1}. ${line}`));
+    javaSetupSteps({ jmeterVersion: options.jmeterVersion }).forEach((line, index) =>
+      console.log(`  ${index + 1}. ${line}`)
+    );
   }
 
   if (setupHints.has("jmeter")) {
@@ -725,10 +804,12 @@ class Validator {
     }
   }
 
-  checkJava(jmeterBin = resolveJmeterBin(), jmeterHome = null) {
+  checkJava(jmeterBin = resolveJmeterBin(), jmeterHome = null, jmeterVersion = null) {
     const home = jmeterHome || resolveJmeterHome(jmeterBin);
-    const { javaHome, source } = resolveJavaHomeForJmeter(jmeterBin, home);
-    const discovered = discoverJmeterJavaHomes();
+    const version = jmeterVersion ?? getJmeterVersionInfo(jmeterBin);
+    const maxJavaMajor = maxJavaMajorForJmeter(version);
+    const { javaHome, source } = resolveJavaHomeForJmeter(jmeterBin, home, { jmeterVersion: version });
+    const discovered = discoverJmeterJavaHomes().filter((entry) => entry.major <= maxJavaMajor);
     let jmeterJavaOk = false;
 
     if (javaHome) {
@@ -748,7 +829,7 @@ class Validator {
               ? `Java ${major} is too old for JMeter on Windows (need ${minStable}+; Java 8 often crashes with exit 3221225477)`
               : `${parsed.raw} is older than recommended for JMeter 5.4+`,
             [
-              "npm run install:jmeter-java  — download Temurin 17 into .jdk/",
+              `npm run install:jmeter-java  — download Temurin ${recommendedPortableJavaMajor(version)} into .jdk/`,
               "npm run setup:jmeter-java  — or detect JDK 11+ already installed"
             ]
           );
@@ -758,10 +839,24 @@ class Validator {
             "Java (JMeter)",
             `${parsed.raw} is older than recommended for JMeter 5.4+`,
             [
-              "npm run install:jmeter-java  — download Temurin 17 into .jdk/",
+              `npm run install:jmeter-java  — download Temurin ${recommendedPortableJavaMajor(version)} into .jdk/`,
               "npm run setup:jmeter-java  — or set JMETER_JAVA_HOME in .env"
             ]
           );
+        } else {
+          const runtimeCompat = assessJmeterRuntimeJavaCompatibility(version, major);
+          if (!runtimeCompat.ok) {
+            this.requestSetupHint("java");
+            this.fail(
+              "Java + JMeter runtime",
+              runtimeCompat.message,
+              [
+                `npm run install:jmeter-java  — downloads Temurin 11 for JMeter ${version?.raw || "5.4.x"}`,
+                "Or upgrade JMeter to 5.5+ to use Java 17"
+              ]
+            );
+            jmeterJavaOk = false;
+          }
         }
       } else {
         this.requestSetupHint("java");
@@ -852,7 +947,7 @@ class Validator {
         `"${jmeterBin}" not runnable`,
         jmeterSetupSteps()
       );
-      return { bin: jmeterBin, home: null };
+      return { bin: jmeterBin, home: null, version: null };
     }
 
     const version = extractJmeterVersion(combinedOutput);
@@ -875,7 +970,7 @@ class Validator {
       this.pass("JMeter home", home);
     }
 
-    return { bin: jmeterBin, home };
+    return { bin: jmeterBin, home, version };
   }
 
   checkJsonPlugins(jmeterHome, jmeterBin) {
@@ -1008,14 +1103,14 @@ function runValidation() {
   validator.checkNode();
   validator.checkNpm();
   const jmeter = validator.checkJmeter();
-  validator.checkJava(jmeter.bin, jmeter.home);
+  validator.checkJava(jmeter.bin, jmeter.home, jmeter.version);
   validator.checkJsonPlugins(jmeter.home, jmeter.bin);
   validator.checkDependencies();
   validator.checkPlans();
   validator.checkWritableRunsDir();
 
   console.log("");
-  printSetupGuide(validator.setupHints);
+  printSetupGuide(validator.setupHints, { jmeterVersion: jmeter.version });
 
   if (validator.errors.length > 0) {
     console.log(`Validation failed (${validator.errors.length} error${validator.errors.length === 1 ? "" : "s"}).`);
@@ -1058,6 +1153,10 @@ module.exports = {
   getJmeterJavaInfo,
   assessPluginBundleJavaCompatibility,
   parseJavaMajor,
+  getJmeterVersionInfo,
+  maxJavaMajorForJmeter,
+  recommendedPortableJavaMajor,
+  assessJmeterRuntimeJavaCompatibility,
   discoverJmeterJavaHomes,
   pickBestJmeterJavaHome,
   getJavaMajorFromHome,
