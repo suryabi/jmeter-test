@@ -10,6 +10,9 @@ import { confirmDeleteRun } from '../../core/utils/confirm-delete-run';
 import {
   RunDetail,
   RunInsights,
+  InsightEntity,
+  InsightSummary,
+  InsightUiRule,
   RunRequestInsight,
   RunRequestInsightStatus,
   RunSampleRow,
@@ -80,6 +83,10 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   samplePayloadLoadingByKey: Record<string, boolean> = {};
   activeInsightRequestIndex = 1;
   insightRequestOptions: { index: number; label: string }[] = [];
+  /** Sentinel id for the "All presenters" insight dropdown option. */
+  readonly allInsightEntitiesId = '__all__';
+  activeInsightEntityId = this.allInsightEntitiesId;
+  insightEntityOptions: { id: string; label: string }[] = [];
 
   @ViewChild('samplesTableWrap') samplesTableWrap?: ElementRef<HTMLElement>;
 
@@ -171,6 +178,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
             summary: data.summary,
             insights: data.insights
           };
+          this.syncActiveInsightEntity(this.insightListEntities());
         }
       } catch {
         // ignore
@@ -401,6 +409,202 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
     );
   }
 
+  primaryInsightListKind(): string | null {
+    if (!this.run) return null;
+    if (this.run.insights.requests.length > 0) return 'request';
+    const uiList = (this.run.insights.ui ?? []).find((rule) => rule.list);
+    if (uiList?.entity && uiList.entity !== 'request') return uiList.entity;
+    const kinds = [...new Set((this.run.insights.entities ?? []).map((entity) => entity.kind))];
+    return kinds.find((kind) => kind !== 'topic') ?? kinds[0] ?? null;
+  }
+
+  usesEntityInsights(): boolean {
+    if (!this.run || this.run.insights.requests.length > 0) return false;
+    const kind = this.primaryInsightListKind();
+    return !!kind && kind !== 'request';
+  }
+
+  insightListEntities(): InsightEntity[] {
+    if (!this.run) return [];
+    const kind = this.primaryInsightListKind();
+    if (!kind || kind === 'request') return [];
+    return (this.run.insights.entities ?? [])
+      .filter((entity) => entity.kind === kind)
+      .sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+  }
+
+  get selectedInsightEntity(): InsightEntity | null {
+    if (!this.run || this.isAllInsightEntitiesSelected()) return null;
+    const entities = this.insightListEntities();
+    if (!entities.length) return null;
+    return entities.find((entity) => entity.id === this.activeInsightEntityId) ?? null;
+  }
+
+  isAllInsightEntitiesSelected(): boolean {
+    return this.activeInsightEntityId === this.allInsightEntitiesId;
+  }
+
+  insightEntityScopeLabel(): string {
+    if (this.isAllInsightEntitiesSelected()) {
+      const kind = this.primaryInsightListKind();
+      return kind ? `All ${this.formatInsightFieldLabel(kind).toLowerCase()}s` : 'All';
+    }
+    const entity = this.selectedInsightEntity;
+    return entity ? this.entityDisplayTitle(entity) : '';
+  }
+
+  insightEntitySummary(): InsightSummary | null {
+    if (!this.run) return null;
+    const kind = this.primaryInsightListKind();
+    if (!kind || kind === 'request') return null;
+    return this.run.insights.summaries?.[kind] ?? null;
+  }
+
+  insightEntityDetailFields(): { label: string; value: string }[] {
+    const entity = this.selectedInsightEntity;
+    if (!entity || !this.run) return [];
+
+    const fields: { label: string; value: string }[] = [
+      {
+        label: this.formatInsightFieldLabel(entity.kind),
+        value: `${entity.index ?? '?'}/${this.entityPlannedTotal(entity) ?? '?'}`
+      }
+    ];
+
+    const uiFields = (this.run.insights.ui ?? []).filter(
+      (rule) => rule.entity === entity.kind && rule.field
+    );
+    for (const rule of uiFields) {
+      const value = this.formatInsightFieldValue(entity.fields?.[rule.field!]);
+      if (value === '—') continue;
+      fields.push({
+        label: rule.label || rule.field || 'Field',
+        value
+      });
+    }
+
+    if (!uiFields.length) {
+      for (const [key, value] of Object.entries(entity.fields ?? {})) {
+        if (key === 'status') continue;
+        const formatted = this.formatInsightFieldValue(value);
+        if (formatted === '—') continue;
+        fields.push({
+          label: this.formatInsightFieldLabel(key),
+          value: formatted
+        });
+      }
+    }
+
+    return fields;
+  }
+
+  filteredWorkflowSteps(): RunStep[] {
+    if (!this.run) return [];
+    const steps = this.run.insights.steps;
+    if (!this.usesEntityInsights() || this.isAllInsightEntitiesSelected()) return steps;
+
+    const entity = this.selectedInsightEntity;
+    if (!entity?.index) return steps;
+
+    const prefix = `Presenter ${entity.index}/`;
+    const filtered = steps.filter(
+      (step) => step.label.startsWith(prefix) || /^Loaded \d+ topic/.test(step.label)
+    );
+    return filtered.length ? filtered : steps;
+  }
+
+  insightRunFields(): { label: string; value: string }[] {
+    if (!this.run) return [];
+    const insights = this.run.insights;
+    return (insights.ui ?? [])
+      .filter((rule) => rule.entity === 'run' && rule.field)
+      .map((rule) => ({
+        label: rule.label || rule.field || 'Field',
+        value: this.formatInsightFieldValue(this.readInsightRunField(insights, rule.field!))
+      }));
+  }
+
+  private readInsightRunField(insights: RunInsights, field: string): unknown {
+    switch (field) {
+      case 'customerName':
+        return insights.customerName;
+      case 'requestId':
+        return insights.requestId;
+      case 'dateRange':
+        return insights.dateRange;
+      default:
+        return null;
+    }
+  }
+
+  entityPlannedTotal(entity: InsightEntity): number | null {
+    if (entity.total != null) return entity.total;
+    return this.insightEntitySummary()?.planned ?? null;
+  }
+
+  entityDisplayTitle(entity: InsightEntity): string {
+    const uiList = (this.run?.insights.ui ?? []).find(
+      (rule) => rule.entity === entity.kind && rule.list
+    );
+    const index = entity.index ?? '?';
+    const total = this.entityPlannedTotal(entity) ?? '?';
+    if (!uiList?.title) {
+      return `${this.formatInsightFieldLabel(entity.kind)} ${index}/${total}`;
+    }
+    return this.renderInsightTemplate(uiList.title, entity, total);
+  }
+
+  entityOptionLabel(entity: InsightEntity): string {
+    return `${this.entityDisplayTitle(entity)} · ${this.entityStatusLabel(entity.status)}`;
+  }
+
+  entityStatusLabel(status: string): string {
+    switch (status) {
+      case 'created':
+        return 'Created';
+      case 'failed':
+        return 'Failed';
+      case 'skipped':
+        return 'Skipped';
+      default:
+        return 'Started';
+    }
+  }
+
+  entityStatusSeverity(
+    status: string
+  ): 'success' | 'danger' | 'warn' | 'info' | 'secondary' {
+    return this.requestStatusSeverity(status as RunRequestInsightStatus);
+  }
+
+  formatInsightFieldLabel(key: string): string {
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (char) => char.toUpperCase())
+      .trim();
+  }
+
+  formatInsightFieldValue(value: unknown): string {
+    if (value == null || value === '') return '—';
+    if (Array.isArray(value)) return value.length ? value.join(', ') : '—';
+    return String(value);
+  }
+
+  renderInsightTemplate(
+    template: string,
+    entity: InsightEntity,
+    totalOverride?: number | string | null
+  ): string {
+    const total = totalOverride ?? entity.total ?? '';
+    return String(template)
+      .replace(/\$index/g, String(entity.index ?? ''))
+      .replace(/\$total/g, String(total))
+      .replace(/\$([a-zA-Z_]\w*)/g, (_, key) => {
+        if (key === 'index' || key === 'total') return '';
+        return this.formatInsightFieldValue(entity.fields?.[key]);
+      });
+  }
+
   insightRequestOptionLabel(request: RunRequestInsight): string {
     const parts = [`Request ${request.index}/${request.total}`];
     const name = request.customerName?.trim();
@@ -496,6 +700,7 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
   private applyRunUpdate(run: RunDetail): void {
     this.run = run;
     this.syncActiveInsightRequest(run.insights.requests);
+    this.syncActiveInsightEntity(this.insightListEntities());
     if (this.hasHtmlReport()) {
       this.ensureReportEmbedUrl();
     } else {
@@ -530,6 +735,30 @@ export class RunDetailPageComponent implements OnInit, OnDestroy {
       requests.find((request) => request.status === 'failed') ??
       requests[0];
     this.activeInsightRequestIndex = preferred.index;
+  }
+
+  private syncActiveInsightEntity(entities: InsightEntity[]): void {
+    this.insightEntityOptions = entities.length
+      ? [
+          { id: this.allInsightEntitiesId, label: 'All presenters' },
+          ...entities.map((entity) => ({
+            id: entity.id,
+            label: this.entityOptionLabel(entity)
+          }))
+        ]
+      : [];
+
+    if (!entities.length) {
+      this.activeInsightEntityId = this.allInsightEntitiesId;
+      return;
+    }
+
+    const stillValid =
+      this.activeInsightEntityId === this.allInsightEntitiesId ||
+      entities.some((entity) => entity.id === this.activeInsightEntityId);
+    if (stillValid) return;
+
+    this.activeInsightEntityId = this.allInsightEntitiesId;
   }
 
   private sampleSummaryKey(run: RunDetail): string {

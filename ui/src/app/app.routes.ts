@@ -12,6 +12,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/plans-page/plans-page.component').then(m => m.PlansPageComponent)
   },
   {
+    path: 'plans/:planFile/insights',
+    loadComponent: () =>
+      import('./pages/plan-insights-page/plan-insights-page.component').then(m => m.PlanInsightsPageComponent)
+  },
+  {
     path: 'runs/:id',
     loadComponent: () =>
       import('./pages/run-detail-page/run-detail-page.component').then(m => m.RunDetailPageComponent)

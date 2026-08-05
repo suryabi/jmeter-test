@@ -546,6 +546,203 @@
           </collectionProp>
         </Arguments>
         <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Insight Fields" enabled="false">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="requestOpen" elementType="Argument">
+              <stringProp name="Argument.name">requestOpen</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=scope_open entity=request match=`Request (\d+)/(\d+) Creation Started` index=$1 total=$2 status=started stepLabel=`Request $1/$2 creation started` stepStatus=info</stringProp>
+            </elementProp>
+            <elementProp name="dateRange" elementType="Argument">
+              <stringProp name="Argument.name">dateRange</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=run_field match=`Date Range:\s*(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})` set=dateRange template=`$1 to $2`</stringProp>
+            </elementProp>
+            <elementProp name="stepSchedule" elementType="Argument">
+              <stringProp name="Argument.name">stepSchedule</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=run match=`REQUEST CALCULATION` label=`Calculated request schedule` status=info</stringProp>
+            </elementProp>
+            <elementProp name="requestEventDate" elementType="Argument">
+              <stringProp name="Argument.name">requestEventDate</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Day:\s*\d+/\d+\s*\((\d{4}-\d{2}-\d{2})` set=eventDate group=1</stringProp>
+            </elementProp>
+            <elementProp name="requestCustomer" elementType="Argument">
+              <stringProp name="Argument.name">requestCustomer</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`SUCCESS - Selected unique customer:\s*(.+)` set=customerName group=1</stringProp>
+            </elementProp>
+            <elementProp name="requestCustomerAlt1" elementType="Argument">
+              <stringProp name="Argument.name">requestCustomerAlt1</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Using customer:\s*(.+)` set=customerName group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestCustomerAlt2" elementType="Argument">
+              <stringProp name="Argument.name">requestCustomerAlt2</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Customer Name:\s*(.+)` set=customerName group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestCustomerAlt3" elementType="Argument">
+              <stringProp name="Argument.name">requestCustomerAlt3</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`user-defined customer mode: customerName=(.+)` set=customerName group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestSkipped" elementType="Argument">
+              <stringProp name="Argument.name">requestSkipped</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Customer &apos;([^&apos;]+)&apos;.+Request creation SKIPPED` set=customerName group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestSkippedStatus" elementType="Argument">
+              <stringProp name="Argument.name">requestSkippedStatus</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Request creation SKIPPED` set=status value=skipped</stringProp>
+            </elementProp>
+            <elementProp name="stepRequestSkipped" elementType="Argument">
+              <stringProp name="Argument.name">stepRequestSkipped</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=request match=`Request creation SKIPPED` label=`Request $index/$total: creation skipped (duplicate customer)` status=warn</stringProp>
+            </elementProp>
+            <elementProp name="requestCreated" elementType="Argument">
+              <stringProp name="Argument.name">requestCreated</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Create Request Status PostProcessor: Status:\s*SUCCESS` set=status value=created</stringProp>
+            </elementProp>
+            <elementProp name="stepRequestCreated" elementType="Argument">
+              <stringProp name="Argument.name">stepRequestCreated</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=request match=`Create Request Status PostProcessor: Status:\s*SUCCESS` label=`Request $index/$total: $customerName created` status=success</stringProp>
+            </elementProp>
+            <elementProp name="requestFailed" elementType="Argument">
+              <stringProp name="Argument.name">requestFailed</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Create Request Status PostProcessor: Status:\s*FAILED` set=status value=failed</stringProp>
+            </elementProp>
+            <elementProp name="stepRequestFailed" elementType="Argument">
+              <stringProp name="Argument.name">stepRequestFailed</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=request match=`Create Request Status PostProcessor: Status:\s*FAILED` label=`Request $index/$total: creation failed` status=failed</stringProp>
+            </elementProp>
+            <elementProp name="requestStartTime" elementType="Argument">
+              <stringProp name="Argument.name">requestStartTime</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Start Time:\s*(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})` set=startTime group=2</stringProp>
+            </elementProp>
+            <elementProp name="requestEndTime" elementType="Argument">
+              <stringProp name="Argument.name">requestEndTime</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`End Time:\s*(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})` set=endTime group=2</stringProp>
+            </elementProp>
+            <elementProp name="requestDurationDays" elementType="Argument">
+              <stringProp name="Argument.name">requestDurationDays</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`(?:New Request|New Event) PreProcessor: Duration:\s*(\d+)` set=durationDays group=1</stringProp>
+            </elementProp>
+            <elementProp name="requestDurationMinutes" elementType="Argument">
+              <stringProp name="Argument.name">requestDurationMinutes</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Duration:\s*(\d+)min\b` set=durationMinutes group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestIdSnapshot" elementType="Argument">
+              <stringProp name="Argument.name">requestIdSnapshot</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`existingFormData_snapshot_([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})_` set=requestId group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestIdProcessed" elementType="Argument">
+              <stringProp name="Argument.name">requestIdProcessed</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`processedFields_([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})_` set=requestId group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestIdActions" elementType="Argument">
+              <stringProp name="Argument.name">requestIdActions</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`/data/([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})/actions/` set=requestId group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="requestStateAction" elementType="Argument">
+              <stringProp name="Argument.name">requestStateAction</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=request match=`Selected Action:\s*(\w+)` set=stateActions group=1 append=true</stringProp>
+            </elementProp>
+            <elementProp name="stepRequestSubmit" elementType="Argument">
+              <stringProp name="Argument.name">stepRequestSubmit</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=request match=`Selected Action:\s*SUBMIT` label=`Request $index/$total: SUBMIT` status=success</stringProp>
+            </elementProp>
+            <elementProp name="stepRequestAction" elementType="Argument">
+              <stringProp name="Argument.name">stepRequestAction</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=request match=`Selected Action:\s*(?!SUBMIT)(\w+)` label=`Request $index/$total: $1` status=success</stringProp>
+            </elementProp>
+            <elementProp name="runCustomerFallback" elementType="Argument">
+              <stringProp name="Argument.name">runCustomerFallback</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=run match=`SUCCESS - Selected unique customer:\s*(.+)` set=customerName group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="runRequestIdFallback" elementType="Argument">
+              <stringProp name="Argument.name">runRequestIdFallback</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=run match=`existingFormData_snapshot_([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})_` set=requestId group=1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="stepModule" elementType="Argument">
+              <stringProp name="Argument.name">stepModule</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=run match=`Module:\s*([^|]+)$` label=`Module: $1` status=info</stringProp>
+            </elementProp>
+            <elementProp name="requestSummary" elementType="Argument">
+              <stringProp name="Argument.name">requestSummary</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=summary entity=request field=status counts=created,skipped,failed,started</stringProp>
+            </elementProp>
+            <elementProp name="uiRequestList" elementType="Argument">
+              <stringProp name="Argument.name">uiRequestList</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=ui entity=request list=true title=Request $index/$total</stringProp>
+            </elementProp>
+            <elementProp name="uiCustomer" elementType="Argument">
+              <stringProp name="Argument.name">uiCustomer</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=ui entity=request field=customerName label=`Customer`</stringProp>
+            </elementProp>
+            <elementProp name="uiRequestId" elementType="Argument">
+              <stringProp name="Argument.name">uiRequestId</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=ui entity=request field=requestId label=`Request ID`</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
         <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Global Response Assertion" enabled="true">
           <collectionProp name="Asserion.test_strings">
             <stringProp name="49586">200</stringProp>

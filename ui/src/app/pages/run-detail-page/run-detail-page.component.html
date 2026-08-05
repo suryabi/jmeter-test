@@ -141,6 +141,18 @@
                     optionValue="index"
                     appendTo="body"
                   />
+                } @else if (usesEntityInsights() && insightListEntities().length > 0) {
+                  <p-select
+                    inputId="insightEntitySelect"
+                    class="surface-select insights-request-select"
+                    panelStyleClass="surface-select-panel"
+                    [options]="insightEntityOptions"
+                    [(ngModel)]="activeInsightEntityId"
+                    [ngModelOptions]="{ standalone: true }"
+                    optionLabel="label"
+                    optionValue="id"
+                    appendTo="body"
+                  />
                 }
               </header>
 
@@ -180,6 +192,53 @@
                   <dl class="info-grid insights-run-meta">
                     <dt>Creation window</dt>
                     <dd>{{ run.insights.dateRange }}</dd>
+                  </dl>
+                }
+              } @else if (usesEntityInsights()) {
+                @if (insightRunFields().length > 0) {
+                  <dl class="info-grid insight-run-context">
+                    @for (field of insightRunFields(); track field.label) {
+                      <dt>{{ field.label }}</dt>
+                      <dd>{{ field.value }}</dd>
+                    }
+                  </dl>
+                }
+
+                @if (insightEntitySummary(); as summary) {
+                  <div class="insights-summary">
+                    <span>{{ summary.planned ?? insightListEntities().length }} planned</span>
+                    @if (summary.created) {
+                      <span class="insights-summary-dot">·</span>
+                      <span class="insights-summary-created">{{ summary.created }} created</span>
+                    }
+                    @if (summary.failed) {
+                      <span class="insights-summary-dot">·</span>
+                      <span class="insights-summary-failed">{{ summary.failed }} failed</span>
+                    }
+                    @if (summary.started) {
+                      <span class="insights-summary-dot">·</span>
+                      <span>{{ summary.started }} in progress</span>
+                    }
+                  </div>
+                }
+
+                @if (insightListEntities().length === 0) {
+                  <p class="steps-empty">No presenter iterations captured yet — workflow steps below will update as the run progresses.</p>
+                }
+
+                @if (selectedInsightEntity; as entity) {
+                  <dl class="info-grid insight-request-details">
+                    @for (field of insightEntityDetailFields(); track field.label) {
+                      <dt>{{ field.label }}</dt>
+                      <dd [class.mono]="field.label.toLowerCase().includes('id')">{{ field.value }}</dd>
+                    }
+                    <dt>Status</dt>
+                    <dd>
+                      <p-tag
+                        [value]="entityStatusLabel(entity.status)"
+                        [severity]="entityStatusSeverity(entity.status)"
+                      />
+                    </dd>
                   </dl>
                 }
               } @else {
@@ -242,9 +301,12 @@
           <section class="flat-panel panel steps-panel mt-4">
             <header class="panel-header steps-header">
               <span class="panel-title"><i class="pi pi-list"></i> Workflow steps</span>
-              <span class="steps-count">{{ run.insights.steps.length }}</span>
+              @if (usesEntityInsights() && insightListEntities().length > 0) {
+                <span class="steps-scope">{{ insightEntityScopeLabel() }}</span>
+              }
+              <span class="steps-count">{{ filteredWorkflowSteps().length }}</span>
             </header>
-            @if (run.insights.steps.length === 0) {
+            @if (filteredWorkflowSteps().length === 0) {
               <p class="steps-empty">
                 @if (run.status === 'running') {
                   Workflow steps will appear here as the run progresses.
@@ -254,13 +316,13 @@
               </p>
             } @else {
               <ol class="steps-timeline">
-                @for (step of run.insights.steps; track $index) {
+                @for (step of filteredWorkflowSteps(); track $index) {
                   <li class="timeline-item" [attr.data-status]="step.status">
                     <span class="timeline-marker"></span>
                     <div class="timeline-body">
                       <span class="timeline-label">{{ step.label }}</span>
                       <span class="timeline-duration" [title]="step.at ? (step.at | date: 'medium') : ''">
-                        {{ formatStepDuration(run.insights.steps, $index) }}
+                        {{ formatStepDuration(filteredWorkflowSteps(), $index) }}
                       </span>
                     </div>
                   </li>

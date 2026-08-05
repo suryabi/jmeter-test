@@ -50,7 +50,7 @@
             <th>Plan</th>
             <th>Size</th>
             <th>Updated</th>
-            <th class="w-52 text-right">Actions</th>
+            <th class="w-72 text-right">Actions</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-plan>
@@ -76,6 +76,15 @@
             </td>
             <td class="text-right">
               <div class="inline-flex items-center justify-end gap-2">
+                <a [routerLink]="['/plans', plan.file, 'insights']" class="plans-insights-link">
+                  <p-button
+                    type="button"
+                    severity="secondary"
+                    size="small"
+                    icon="pi pi-chart-bar"
+                    label="Insights"
+                  />
+                </a>
                 <p-button
                   type="button"
                   severity="secondary"

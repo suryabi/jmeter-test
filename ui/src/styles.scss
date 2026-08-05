@@ -751,6 +751,32 @@ input.p-inputtext.surface-input {
   gap: 0.5rem !important;
 }
 
+/* ---------- Insights guide dialog ---------- */
+
+.p-dialog.insights-guide-dialog {
+  background: rgba(23, 16, 48, 0.98) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 18px !important;
+  color: var(--text) !important;
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.7) !important;
+  max-height: 90vh;
+}
+
+.p-dialog.insights-guide-dialog .p-dialog-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: #f5f3ff !important;
+  padding: 1rem 1.15rem 0.85rem !important;
+}
+
+.p-dialog.insights-guide-dialog .p-dialog-content {
+  background: transparent !important;
+  color: var(--text) !important;
+  padding: 0 1.15rem 1.15rem !important;
+  overflow: auto;
+  max-height: calc(90vh - 4.5rem);
+}
+
 /* ---------- PrimeNG dark overrides ---------- */
 
 .p-card {
@@ -871,6 +897,12 @@ input.p-inputtext.surface-input {
   background: rgba(251, 191, 36, 0.18) !important;
   color: #fcd34d !important;
   border: 1px solid rgba(251, 191, 36, 0.4) !important;
+}
+
+.p-tag-contrast {
+  background: rgba(244, 244, 245, 0.12) !important;
+  color: #f4f4f5 !important;
+  border: 1px solid rgba(244, 244, 245, 0.28) !important;
 }
 
 /* Buttons */

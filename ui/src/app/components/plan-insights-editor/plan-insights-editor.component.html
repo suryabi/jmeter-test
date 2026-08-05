@@ -1,0 +1,261 @@
+<section class="insights-editor flat-panel">
+  <header class="insights-editor-header">
+    <div class="insights-editor-heading">
+      <div class="insights-editor-icon">
+        <i class="pi pi-chart-bar"></i>
+      </div>
+      <div>
+        <h3 class="insights-editor-title">Insight rules</h3>
+        <p class="insights-editor-sub">
+          Map <code>jmeter.log</code> lines to the run Insights panel. Rules are stored in the plan’s
+          disabled <code>Insight Fields</code> Arguments group (not executed by JMeter).
+        </p>
+      </div>
+    </div>
+    <div class="insights-editor-header-actions">
+      <p-button
+        type="button"
+        severity="secondary"
+        size="small"
+        icon="pi pi-book"
+        label="Configuration guide"
+        (onClick)="openGuide()"
+      />
+    </div>
+  </header>
+
+  @if (planFile(); as file) {
+    <div class="insights-editor-meta">
+      <span class="insights-meta-chip">
+        <i class="pi pi-file"></i>
+        {{ file }}
+      </span>
+      <span class="insights-meta-chip">
+        <i class="pi pi-list"></i>
+        {{ ruleCount() }} rule{{ ruleCount() === 1 ? '' : 's' }}
+      </span>
+      @if (!hasInsightBlock()) {
+        <span class="insights-meta-chip insights-meta-chip-warn">
+          <i class="pi pi-info-circle"></i>
+          Block created on first save
+        </span>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <div class="insights-editor-message">
+      <p-message severity="error" [text]="error()" />
+    </div>
+  }
+
+  @if (notice()) {
+    <div class="insights-editor-message">
+      <p-message severity="success" [text]="notice()" />
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="insights-editor-loading">
+      <p-progressSpinner strokeWidth="4" ariaLabel="Loading insight fields" />
+      <span>Loading insight rules…</span>
+    </div>
+  } @else {
+    <div class="insights-editor-workspace">
+      <div class="insights-editor-toolbar">
+        <div class="insights-toolbar-left">
+          <p-button type="button" size="small" icon="pi pi-plus" label="Add rule" (onClick)="addField()" />
+          <p-button
+            type="button"
+            severity="secondary"
+            size="small"
+            icon="pi pi-save"
+            label="Save to plan"
+            [loading]="saving()"
+            [disabled]="saving()"
+            (onClick)="save()"
+          />
+        </div>
+        <p class="insights-toolbar-note">
+          Order matters — rules are evaluated top to bottom as the log is scanned.
+        </p>
+      </div>
+
+      @if (fields().length === 0) {
+        <div class="insights-editor-empty">
+          <i class="pi pi-inbox"></i>
+          <h4>No insight rules yet</h4>
+          <p>
+            Add a rule manually or open the configuration guide for templates. Saving writes an
+            <code>Insight Fields</code> block into the JMX if one does not exist.
+          </p>
+          <div class="insights-editor-empty-actions">
+            <p-button type="button" size="small" icon="pi pi-plus" label="Add first rule" (onClick)="addField()" />
+            <p-button
+              type="button"
+              severity="secondary"
+              size="small"
+              icon="pi pi-book"
+              label="Configuration guide"
+              (onClick)="openGuide()"
+            />
+          </div>
+        </div>
+      } @else {
+        <div class="insights-master-detail">
+          <div class="insights-rule-list-panel">
+            <header class="insights-rule-list-header">
+              <span>Rules</span>
+              <span class="insights-rule-list-count">{{ ruleCount() }}</span>
+            </header>
+            <ul class="insights-rule-list" role="listbox" aria-label="Insight rules">
+              @for (field of fields(); track field.key; let index = $index) {
+                <li>
+                  <button
+                    type="button"
+                    class="insights-rule-list-item"
+                    [class.is-selected]="isSelected(field.key)"
+                    role="option"
+                    [attr.aria-selected]="isSelected(field.key)"
+                    (click)="selectRule(field.key)"
+                  >
+                    <span class="insights-rule-list-index">#{{ index + 1 }}</span>
+                    <span class="insights-rule-list-body">
+                      <span class="insights-rule-list-top">
+                        <span class="insights-rule-list-badges">
+                          @if (ruleKind(field.description); as kind) {
+                            <p-tag [value]="kindLabel(kind)" [severity]="kindSeverity(kind)" />
+                          } @else {
+                            <p-tag value="?" severity="danger" />
+                          }
+                          @if (ruleEntity(field.description); as entity) {
+                            <p-tag [value]="entity" severity="secondary" />
+                          }
+                        </span>
+                        <span class="insights-rule-list-id">{{ field.id }}</span>
+                      </span>
+                      <span class="insights-rule-list-preview">{{ rulePreview(field.description) }}</span>
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+
+          <div class="insights-rule-detail-panel">
+            @if (selectedField(); as field) {
+              <header class="insights-rule-detail-header">
+                <div>
+                  <span class="insights-rule-detail-label">Editing rule #{{ selectedRuleIndex() + 1 }}</span>
+                  <div class="insights-rule-detail-badges">
+                    @if (ruleKind(field.description); as kind) {
+                      <p-tag [value]="kindLabel(kind)" [severity]="kindSeverity(kind)" />
+                    }
+                    @if (ruleEntity(field.description); as entity) {
+                      <p-tag [value]="entity" severity="secondary" />
+                    }
+                    @if (ruleScope(field.description); as scope) {
+                      <p-tag [value]="'scope: ' + scope" severity="secondary" />
+                    }
+                  </div>
+                </div>
+                <div class="insights-rule-detail-actions">
+                  <p-button
+                    type="button"
+                    severity="secondary"
+                    size="small"
+                    icon="pi pi-copy"
+                    [text]="true"
+                    (onClick)="duplicateField()"
+                    ariaLabel="Duplicate rule"
+                  />
+                  <p-button
+                    type="button"
+                    severity="secondary"
+                    size="small"
+                    icon="pi pi-arrow-up"
+                    [text]="true"
+                    [disabled]="selectedRuleIndex() <= 0"
+                    (onClick)="moveSelectedField(-1)"
+                    ariaLabel="Move rule up"
+                  />
+                  <p-button
+                    type="button"
+                    severity="secondary"
+                    size="small"
+                    icon="pi pi-arrow-down"
+                    [text]="true"
+                    [disabled]="selectedRuleIndex() >= fields().length - 1"
+                    (onClick)="moveSelectedField(1)"
+                    ariaLabel="Move rule down"
+                  />
+                  <p-button
+                    type="button"
+                    severity="danger"
+                    size="small"
+                    icon="pi pi-trash"
+                    [text]="true"
+                    (onClick)="removeSelectedField()"
+                    ariaLabel="Remove rule"
+                  />
+                </div>
+              </header>
+
+              <div class="insights-rule-detail-form">
+                <div class="insights-field-col">
+                  <label class="insights-field-label" [for]="'insight-id-' + field.key">Rule id</label>
+                  <input
+                    pInputText
+                    class="insights-field-id"
+                    [id]="'insight-id-' + field.key"
+                    [ngModel]="field.id"
+                    (ngModelChange)="onFieldIdChange(field, $event)"
+                    spellcheck="false"
+                    autocomplete="off"
+                    placeholder="requestOpen"
+                  />
+                  <span class="insights-field-hint">Unique name stored as <code>Argument.name</code></span>
+                </div>
+                <div class="insights-field-col">
+                  <label class="insights-field-label" [for]="'insight-desc-' + field.key">Rule description</label>
+                  <textarea
+                    pTextarea
+                    class="insights-field-desc"
+                    [id]="'insight-desc-' + field.key"
+                    rows="12"
+                    [(ngModel)]="field.description"
+                    spellcheck="false"
+                    placeholder="kind=step scope=run match=`…` label=`…` status=info"
+                  ></textarea>
+                  <span class="insights-field-hint">
+                    Space-separated tags in <code>Argument.desc</code>. Use backticks for regex or labels with spaces.
+                  </span>
+                </div>
+              </div>
+            } @else {
+              <div class="insights-rule-detail-empty">
+                <i class="pi pi-arrow-left"></i>
+                <p>Select a rule from the list to edit it.</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <p-dialog
+    header="Configuration guide"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [visible]="guideOpen()"
+    (visibleChange)="guideOpen.set($event)"
+    [style]="{ width: 'min(56rem, 94vw)' }"
+    [breakpoints]="{ '960px': '96vw' }"
+    styleClass="insights-guide-dialog"
+    appendTo="body"
+  >
+    <app-plan-insights-guide [templates]="templates" (addTemplate)="addTemplate($event)" />
+  </p-dialog>
+</section>

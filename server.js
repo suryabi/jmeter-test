@@ -11,8 +11,12 @@ const {
   parseJmxParameters,
   applyParameterOverrides,
   patchPlanForSampleDetailsListener,
-  fetchApiFieldOptions
+  fetchApiFieldOptions,
+  parseInsightFields,
+  readInsightFieldsConfig,
+  writeInsightFieldsConfig
 } = require("./jmx-parameters");
+const { parseLogInsights, normalizeInsightRules } = require("./log-insights");
 const {
   resolveJmeterBin,
   resolveJmeterHome,
@@ -297,6 +301,51 @@ function handlePlanDelete(planFile, res) {
 
   fs.unlinkSync(planPath);
   return sendJson(res, 200, { deleted: true, file: fileName });
+}
+
+function handleGetPlanInsights(planFile, res) {
+  let fileName;
+  try {
+    fileName = sanitizePlanFilename(planFile);
+    const planPath = resolvePlanPath(fileName);
+    const config = readInsightFieldsConfig(planPath);
+    return sendJson(res, 200, config);
+  } catch (err) {
+    const status = err.message?.includes("not found") ? 404 : 400;
+    return sendJson(res, status, { error: err.message || "Failed to load insight fields" });
+  }
+}
+
+async function handlePutPlanInsights(req, planFile, res) {
+  let fileName;
+  try {
+    fileName = sanitizePlanFilename(planFile);
+  } catch (err) {
+    return sendJson(res, 400, { error: err.message || "Invalid plan filename" });
+  }
+
+  if (planIsInUse(fileName)) {
+    return sendJson(res, 409, {
+      error: `Plan "${fileName}" is used by a running test and cannot be edited.`
+    });
+  }
+
+  let body;
+  try {
+    const raw = await readBody(req);
+    body = raw ? JSON.parse(raw) : {};
+  } catch (err) {
+    return sendJson(res, 400, { error: err.message || "Invalid JSON body" });
+  }
+
+  try {
+    const planPath = resolvePlanPath(fileName);
+    const config = writeInsightFieldsConfig(planPath, body.fields || []);
+    return sendJson(res, 200, config);
+  } catch (err) {
+    const status = err.message?.includes("not found") ? 404 : 400;
+    return sendJson(res, status, { error: err.message || "Failed to save insight fields" });
+  }
 }
 
 // ----------------------------
@@ -613,270 +662,22 @@ function getSamplePayload(run, encodedSampleKey) {
 }
 
 // ----------------------------
-// Log insight extraction (business-level events from raw logs)
+// Log insight extraction (configured per plan via Insight Fields in JMX)
 // ----------------------------
 
-const INSIGHTS_UUID =
-  "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}";
-
-function parseJmeterLogTimestamp(line) {
-  const m = String(line).match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}),(\d{3})/);
-  if (!m) return null;
-  const ms = Date.parse(`${m[1]}T${m[2]}.${m[3]}`);
-  return Number.isFinite(ms) ? ms : null;
+function loadInsightConfigForRun(run) {
+  const planFile = run?.planFile;
+  if (!planFile) return null;
+  const planPath = path.join(PLANS_DIR, planFile);
+  if (!fs.existsSync(planPath)) return null;
+  const xml = fs.readFileSync(planPath, "utf-8");
+  const parsed = parseInsightFields(xml);
+  return normalizeInsightRules(parsed);
 }
 
-function createRequestInsight(index, total, atMs) {
-  return {
-    index,
-    total,
-    customerName: null,
-    requestId: null,
-    eventDate: null,
-    startTime: null,
-    endTime: null,
-    durationDays: null,
-    durationMinutes: null,
-    status: "started",
-    stateActions: [],
-    at: atMs != null ? new Date(atMs).toISOString() : null
-  };
-}
-
-function setRequestInsightId(request, value) {
-  const id = String(value || "").trim();
-  if (!id || id === "unknown" || id === "default") return;
-  if (!request.requestId) request.requestId = id;
-}
-
-function finalizeRequestInsight(request, insights) {
-  if (!request) return;
-  insights.requests.push(request);
-}
-
-function applyLegacyInsightSummary(insights) {
-  const { requests } = insights;
-  const created = requests.filter((r) => r.status === "created");
-  const skipped = requests.filter((r) => r.status === "skipped");
-  const failed = requests.filter((r) => r.status === "failed");
-
-  insights.requestSummary = {
-    planned: requests[0]?.total ?? requests.length,
-    created: created.length,
-    skipped: skipped.length,
-    failed: failed.length
-  };
-
-  const primary = created[created.length - 1] || created[0] || requests[requests.length - 1];
-  if (primary) {
-    insights.requestId = primary.requestId;
-    insights.eventDate = primary.eventDate;
-    insights.startTime = primary.startTime;
-    insights.endTime = primary.endTime;
-    insights.durationDays = primary.durationDays;
-    insights.durationMinutes = primary.durationMinutes;
-  }
-
-  const uniqueCustomers = [...new Set(requests.map((r) => r.customerName).filter(Boolean))];
-  if (uniqueCustomers.length === 0) {
-    insights.customerName = null;
-  } else if (uniqueCustomers.length === 1) {
-    insights.customerName = uniqueCustomers[0];
-  } else {
-    const createdNames = [...new Set(created.map((r) => r.customerName).filter(Boolean))];
-    const names = createdNames.length ? createdNames : uniqueCustomers;
-    insights.customerName =
-      names.length <= 2 ? names.join(", ") : `${names[0]} +${names.length - 1} more`;
-  }
-
-  insights.stateActions = [...new Set(requests.flatMap((r) => r.stateActions))];
-}
-
-function parseLogInsights(logText) {
-  const insights = {
-    customerName: null,
-    requestId: null,
-    eventDate: null,
-    startTime: null,
-    endTime: null,
-    dateRange: null,
-    durationMinutes: null,
-    durationDays: null,
-    stateActions: [],
-    steps: [],
-    requests: [],
-    requestSummary: {
-      planned: 0,
-      created: 0,
-      skipped: 0,
-      failed: 0
-    }
-  };
-
-  if (!logText) return insights;
-
-  let currentRequest = null;
-  let startTimeIso = null;
-  let endTimeIso = null;
-
-  const requestIdSnapshotRe = new RegExp(`existingFormData_snapshot_(${INSIGHTS_UUID})_`, "i");
-  const requestIdProcessedRe = new RegExp(`processedFields_(${INSIGHTS_UUID})_`, "i");
-  const requestIdActionsRe = new RegExp(`/data/(${INSIGHTS_UUID})/actions/`, "i");
-
-  const lines = logText.split(/\r?\n/);
-  for (const line of lines) {
-    const lineAtMs = parseJmeterLogTimestamp(line);
-
-    let match = line.match(/Request (\d+)\/(\d+) Creation Started/);
-    if (match) {
-      finalizeRequestInsight(currentRequest, insights);
-      currentRequest = createRequestInsight(Number(match[1]), Number(match[2]), lineAtMs);
-      pushStep(insights, `Request ${match[1]}/${match[2]} creation started`, "info", lineAtMs);
-      continue;
-    }
-
-    match = line.match(/Date Range:\s*(\d{4}-\d{2}-\d{2})\s+to\s+(\d{4}-\d{2}-\d{2})/);
-    if (match) {
-      insights.dateRange = `${match[1]} to ${match[2]}`;
-    }
-
-    if (/REQUEST CALCULATION/.test(line)) {
-      pushStep(insights, "Calculated request schedule", "info", lineAtMs);
-    }
-
-    if (currentRequest) {
-      match = line.match(/Day:\s*\d+\/\d+\s*\((\d{4}-\d{2}-\d{2})/);
-      if (match) currentRequest.eventDate = match[1];
-
-      match = line.match(/SUCCESS - Selected unique customer:\s*(.+)/);
-      if (match) currentRequest.customerName = match[1].trim();
-
-      match = line.match(/Using customer:\s*(.+)/);
-      if (match && !currentRequest.customerName) currentRequest.customerName = match[1].trim();
-
-      match = line.match(/Customer Name:\s*(.+)/);
-      if (match) currentRequest.customerName = match[1].trim();
-
-      match = line.match(/user-defined customer mode: customerName=(.+)/i);
-      if (match && !currentRequest.customerName) currentRequest.customerName = match[1].trim();
-
-      match = line.match(/Customer '([^']+)'.+Request creation SKIPPED/);
-      if (match) {
-        if (!currentRequest.customerName) currentRequest.customerName = match[1].trim();
-        currentRequest.status = "skipped";
-        pushStep(
-          insights,
-          `Request ${currentRequest.index}/${currentRequest.total}: creation skipped (duplicate customer)`,
-          "warn",
-          lineAtMs
-        );
-      }
-
-      if (/Create Request Status PostProcessor: Status:\s*SUCCESS/.test(line)) {
-        currentRequest.status = "created";
-        const label = currentRequest.customerName
-          ? `Request ${currentRequest.index}/${currentRequest.total}: ${currentRequest.customerName} created`
-          : `Request ${currentRequest.index}/${currentRequest.total} created`;
-        pushStep(insights, label, "success", lineAtMs);
-      }
-
-      if (/Create Request Status PostProcessor: Status:\s*FAILED/.test(line)) {
-        currentRequest.status = "failed";
-        pushStep(
-          insights,
-          `Request ${currentRequest.index}/${currentRequest.total}: creation failed`,
-          "failed",
-          lineAtMs
-        );
-      }
-
-      match = line.match(/Start Time:\s*(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
-      if (match) {
-        currentRequest.eventDate = currentRequest.eventDate || match[1];
-        currentRequest.startTime = match[2];
-        startTimeIso = `${match[1]}T${match[2]}:00`;
-      }
-
-      match = line.match(/End Time:\s*(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
-      if (match) {
-        currentRequest.endTime = match[2];
-        endTimeIso = `${match[1]}T${match[2]}:00`;
-      }
-
-      match = line.match(/(?:New Request|New Event) PreProcessor: Duration:\s*(\d+)/);
-      if (match) currentRequest.durationDays = Number(match[1]);
-
-      match = line.match(/Duration:\s*(\d+)min\b/);
-      if (match && currentRequest.durationMinutes == null) {
-        currentRequest.durationMinutes = Number(match[1]);
-      }
-
-      match = line.match(requestIdSnapshotRe);
-      if (match) setRequestInsightId(currentRequest, match[1]);
-
-      if (!currentRequest.requestId) {
-        match = line.match(requestIdProcessedRe);
-        if (match) setRequestInsightId(currentRequest, match[1]);
-      }
-
-      if (!currentRequest.requestId) {
-        match = line.match(requestIdActionsRe);
-        if (match) setRequestInsightId(currentRequest, match[1]);
-      }
-
-      match = line.match(/Selected Action:\s*(\w+)/);
-      if (match) {
-        const action = match[1];
-        if (!currentRequest.stateActions.includes(action)) {
-          currentRequest.stateActions.push(action);
-        }
-        if (action === "SUBMIT") {
-          pushStep(insights, `Request ${currentRequest.index}/${currentRequest.total}: SUBMIT`, "success", lineAtMs);
-        } else {
-          pushStep(
-            insights,
-            `Request ${currentRequest.index}/${currentRequest.total}: ${action}`,
-            "success",
-            lineAtMs
-          );
-        }
-      }
-    } else {
-      match = line.match(/SUCCESS - Selected unique customer:\s*(.+)/);
-      if (match && !insights.customerName) insights.customerName = match[1].trim();
-
-      match = line.match(requestIdSnapshotRe);
-      if (match && !insights.requestId) insights.requestId = match[1];
-    }
-
-    const moduleMatch = line.match(/Module:\s*([^|]+)$/);
-    if (moduleMatch && !line.includes("Handler:") && !line.includes("Configs:")) {
-      pushStep(insights, `Module: ${moduleMatch[1].trim()}`, "info", lineAtMs);
-    }
-  }
-
-  finalizeRequestInsight(currentRequest, insights);
-  applyLegacyInsightSummary(insights);
-
-  if (insights.durationMinutes == null && startTimeIso && endTimeIso) {
-    const startMs = Date.parse(startTimeIso);
-    const endMs = Date.parse(endTimeIso);
-    if (Number.isFinite(startMs) && Number.isFinite(endMs) && endMs > startMs) {
-      insights.durationMinutes = Math.round((endMs - startMs) / 60000);
-    }
-  }
-
-  return insights;
-}
-
-function pushStep(insights, label, status, atMs = null) {
-  const last = insights.steps[insights.steps.length - 1];
-  if (last && last.label === label) return;
-  insights.steps.push({
-    label,
-    status,
-    at: atMs != null ? new Date(atMs).toISOString() : null
-  });
+function buildRunInsights(run, logText) {
+  const config = loadInsightConfigForRun(run);
+  return parseLogInsights(logText, config);
 }
 
 
@@ -1012,7 +813,7 @@ function getRunDetail(run, { logTailLines = DEFAULT_LOG_TAIL_LINES } = {}) {
     ...getRunSummary(run),
     artifacts: getArtifacts(run),
     summary: parseJtlSummary(run.jtlFile, getContextNameFromRun(run)),
-    insights: parseLogInsights(fullLogForInsights),
+    insights: buildRunInsights(run, fullLogForInsights),
     logTail,
     logSize: fileSize(run.logFile),
     failureHint: buildFailureHint(run)
@@ -1540,7 +1341,8 @@ function handleLogStream(run, req, res) {
         status: run.status,
         exitCode: run.exitCode,
         summary: parseJtlSummary(run.jtlFile, getContextNameFromRun(run)),
-        insights: parseLogInsights(
+        insights: buildRunInsights(
+          run,
           fs.existsSync(run.logFile) ? fs.readFileSync(run.logFile, "utf-8") : ""
         )
       });
@@ -1579,6 +1381,7 @@ const server = http.createServer(async (req, res) => {
           plans: "GET /plans",
           uploadPlan: "POST /plans?filename=<name.jmx>",
           downloadPlan: "GET /plans/:filename/download",
+          planInsights: "GET|PUT /plans/:filename/insights",
           deletePlan: "DELETE /plans/:filename",
           parameters: "GET /parameters?plan=<filename>",
           fieldOptions: "POST /field-options",
@@ -1595,6 +1398,17 @@ const server = http.createServer(async (req, res) => {
           htmlReport: "GET /runs/:id/report/"
         }
       });
+    }
+
+    const planInsightsMatch = pathname.match(/^\/plans\/([^/]+)\/insights$/i);
+    if (planInsightsMatch) {
+      const fileName = decodeURIComponent(planInsightsMatch[1]);
+      if (req.method === "GET") {
+        return handleGetPlanInsights(fileName, res);
+      }
+      if (req.method === "PUT") {
+        return handlePutPlanInsights(req, fileName, res);
+      }
     }
 
     const planDownloadMatch = pathname.match(/^\/plans\/([^/]+)\/download$/i);

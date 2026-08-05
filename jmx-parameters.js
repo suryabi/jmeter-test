@@ -22,6 +22,7 @@ function encodeXml(value) {
 }
 
 const API_FIELD_VARIABLES_TITLE = "API Field Variables";
+const INSIGHT_FIELDS_TITLE = "Insight Fields";
 const DEFAULT_PARAMETER_COLS = 4;
 
 /** Fields referenced via header.field:* that are resolved server-side when absent from form props. */
@@ -100,23 +101,215 @@ function cleanDescription(description) {
     .trim();
 }
 
-function parseApiFieldMapping(description) {
+function parseKeyValueMapping(description) {
   const mapping = {};
-  const requestHeaders = {};
   const text = String(description || "").trim();
   // Support display=`path.path (path.other)` — backtick values may contain spaces.
   const tokenRe = /([^\s=]+)=(`[^`]*`|[^\s]+)/g;
   let match;
   while ((match = tokenRe.exec(text)) !== null) {
-    const key = match[1];
-    const value = match[2];
+    mapping[match[1]] = match[2];
+  }
+  return mapping;
+}
+
+function parseApiFieldMapping(description) {
+  const mapping = parseKeyValueMapping(description);
+  const requestHeaders = {};
+  for (const [key, value] of Object.entries(mapping)) {
     if (key.startsWith("header.")) {
       requestHeaders[key.slice("header.".length)] = value;
-    } else {
-      mapping[key] = value;
+      delete mapping[key];
     }
   }
   return { mapping, requestHeaders };
+}
+
+function extractBacktickField(text, key) {
+  const re = new RegExp(`\\b${escapeRegExp(key)}=\`([^\`]*)\``);
+  const match = String(text || "").match(re);
+  return match ? match[1] : null;
+}
+
+function parseInsightFieldRule(description) {
+  const text = String(description || "").trim();
+  let remainder = text;
+  const rule = { kind: "" };
+
+  for (const key of ["match", "label", "stepLabel", "template"]) {
+    const value = extractBacktickField(text, key);
+    if (value != null) {
+      rule[key] = value;
+      remainder = remainder.replace(new RegExp(`\\b${escapeRegExp(key)}=\`[^\`]*\``), " ").trim();
+    }
+  }
+
+  const tokenRe = /([^\s=]+)=(`[^`]*`|[^\s]+)/g;
+  let match;
+  while ((match = tokenRe.exec(remainder)) !== null) {
+    const key = match[1];
+    let value = match[2];
+    if (typeof value === "string" && value.startsWith("`") && value.endsWith("`")) {
+      value = value.slice(1, -1);
+    }
+
+    if (key === "kind") {
+      rule.kind = value;
+    } else if (key === "group") {
+      rule.group = Number(value);
+    } else if (key === "append") {
+      rule.append = String(value).toLowerCase() === "true";
+    } else if (key === "list") {
+      rule.list = String(value).toLowerCase() === "true";
+    } else if (key === "onlyIfEmpty") {
+      rule.onlyIfEmpty = String(value).toLowerCase() === "true";
+    } else if (key === "counts") {
+      rule.counts = String(value)
+        .split(",")
+        .map((part) => part.trim())
+        .filter(Boolean);
+    } else if (key.startsWith("link.")) {
+      rule.link = rule.link || {};
+      rule.link[key.slice("link.".length)] = value;
+    } else {
+      rule[key] = value;
+    }
+  }
+
+  return rule;
+}
+
+function parseInsightFields(xml) {
+  const re = new RegExp(
+    `<Arguments\\b[^>]*testname="${INSIGHT_FIELDS_TITLE}"[^>]*>[\\s\\S]*?<collectionProp name="Arguments\\.arguments">([\\s\\S]*?)<\\/collectionProp>`,
+    "i"
+  );
+  const match = xml.match(re);
+  if (!match) return { rules: [], ui: [], fields: [], hasInsightBlock: false };
+
+  const blockXml = match[1] || "";
+  const fields = parseInsightFieldEntries(blockXml);
+  const rules = [];
+  for (const field of fields) {
+    const rule = parseInsightFieldRule(field.description);
+    rule.id = field.id;
+    rules.push(rule);
+  }
+
+  const ui = rules.filter((rule) => rule.kind === "ui");
+  const engineRules = rules.filter((rule) => rule.kind !== "ui");
+  return { rules: engineRules, ui, raw: rules, fields, hasInsightBlock: true };
+}
+
+function parseInsightFieldEntries(blockXml) {
+  const fields = [];
+  const entryRe = /<elementProp name="([^"]+)" elementType="Argument">([\s\S]*?)<\/elementProp>/g;
+  let entry;
+  while ((entry = entryRe.exec(blockXml)) !== null) {
+    const inner = entry[2];
+    const id =
+      inner.match(/<stringProp name="Argument.name">([^<]*)<\/stringProp>/)?.[1] || entry[1];
+    const description = decodeXml(
+      inner.match(/<stringProp name="Argument.desc">([^<]*)<\/stringProp>/)?.[1] || ""
+    );
+    fields.push({ id, name: id, description });
+  }
+  return fields;
+}
+
+function sanitizeInsightFieldId(id) {
+  const trimmed = String(id || "").trim();
+  if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(trimmed)) {
+    throw new Error(`Invalid insight field id "${id}". Use letters, numbers, and underscores.`);
+  }
+  return trimmed;
+}
+
+function buildInsightArgumentElement({ id, description }) {
+  const safeId = sanitizeInsightFieldId(id);
+  const encodedDesc = encodeXml(String(description ?? "").trim());
+  return `            <elementProp name="${safeId}" elementType="Argument">
+              <stringProp name="Argument.name">${safeId}</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">${encodedDesc}</stringProp>
+            </elementProp>`;
+}
+
+function insertInsightFieldsBlock(xml, collectionInner) {
+  const anchorRe = new RegExp(
+    `(<Arguments\\b[^>]*testname="${API_FIELD_VARIABLES_TITLE}"[^>]*>[\\s\\S]*?<\\/Arguments>\\s*<hashTree\\/>)`,
+    "i"
+  );
+  if (!anchorRe.test(xml)) {
+    throw new Error(
+      `Cannot insert ${INSIGHT_FIELDS_TITLE}: ${API_FIELD_VARIABLES_TITLE} block not found.`
+    );
+  }
+  const block = `$1
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="${INSIGHT_FIELDS_TITLE}" enabled="false">
+          <collectionProp name="Arguments.arguments">${collectionInner}</collectionProp>
+        </Arguments>
+        <hashTree/>`;
+  return xml.replace(anchorRe, block);
+}
+
+function readInsightFieldsConfig(planPath) {
+  const xml = fs.readFileSync(planPath, "utf-8");
+  const parsed = parseInsightFields(xml);
+  return {
+    planFile: path.basename(planPath),
+    fields: parsed.fields || [],
+    hasInsightBlock: Boolean(parsed.hasInsightBlock)
+  };
+}
+
+function validateInsightFieldsPayload(fields) {
+  if (!Array.isArray(fields)) {
+    throw new Error("fields must be an array.");
+  }
+
+  const seen = new Set();
+  const normalized = [];
+  for (const field of fields) {
+    const id = sanitizeInsightFieldId(field?.id ?? field?.name);
+    if (seen.has(id)) {
+      throw new Error(`Duplicate insight field id "${id}".`);
+    }
+    seen.add(id);
+
+    const description = String(field?.description ?? "").trim();
+    if (!description) {
+      throw new Error(`Insight field "${id}" requires a description.`);
+    }
+    if (!/\bkind=/.test(description)) {
+      throw new Error(`Insight field "${id}" description must include kind=.`);
+    }
+
+    normalized.push({ id, name: id, description });
+  }
+  return normalized;
+}
+
+function writeInsightFieldsConfig(planPath, fields) {
+  const normalized = validateInsightFieldsPayload(fields);
+  let xml = fs.readFileSync(planPath, "utf-8");
+  const elements = normalized.map((field) => buildInsightArgumentElement(field)).join("\n");
+  const collectionInner = elements ? `\n${elements}\n          ` : "\n          ";
+
+  const blockRe = new RegExp(
+    `(<Arguments\\b[^>]*testname="${INSIGHT_FIELDS_TITLE}"[^>]*>[\\s\\S]*?<collectionProp name="Arguments\\.arguments">)[\\s\\S]*?(<\\/collectionProp>[\\s\\S]*?<\\/Arguments>)`,
+    "i"
+  );
+
+  if (blockRe.test(xml)) {
+    xml = xml.replace(blockRe, (_match, open, close) => `${open}${collectionInner}${close}`);
+  } else {
+    xml = insertInsightFieldsBlock(xml, collectionInner);
+  }
+
+  fs.writeFileSync(planPath, xml, "utf-8");
+  return readInsightFieldsConfig(planPath);
 }
 
 function resolveApiHeaderSource(sourceSpec, props) {
@@ -639,7 +832,10 @@ function parseJmxParameters(planPath) {
   const apiFieldMap = parseApiFieldVariables(xml);
   const groups = [
     ...parseArgumentsSections(xml)
-      .filter((group) => group.title !== API_FIELD_VARIABLES_TITLE)
+      .filter(
+        (group) =>
+          group.title !== API_FIELD_VARIABLES_TITLE && group.title !== INSIGHT_FIELDS_TITLE
+      )
       .map((group) => ({
         ...group,
         parameters: group.parameters.map((param) => enrichParameter(param, apiFieldMap))
@@ -744,5 +940,9 @@ module.exports = {
   DEFAULT_PARAMETER_COLS,
   parseParameterCols,
   formatItemLabel,
-  parseApiFieldMapping
+  parseApiFieldMapping,
+  parseInsightFields,
+  readInsightFieldsConfig,
+  writeInsightFieldsConfig,
+  INSIGHT_FIELDS_TITLE
 };

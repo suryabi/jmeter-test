@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
 import { RunnerService } from '../../core/services/runner.service';
 import { PlanInfo } from '../../core/models/runner.models';
@@ -13,7 +14,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 @Component({
   selector: 'app-plans-panel',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule, MessageModule, ProgressSpinnerModule],
+  imports: [CommonModule, RouterLink, ButtonModule, TableModule, MessageModule, ProgressSpinnerModule],
   templateUrl: './plans-panel.component.html',
   styleUrl: './plans-panel.component.scss'
 })

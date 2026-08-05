@@ -8,6 +8,8 @@ import {
   LogPollResponse,
   ParametersSchema,
   DeletePlanResponse,
+  PlanInsightsResponse,
+  InsightFieldConfig,
   PlansResponse,
   RunDetail,
   RunSamplePayloadResponse,
@@ -46,6 +48,19 @@ export class RunnerService {
   deletePlan(file: string): Observable<DeletePlanResponse> {
     return this.http.delete<DeletePlanResponse>(
       `${this.baseUrl}/plans/${encodeURIComponent(file)}`
+    );
+  }
+
+  getPlanInsights(file: string): Observable<PlanInsightsResponse> {
+    return this.http.get<PlanInsightsResponse>(
+      `${this.baseUrl}/plans/${encodeURIComponent(file)}/insights`
+    );
+  }
+
+  savePlanInsights(file: string, fields: InsightFieldConfig[]): Observable<PlanInsightsResponse> {
+    return this.http.put<PlanInsightsResponse>(
+      `${this.baseUrl}/plans/${encodeURIComponent(file)}/insights`,
+      { fields }
     );
   }
 

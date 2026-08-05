@@ -1,0 +1,98 @@
+<p class="insights-help-intro">
+  Reference for insight rule syntax. Templates add a new rule to the list and close this dialog.
+</p>
+
+<div class="insights-help-grid">
+  <section class="insights-help-section">
+    <h5>How it works</h5>
+    <ol class="insights-help-steps">
+      <li>Groovy scripts in the plan write lines to <code>jmeter.log</code>.</li>
+      <li>After a run, the runner scans the log and applies these rules in order.</li>
+      <li>Matching rules update entities (requests, presenters, topics…) and workflow steps.</li>
+      <li><code>kind=ui</code> rules control labels and lists on the run detail Insights tab.</li>
+    </ol>
+  </section>
+
+  <section class="insights-help-section">
+    <h5>Rule kinds</h5>
+    <dl class="insights-help-dl">
+      <div>
+        <dt><code>scope_open</code></dt>
+        <dd>Start a repeating entity (e.g. Request 2/5). Sets index/total and optional first step.</dd>
+      </div>
+      <div>
+        <dt><code>field</code></dt>
+        <dd>Capture a property on the active entity from a regex capture group.</dd>
+      </div>
+      <div>
+        <dt><code>step</code></dt>
+        <dd>Append a workflow timeline entry under the current scope.</dd>
+      </div>
+      <div>
+        <dt><code>run_field</code></dt>
+        <dd>Set a run-level value (date range, planned counts) outside entity scopes.</dd>
+      </div>
+      <div>
+        <dt><code>summary</code></dt>
+        <dd>Aggregate entity counts by status for the Insights summary row.</dd>
+      </div>
+      <div>
+        <dt><code>ui</code></dt>
+        <dd>Presentation only — field labels, entity picker titles, detail columns.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="insights-help-section">
+    <h5>Common tags</h5>
+    <div class="insights-help-tags">
+      <span><code>entity=</code> request, presenter, topic</span>
+      <span><code>scope=</code> run, request, presenter, topic</span>
+      <span><code>match=`…`</code> regex against log line</span>
+      <span><code>label=`…`</code> step text ($index, $total, field names)</span>
+      <span><code>set=</code> + <code>group=N</code> capture group → field</span>
+      <span><code>link.index=$1</code> tie step/field to entity index</span>
+      <span><code>onlyIfEmpty=true</code> first match wins</span>
+      <span><code>counts=</code> created,failed,skipped,started</span>
+    </div>
+  </section>
+
+  <section class="insights-help-section insights-help-span-2">
+    <h5>Examples</h5>
+    <div class="insights-help-example">
+      <span class="insights-help-example-label">BIQ — open request</span>
+      <pre>kind=scope_open entity=request match=`Request (\d+)/(\d+) Creation Started` index=$1 total=$2 status=started</pre>
+    </div>
+    <div class="insights-help-example">
+      <span class="insights-help-example-label">Presenter — open on plan line</span>
+      <pre>kind=scope_open entity=presenter match=`Presenter #(\d+): will be assigned` index=$1 total=$presentersPlanned status=started</pre>
+    </div>
+    <div class="insights-help-example">
+      <span class="insights-help-example-label">Scoped workflow step</span>
+      <pre>kind=step scope=presenter match=`Presenter created (\d+)/(\d+) id=(\S+)` link.index=$1 label=`Presenter $index/$total created` status=success</pre>
+    </div>
+  </section>
+
+  <section class="insights-help-section">
+    <h5>Templates</h5>
+    <p class="insights-help-copy">Click to add a starter rule you can edit.</p>
+    <div class="insights-template-list">
+      @for (template of templates(); track template.id) {
+        <button type="button" class="insights-template-btn" (click)="addTemplate.emit(template)">
+          <i class="pi pi-plus"></i>
+          {{ template.label }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <section class="insights-help-section insights-help-full insights-help-tips">
+    <h5>Tips</h5>
+    <ul>
+      <li>Wrap regex or labels that contain spaces in backticks: <code>match=`…`</code>.</li>
+      <li>Emit stable log lines from Groovy — insights only see what the plan logs.</li>
+      <li>Use <code>scope_open</code> early on a planning line if success lines may never appear (e.g. 409 failures).</li>
+      <li>Plans in use by a running test cannot be saved until the run finishes.</li>
+    </ul>
+  </section>
+</div>

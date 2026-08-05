@@ -260,6 +260,125 @@
           </collectionProp>
         </Arguments>
         <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Insight Fields" enabled="false">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="runPresentersPlanned" elementType="Argument">
+              <stringProp name="Argument.name">runPresentersPlanned</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=run_field match=`Presenters to create\s*:\s*\d+\s*-\&gt;\s*(\d+) this run` set=presentersPlanned group=1</stringProp>
+            </elementProp>
+            <elementProp name="presenterOpenPlan" elementType="Argument">
+              <stringProp name="Argument.name">presenterOpenPlan</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=scope_open entity=presenter match=`Presenter #(\d+): will be assigned \d+ topic` index=$1 total=$presentersPlanned status=started stepLabel=`Presenter $1/$presentersPlanned started` stepStatus=info</stringProp>
+            </elementProp>
+            <elementProp name="presenterOpenExisting" elementType="Argument">
+              <stringProp name="Argument.name">presenterOpenExisting</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=scope_open entity=presenter match=`Existing Presenter Flow: processing presenter (\d+)/(\d+) id=(\S+)` index=$1 total=$2 status=started stepLabel=`Processing presenter $1/$2` stepStatus=info</stringProp>
+            </elementProp>
+            <elementProp name="presenterIdField" elementType="Argument">
+              <stringProp name="Argument.name">presenterIdField</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=presenter match=`Presenter created (\d+)/(\d+) id=(\S+)` set=presenterId group=3 link.index=$1 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="presenterIdExisting" elementType="Argument">
+              <stringProp name="Argument.name">presenterIdExisting</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=presenter match=`Existing Presenter Flow: processing presenter (\d+)/(\d+) id=(\S+)` set=presenterId group=3 onlyIfEmpty=true</stringProp>
+            </elementProp>
+            <elementProp name="presenterCreated" elementType="Argument">
+              <stringProp name="Argument.name">presenterCreated</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=presenter match=`Presenter created (\d+)/(\d+) id=(\S+)` set=status value=created link.index=$1</stringProp>
+            </elementProp>
+            <elementProp name="stepPresenterCreated" elementType="Argument">
+              <stringProp name="Argument.name">stepPresenterCreated</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=presenter match=`Presenter created (\d+)/(\d+) id=(\S+)` link.index=$1 label=`Presenter $index/$total created (id=$presenterId)` status=success</stringProp>
+            </elementProp>
+            <elementProp name="presenterFailed" elementType="Argument">
+              <stringProp name="Argument.name">presenterFailed</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=presenter match=`Presenter created (\d+)/(\d+) failed` set=status value=failed link.index=$1</stringProp>
+            </elementProp>
+            <elementProp name="stepPresenterFailed" elementType="Argument">
+              <stringProp name="Argument.name">stepPresenterFailed</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=presenter match=`Presenter created (\d+)/(\d+) failed` link.index=$1 label=`Presenter $index/$total: creation failed` status=failed</stringProp>
+            </elementProp>
+            <elementProp name="topicOpen" elementType="Argument">
+              <stringProp name="Argument.name">topicOpen</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=scope_open entity=topic parent=presenter link.index=$1 match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): &apos;(.+)&apos; added successfully` index=$2 total=$3 status=created</stringProp>
+            </elementProp>
+            <elementProp name="topicNameField" elementType="Argument">
+              <stringProp name="Argument.name">topicNameField</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=field entity=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): &apos;(.+)&apos; added successfully` set=topicName group=4 link.index=$1</stringProp>
+            </elementProp>
+            <elementProp name="stepTopicAdded" elementType="Argument">
+              <stringProp name="Argument.name">stepTopicAdded</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): &apos;(.+)&apos; added successfully` link.index=$1 label=`Topic $index/$total: $topicName added` status=success</stringProp>
+            </elementProp>
+            <elementProp name="stepTopicFailed" elementType="Argument">
+              <stringProp name="Argument.name">stepTopicFailed</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=presenter match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): failed` link.index=$1 label=`Presenter $index/$total: topic $2/$3 failed` status=warn</stringProp>
+            </elementProp>
+            <elementProp name="stepBlockedSlotBuilt" elementType="Argument">
+              <stringProp name="Argument.name">stepBlockedSlotBuilt</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=presenter match=`Presenter #(\d+), blocked slot (\d+)/(\d+): blocked slot date=` link.index=$1 label=`Presenter $index/$total: blocked slot $2/$3 planned` status=info</stringProp>
+            </elementProp>
+            <elementProp name="stepBlockedSlot" elementType="Argument">
+              <stringProp name="Argument.name">stepBlockedSlot</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=presenter match=`Blocked slot created for Presenter #(\d+) slot (\d+)/(\d+)` link.index=$1 label=`Presenter $index/$total: blocked slot $2/$3 created` status=success</stringProp>
+            </elementProp>
+            <elementProp name="runTopicsLoaded" elementType="Argument">
+              <stringProp name="Argument.name">runTopicsLoaded</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=step scope=run match=`Get Topics: loaded (\d+) topic` label=`Loaded $1 topic(s)` status=info</stringProp>
+            </elementProp>
+            <elementProp name="presenterSummary" elementType="Argument">
+              <stringProp name="Argument.name">presenterSummary</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=summary entity=presenter field=status counts=created,failed,started</stringProp>
+            </elementProp>
+            <elementProp name="uiPresenterList" elementType="Argument">
+              <stringProp name="Argument.name">uiPresenterList</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=ui entity=presenter list=true title=`Presenter $index/$total`</stringProp>
+            </elementProp>
+            <elementProp name="uiPresenterId" elementType="Argument">
+              <stringProp name="Argument.name">uiPresenterId</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">kind=ui entity=presenter field=presenterId label=`Presenter ID`</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
         <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Global Response Assertion" enabled="true">
           <collectionProp name="Asserion.test_strings">
             <stringProp name="49586">200</stringProp>

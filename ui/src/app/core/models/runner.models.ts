@@ -71,6 +71,18 @@ export interface DeletePlanResponse {
   file: string;
 }
 
+export interface InsightFieldConfig {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface PlanInsightsResponse {
+  planFile: string;
+  fields: InsightFieldConfig[];
+  hasInsightBlock: boolean;
+}
+
 export interface PlansResponse {
   plans: PlanInfo[];
 }
@@ -129,6 +141,35 @@ export interface RunStep {
   at: string | null;
 }
 
+export interface InsightEntity {
+  id: string;
+  kind: string;
+  index: number | null;
+  total: number | null;
+  parentId: string | null;
+  status: string;
+  fields: Record<string, string | number | boolean | string[] | null>;
+  at: string | null;
+}
+
+export interface InsightSummary {
+  planned?: number;
+  created?: number;
+  skipped?: number;
+  failed?: number;
+  started?: number;
+  [key: string]: number | undefined;
+}
+
+export interface InsightUiRule {
+  kind: 'ui';
+  entity: string;
+  field?: string;
+  label?: string;
+  list?: boolean;
+  title?: string;
+}
+
 export interface RunInsights {
   /** Primary / summary fields (backward compatible with single-request runs). */
   customerName: string | null;
@@ -141,9 +182,13 @@ export interface RunInsights {
   durationDays: number | null;
   stateActions: string[];
   steps: RunStep[];
-  /** One entry per request-creation loop iteration. */
+  /** One entry per request-creation loop iteration (BIQ). */
   requests: RunRequestInsight[];
   requestSummary: RunRequestSummary;
+  /** Generic entities parsed from plan Insight Fields (presenters, topics, etc.). */
+  entities: InsightEntity[];
+  summaries: Record<string, InsightSummary>;
+  ui: InsightUiRule[];
 }
 
 export interface RunSampleSummary {

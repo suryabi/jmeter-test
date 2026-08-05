@@ -1,0 +1,16 @@
+<app-topbar />
+
+<div class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+  <a routerLink="/plans" class="back-link">
+    <i class="pi pi-arrow-left"></i>
+    Back to plans
+  </a>
+
+  @if (error()) {
+    <div class="mt-4">
+      <p-message severity="error" [text]="error()" />
+    </div>
+  } @else if (planFile()) {
+    <app-plan-insights-editor class="insights-editor-page block mt-6" [planFile]="planFile()" />
+  }
+</div>

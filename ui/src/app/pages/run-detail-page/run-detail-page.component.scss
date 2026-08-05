@@ -436,8 +436,31 @@
   color: #86efac;
 }
 
+.insights-summary-failed {
+  color: #fca5a5;
+}
+
 .insights-summary-dot {
   opacity: 0.55;
+}
+
+.insight-run-context {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.steps-header {
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  justify-content: space-between;
+}
+
+.steps-scope {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-right: auto;
 }
 
 .insights-panel-header {
@@ -498,11 +521,6 @@
 /* Steps timeline (Overview tab) */
 .steps-panel {
   min-width: 0;
-}
-
-.steps-header {
-  margin-bottom: 0.75rem;
-  justify-content: space-between;
 }
 
 .steps-count {
