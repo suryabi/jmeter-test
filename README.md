@@ -137,6 +137,8 @@ npm run validate
 
 Checks: Node 20.19+/22.12+, npm, Java for JMeter (`JMETER_JAVA_HOME` / launcher / auto-discovery), JMeter (`JMETER_BIN` or PATH), jpgc-json plugins, `node_modules`, plans in `./plans`, writable `./runs`.
 
+When something is missing, validate prints inline fix hints and a **Setup help** section with numbered steps (Java install via `npm run install:jmeter-java`, JMeter install, plugins).
+
 Configure Java for JMeter only:
 
 ```bash

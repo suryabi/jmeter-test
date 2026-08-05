@@ -585,36 +585,121 @@ function discoverJava(jmeterBin) {
   return null;
 }
 
+function javaSetupSteps(options = {}) {
+  const minMajor = minStableJavaMajorForPlatform();
+  const steps = [];
+
+  if (options.intro !== false) {
+    steps.push(
+      process.platform === "win32"
+        ? "JMeter needs 64-bit Java 11+ (17+ recommended). System JAVA_HOME can stay on Java 8 for backend work."
+        : "JMeter needs Java 11+ (17 recommended). Use JMETER_JAVA_HOME so system JAVA_HOME is unchanged."
+    );
+  }
+
+  steps.push("npm run install:jmeter-java — download portable Temurin 17 into .jdk/ (no admin, all platforms)");
+  steps.push("npm run setup:jmeter-java — or detect an installed JDK and write JMETER_JAVA_HOME to .env");
+  steps.push("Manual install: https://adoptium.net/temurin/releases/?version=17 then re-run npm run setup:jmeter-java");
+  steps.push("Copy .env.example → .env and set JMETER_HOME if JMeter is not on PATH");
+
+  if (process.platform === "win32" && minMajor >= 11) {
+    steps.push("After setup, restart npm run dev and confirm launcher.log shows javaHomeSource=JMETER_JAVA_HOME env (not jdk-1.8)");
+  }
+
+  return steps;
+}
+
+function jmeterSetupSteps() {
+  const steps = [
+    "Download Apache JMeter 5.4+ — https://jmeter.apache.org/download_jmeter.cgi"
+  ];
+
+  if (process.platform === "win32") {
+    steps.push('Set JMETER_HOME in .env to your install folder (e.g. D:\\Softwares\\Jmeter 5.4\\Jmeter 5.4)');
+    steps.push('Or set JMETER_BIN to the full path of bin\\jmeter.bat');
+  } else {
+    steps.push("Add JMeter bin/ to PATH, or set JMETER_BIN / JMETER_HOME in .env (see .env.example)");
+  }
+
+  steps.push("npm run install:jmeter-plugins — copy vendored jpgc-json plugins into JMeter");
+  return steps;
+}
+
+function printSetupGuide(setupHints) {
+  if (!setupHints || setupHints.size === 0) return;
+
+  console.log("\n--- Setup help ---");
+
+  if (setupHints.has("node")) {
+    console.log("\nNode.js:");
+    console.log("  1. Install Node.js 20.19+ or 22.12+ — https://nodejs.org/");
+    console.log("  2. npm run init");
+  }
+
+  if (setupHints.has("java")) {
+    console.log("\nJava for JMeter:");
+    javaSetupSteps().forEach((line, index) => console.log(`  ${index + 1}. ${line}`));
+  }
+
+  if (setupHints.has("jmeter")) {
+    console.log("\nApache JMeter:");
+    jmeterSetupSteps().forEach((line, index) => console.log(`  ${index + 1}. ${line}`));
+  }
+
+  if (setupHints.has("plugins")) {
+    console.log("\nJMeter JSON plugins (jpgc-json):");
+    console.log("  1. Set JMETER_HOME in .env if not already set");
+    console.log("  2. npm run install:jmeter-plugins");
+    console.log("  3. npm run validate");
+  }
+
+  console.log("");
+}
+
 class Validator {
   constructor() {
     this.errors = [];
     this.warnings = [];
+    this.setupHints = new Set();
   }
 
   pass(label, detail) {
     console.log(`✓  ${label}${detail ? `: ${detail}` : ""}`);
   }
 
+  printFix(fix) {
+    if (!fix) return;
+    const lines = Array.isArray(fix) ? fix : [fix];
+    for (const line of lines) {
+      console.log(`   → ${line}`);
+    }
+  }
+
   fail(label, detail, fix) {
     this.errors.push(label);
     console.log(`✗  ${label}${detail ? `: ${detail}` : ""}`);
-    if (fix) console.log(`   → ${fix}`);
+    this.printFix(fix);
   }
 
   warn(label, detail, fix) {
     this.warnings.push(label);
     console.log(`⚠  ${label}${detail ? `: ${detail}` : ""}`);
-    if (fix) console.log(`   → ${fix}`);
+    this.printFix(fix);
+  }
+
+  requestSetupHint(kind) {
+    this.setupHints.add(kind);
   }
 
   checkNode() {
     const versionText = process.version;
     const version = parseVersion(versionText);
     if (!meetsAnyNodeRequirement(version)) {
+      this.requestSetupHint("node");
       this.fail(
         "Node.js",
         versionText,
-        "Install Node.js 20.19+ or 22.12+ (Angular 21 requires it). https://nodejs.org/"
+        "Install Node.js 20.19+ or 22.12+ — https://nodejs.org/ then run: npm run init"
       );
       return;
     }
@@ -643,6 +728,7 @@ class Validator {
   checkJava(jmeterBin = resolveJmeterBin(), jmeterHome = null) {
     const home = jmeterHome || resolveJmeterHome(jmeterBin);
     const { javaHome, source } = resolveJavaHomeForJmeter(jmeterBin, home);
+    const discovered = discoverJmeterJavaHomes();
     let jmeterJavaOk = false;
 
     if (javaHome) {
@@ -652,29 +738,52 @@ class Validator {
         jmeterJavaOk = true;
         this.pass("Java (JMeter uses)", `${jmeterJava.versionLine} — ${source}`);
         const parsed = parseVersion(jmeterJava.versionLine);
-        if (parsed && (parsed.major < 11 || (parsed.major === 1 && parsed.minor <= 8))) {
-          const fix =
+        const minStable = minStableJavaMajorForPlatform();
+        const major = parsed?.major === 1 ? parsed.minor : parsed?.major;
+        if (major != null && major < minStable) {
+          this.requestSetupHint("java");
+          this.warn(
+            "Java (JMeter)",
             process.platform === "win32"
-              ? "Install Java 17/21 and run: npm run setup:jmeter-java  (sets JMETER_JAVA_HOME in .env; keeps JAVA_HOME on Java 8 for backend)"
-              : "Prefer Java 11, 17, or 21 — set JMETER_JAVA_HOME in .env or jmeter.bat / bin/setenv.bat";
+              ? `Java ${major} is too old for JMeter on Windows (need ${minStable}+; Java 8 often crashes with exit 3221225477)`
+              : `${parsed.raw} is older than recommended for JMeter 5.4+`,
+            [
+              "npm run install:jmeter-java  — download Temurin 17 into .jdk/",
+              "npm run setup:jmeter-java  — or detect JDK 11+ already installed"
+            ]
+          );
+        } else if (parsed && (parsed.major < 11 || (parsed.major === 1 && parsed.minor <= 8))) {
+          this.requestSetupHint("java");
           this.warn(
             "Java (JMeter)",
             `${parsed.raw} is older than recommended for JMeter 5.4+`,
-            fix
+            [
+              "npm run install:jmeter-java  — download Temurin 17 into .jdk/",
+              "npm run setup:jmeter-java  — or set JMETER_JAVA_HOME in .env"
+            ]
           );
         }
       } else {
+        this.requestSetupHint("java");
         this.fail(
           "Java (JMeter uses)",
-          `JAVA_HOME in ${source} is not runnable (${javaHome})`,
-          "Fix JAVA_HOME in jmeter.bat or JMETER_HOME/bin/setenv.bat"
+          `Java at ${source} is not runnable (${javaHome})`,
+          "Fix JMETER_JAVA_HOME in .env or JAVA_HOME in JMETER_HOME/bin/setenv.bat / setenv.sh"
         );
       }
     } else {
+      this.requestSetupHint("java");
+      const discoverHint =
+        discovered.length > 0
+          ? `Found ${discovered.length} suitable JDK(s) on disk — run: npm run setup:jmeter-java`
+          : "No suitable JDK found — run: npm run install:jmeter-java";
       this.warn(
         "Java (JMeter uses)",
-        "could not resolve from jmeter.bat / setenv.bat",
-        "Set JMETER_JAVA_HOME in .env (npm run setup:jmeter-java), or configure JMETER_HOME/bin/setenv.bat"
+        "could not resolve Java for JMeter",
+        [
+          discoverHint,
+          "Copy .env.example → .env and set JMETER_HOME if JMeter is not on PATH"
+        ]
       );
     }
 
@@ -710,16 +819,24 @@ class Validator {
     }
 
     if (!jmeterJavaOk && !pathJava && !process.env.JAVA_HOME) {
+      this.requestSetupHint("java");
       this.fail(
         "Java",
         "not found for JMeter or on PATH",
-        "Install a JRE/JDK (11, 17, or 21) and run: npm run setup:jmeter-java"
+        [
+          "npm run install:jmeter-java  — download Temurin 17 (keeps system JAVA_HOME unchanged)",
+          "npm run setup:jmeter-java  — or detect an installed JDK 11+"
+        ]
       );
     } else if (!jmeterJavaOk && !pathJava) {
+      this.requestSetupHint("java");
       this.fail(
         "Java",
         "no runnable Java found for population runs",
-        "Set JMETER_JAVA_HOME in .env (npm run setup:jmeter-java), or fix system JAVA_HOME"
+        [
+          "npm run install:jmeter-java  — download Temurin 17 into .jdk/",
+          "npm run setup:jmeter-java  — or set JMETER_JAVA_HOME in .env"
+        ]
       );
     }
   }
@@ -729,10 +846,11 @@ class Validator {
     const result = runCommand(jmeterBin, ["--version"]);
     const combinedOutput = `${result.stdout || ""}\n${result.stderr || ""}`;
     if (result.status !== 0 && !/Version\s+\d+\.\d+/i.test(combinedOutput)) {
+      this.requestSetupHint("jmeter");
       this.fail(
         "JMeter",
         `"${jmeterBin}" not runnable`,
-        'Install Apache JMeter 5.4+ and add it to PATH, or set JMETER_BIN to the full path (e.g. export JMETER_BIN=/opt/jmeter/bin/jmeter).'
+        jmeterSetupSteps()
       );
       return { bin: jmeterBin, home: null };
     }
@@ -747,10 +865,11 @@ class Validator {
 
     const home = resolveJmeterHome(jmeterBin);
     if (!home) {
+      this.requestSetupHint("jmeter");
       this.warn(
         "JMeter home",
         "could not resolve JMETER_HOME",
-        "Set JMETER_HOME if plugin detection is inconclusive."
+        "Set JMETER_HOME in .env (see .env.example) or JMETER_BIN to the jmeter executable"
       );
     } else {
       this.pass("JMeter home", home);
@@ -770,24 +889,34 @@ class Validator {
     const compat = assessPluginBundleJavaCompatibility(manifest, javaInfo.major);
 
     if (compat.level === "error") {
+      this.requestSetupHint("java");
       this.fail(
         "Plugin bundle + Java",
         compat.message,
-        `Set JMETER_JAVA_HOME in .env (npm run setup:jmeter-java), or Java ${compat.recommended}+ in jmeter.bat / setenv.bat`
+        [
+          "npm run install:jmeter-java  — download Temurin 17 into .jdk/",
+          `npm run setup:jmeter-java  — or configure Java ${compat.recommended}+ via JMETER_JAVA_HOME in .env`
+        ]
       );
       return;
     }
     if (compat.level === "unknown") {
+      this.requestSetupHint("java");
+      this.requestSetupHint("jmeter");
       this.warn(
         "Plugin bundle + Java",
         compat.message,
-        "Set JMETER_HOME so validate can read jmeter.bat JAVA_HOME"
+        "Set JMETER_HOME in .env, then run: npm run setup:jmeter-java"
       );
     } else if (compat.level === "warn") {
+      this.requestSetupHint("java");
       this.warn(
         "Plugin bundle + Java",
         compat.message,
-        "Older Java may work but can cause JVM crashes or UnsupportedClassVersionError with plugin deps"
+        [
+          "npm run install:jmeter-java  — recommended on Windows to avoid JVM crashes",
+          "Older Java may cause UnsupportedClassVersionError or access violations"
+        ]
       );
     } else {
       this.pass("Plugin bundle + Java", compat.message);
@@ -795,19 +924,28 @@ class Validator {
 
     const hasPlugins = hasJsonPlugins(jmeterHome);
     if (hasPlugins === null) {
+      this.requestSetupHint("plugins");
+      this.requestSetupHint("jmeter");
       this.warn(
         "JMeter JSON plugins",
         "could not verify (JMETER_HOME unknown)",
-        "Run: npm run install:jmeter-plugins after setting JMETER_HOME or JMETER_BIN"
+        [
+          "Set JMETER_HOME in .env (see .env.example)",
+          "npm run install:jmeter-plugins"
+        ]
       );
       return;
     }
 
     if (!hasPlugins) {
+      this.requestSetupHint("plugins");
       this.fail(
         "JMeter JSON plugins",
         "jpgc-json not found in lib/ext",
-        "Run: npm run install:jmeter-plugins  (copies vendored jars from vendor/jmeter-plugins/)"
+        [
+          "npm run install:jmeter-plugins  — copies vendored jars from vendor/jmeter-plugins/",
+          "Requires JMETER_HOME in .env if JMeter is not auto-detected"
+        ]
       );
       return;
     }
@@ -877,6 +1015,8 @@ function runValidation() {
   validator.checkWritableRunsDir();
 
   console.log("");
+  printSetupGuide(validator.setupHints);
+
   if (validator.errors.length > 0) {
     console.log(`Validation failed (${validator.errors.length} error${validator.errors.length === 1 ? "" : "s"}).`);
     if (validator.warnings.length > 0) {
@@ -888,6 +1028,9 @@ function runValidation() {
 
   if (validator.warnings.length > 0) {
     console.log(`Validation passed with ${validator.warnings.length} warning${validator.warnings.length === 1 ? "" : "s"}.`);
+    if (validator.setupHints.has("java")) {
+      console.log("Address Java warnings before running JMeter on Windows.");
+    }
   } else {
     console.log("All prerequisites met. You can start the app with: npm run dev");
   }
@@ -917,5 +1060,8 @@ module.exports = {
   discoverJmeterJavaHomes,
   pickBestJmeterJavaHome,
   getJavaMajorFromHome,
-  minStableJavaMajorForPlatform
+  minStableJavaMajorForPlatform,
+  javaSetupSteps,
+  jmeterSetupSteps,
+  printSetupGuide
 };
