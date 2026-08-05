@@ -1053,6 +1053,7 @@ module.exports = {
   resolveJavaHomeFromJmeterScripts,
   resolveJavaHomeForJmeter,
   javaExecutableForHome,
+  javaVersionFromBin,
   loadPluginManifest,
   getJmeterJavaInfo,
   assessPluginBundleJavaCompatibility,
