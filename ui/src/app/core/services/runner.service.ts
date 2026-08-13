@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { resolveRunnerApiUrl } from '../utils/runner-api-url';
 import {
+  CreateScheduleRequest,
   FieldOptionsRequest,
   FieldOptionsResponse,
   LogPollResponse,
@@ -16,6 +17,8 @@ import {
   UploadPlanResponse,
   RunSamplesResponse,
   RunSummary,
+  Schedule,
+  ScheduleRecurrence,
   StartRunRequest
 } from '../models/runner.models';
 
@@ -131,6 +134,36 @@ export class RunnerService {
     const params = new HttpParams().set('sampleKey', sampleKey);
     return this.http.get<RunSamplePayloadResponse>(`${this.baseUrl}/runs/${id}/samples/payload`, {
       params
+    });
+  }
+
+  listSchedules(): Observable<{ schedules: Schedule[] }> {
+    return this.http.get<{ schedules: Schedule[] }>(`${this.baseUrl}/schedules`);
+  }
+
+  getSchedule(id: string): Observable<{ schedule: Schedule }> {
+    return this.http.get<{ schedule: Schedule }>(`${this.baseUrl}/schedules/${id}`);
+  }
+
+  createSchedule(body: CreateScheduleRequest): Observable<{ schedule: Schedule }> {
+    return this.http.post<{ schedule: Schedule }>(`${this.baseUrl}/schedules`, body);
+  }
+
+  updateSchedule(id: string, body: Partial<Schedule>): Observable<{ schedule: Schedule }> {
+    return this.http.put<{ schedule: Schedule }>(`${this.baseUrl}/schedules/${id}`, body);
+  }
+
+  deleteSchedule(id: string): Observable<{ deleted: boolean; id: string }> {
+    return this.http.delete<{ deleted: boolean; id: string }>(`${this.baseUrl}/schedules/${id}`);
+  }
+
+  runScheduleNow(id: string): Observable<{ run: RunDetail }> {
+    return this.http.post<{ run: RunDetail }>(`${this.baseUrl}/schedules/${id}/run-now`, {});
+  }
+
+  previewRecurrence(recurrence: ScheduleRecurrence): Observable<{ nextRunAt: string | null }> {
+    return this.http.post<{ nextRunAt: string | null }>(`${this.baseUrl}/schedules/preview`, {
+      recurrence
     });
   }
 }

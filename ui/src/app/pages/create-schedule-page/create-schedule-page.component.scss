@@ -1,0 +1,98 @@
+:host {
+  display: block;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ddd6fe;
+  text-decoration: none;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.back-link:hover {
+  background: rgba(139, 92, 246, 0.16);
+  border-color: rgba(167, 139, 250, 0.3);
+  color: #ffffff;
+  transform: translateX(-2px);
+}
+
+.loading-box {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1rem;
+  background: rgba(19, 12, 39, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.page-hero {
+  position: relative;
+  border-radius: 26px;
+  padding: 1.6rem 1.85rem;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
+    radial-gradient(120% 100% at 100% 0%, rgba(244, 114, 182, 0.1) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(28, 19, 56, 0.92) 0%, rgba(15, 10, 30, 0.92) 100%);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  overflow: hidden;
+}
+
+.page-hero::after {
+  content: '';
+  position: absolute;
+  right: -70px;
+  top: -70px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg, #8b5cf6, #f472b6, #22d3ee, #8b5cf6);
+  filter: blur(26px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.page-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.page-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #e9d5ff;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.16);
+  border: 1px solid rgba(167, 139, 250, 0.34);
+}
+
+.page-hero-title {
+  margin: 0.85rem 0 0;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #faf7ff;
+}
+
+.page-hero-sub {
+  margin: 0.55rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  max-width: 42rem;
+}

@@ -1,5 +1,6 @@
 # Runtime artifacts
 runs/
+schedules/
 *.log
 
 # Dependencies

@@ -95,6 +95,8 @@ export interface RunSummary {
   planFile: string | null;
   /** Optional caller tag (e.g. terraform / console) for who started the run. */
   source?: string | null;
+  /** Set when this run was fired by a saved schedule. */
+  scheduleId?: string | null;
   status: RunStatus;
   pid: number | null;
   startedAt: string;
@@ -231,6 +233,44 @@ export interface StartRunRequest {
   /** Optional caller tag so runs can be attributed to an upstream UI/system. */
   source?: string;
   props?: RunProps;
+}
+
+/** v1: the only computed-value rule is a date offset applied to a `date`-type parameter. */
+export interface ScheduleDateOffsetRule {
+  field: string;
+  type: 'dateOffset';
+  days: number;
+}
+
+export type ScheduleRule = ScheduleDateOffsetRule;
+
+export type ScheduleRecurrence =
+  | { type: 'once'; at: string }
+  | { type: 'daily'; time: string }
+  | { type: 'cron'; expression: string };
+
+export interface Schedule {
+  id: string;
+  label: string;
+  planFile: string;
+  baseProps: RunProps;
+  rules: ScheduleRule[];
+  recurrence: ScheduleRecurrence;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+  nextRunAt: string | null;
+  lastRunAt: string | null;
+  lastRunId: string | null;
+  lastRunStatus: RunStatus | null;
+}
+
+export interface CreateScheduleRequest {
+  label?: string;
+  planFile: string;
+  baseProps: RunProps;
+  rules: ScheduleRule[];
+  recurrence: ScheduleRecurrence;
 }
 
 export interface FieldOptionsRequest {

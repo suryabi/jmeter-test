@@ -1,0 +1,50 @@
+<app-topbar />
+
+<div class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+  <a routerLink="/schedules" class="back-link">
+    <i class="pi pi-arrow-left"></i>
+    Back to schedules
+  </a>
+
+  <section class="page-hero mt-4">
+    <div class="page-hero-content">
+      <span class="page-hero-eyebrow">
+        <i class="pi pi-clock"></i>
+        {{ scheduleId ? 'Edit schedule' : 'New schedule' }}
+      </span>
+      @if (scheduleId) {
+        <h1 class="page-hero-title">Update the <span class="gradient-text">schedule</span></h1>
+        <p class="page-hero-sub">
+          Changes apply the next time this schedule fires. Its next run time is recalculated from
+          the recurrence you set below.
+        </p>
+      } @else {
+        <h1 class="page-hero-title">Set it and <span class="gradient-text">forget it</span></h1>
+        <p class="page-hero-sub">
+          Pick a plan, tune the parameters, and choose how often it should run. Date fields can be
+          computed automatically (e.g. "today + 15 days") so every firing uses a fresh value.
+        </p>
+      }
+    </div>
+  </section>
+
+  @if (error) {
+    <div class="my-4">
+      <p-message severity="error" [text]="error" />
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-box mt-6">
+      <p-progress-spinner styleClass="!h-6 !w-6" strokeWidth="6" />
+      <span>Loading schedule…</span>
+    </div>
+  } @else {
+    <app-start-run-form
+      class="mt-6 block"
+      mode="schedule"
+      [initialSchedule]="schedule"
+      (scheduleSave)="onSaveSchedule($event)"
+    />
+  }
+</div>

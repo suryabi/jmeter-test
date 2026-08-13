@@ -1,0 +1,179 @@
+<app-topbar />
+
+<div class="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+  <section class="page-hero">
+    <div class="page-hero-content">
+      <span class="page-hero-eyebrow">
+        <i class="pi pi-clock"></i>
+        Schedules
+      </span>
+      <h1 class="page-hero-title">Recurring <span class="gradient-text">population runs</span></h1>
+      <p class="page-hero-sub">
+        Fires automatically while the runner (<code>npm run dev</code> / <code>npm start</code>) is
+        running. If the server is down at the scheduled time, it catches up once on next startup.
+      </p>
+      <div class="page-hero-actions">
+        <p-button icon="pi pi-plus" label="New schedule" routerLink="/schedules/new" />
+      </div>
+    </div>
+  </section>
+
+  @if (error) {
+    <div class="my-4">
+      <p-message severity="error" [text]="error" />
+    </div>
+  }
+
+  <section class="history-panel flat-panel mt-6">
+    <header class="history-header">
+      <div>
+        <h2 class="m-0 text-base font-semibold text-[var(--text)]">Schedules</h2>
+        <p class="m-0 mt-0.5 text-xs text-[var(--text-dim)]">
+          Auto-refreshing every 10 seconds &middot; {{ schedules().length }} schedule{{ schedules().length === 1 ? '' : 's' }}
+        </p>
+      </div>
+      <div class="history-polling">
+        <span class="live-dot"></span> Polling
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="history-table-wrap">
+        <div class="empty-state">
+          <p-progress-spinner styleClass="!h-8 !w-8" strokeWidth="6" />
+          <p class="mt-3 text-sm text-[var(--text-muted)]">Loading schedules…</p>
+        </div>
+      </div>
+    } @else if (schedules().length === 0) {
+      <div class="history-table-wrap">
+        <div class="empty-state">
+          <i class="pi pi-clock text-4xl text-[var(--text-dim)]"></i>
+          <p class="mt-3 text-sm text-[var(--text-muted)]">No schedules yet</p>
+          <p class="m-0 text-xs text-[var(--text-dim)]">
+            Create one to run a plan automatically &mdash; e.g. every night with a computed date.
+          </p>
+        </div>
+      </div>
+    } @else {
+      <div class="history-table-wrap">
+        <p-table [value]="schedules()" [tableStyle]="{ 'min-width': '62rem' }" responsiveLayout="scroll">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Schedule</th>
+              <th>Plan</th>
+              <th>Recurrence</th>
+              <th>Next run</th>
+              <th>Last run</th>
+              <th class="w-64 text-right">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-schedule>
+            <tr [class.opacity-60]="!schedule.enabled">
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="run-row-icon">
+                    <i class="pi pi-clock"></i>
+                  </div>
+                  <div>
+                    <div class="text-sm font-medium text-[var(--text)]">
+                      {{ schedule.label || 'Unnamed schedule' }}
+                    </div>
+                    @if (!schedule.enabled) {
+                      <p-tag severity="secondary" value="Paused" />
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="plan-badge">
+                  <i class="pi pi-file text-xs"></i>
+                  {{ schedule.planFile.replace('.jmx', '') }}
+                </span>
+              </td>
+              <td>
+                <span class="text-sm text-[var(--text-muted)]">{{ describeRecurrence(schedule.recurrence) }}</span>
+                @if (schedule.rules.length) {
+                  <div class="text-xs text-[var(--text-dim)] mt-0.5">
+                    <i class="pi pi-sparkles"></i>
+                    {{ schedule.rules.length }} computed field{{ schedule.rules.length === 1 ? '' : 's' }}
+                  </div>
+                }
+              </td>
+              <td>
+                <span class="text-sm text-[var(--text-muted)]">
+                  {{ schedule.nextRunAt ? (schedule.nextRunAt | date: 'MMM d, h:mm a') : '—' }}
+                </span>
+              </td>
+              <td>
+                @if (schedule.lastRunAt) {
+                  <div class="flex items-center gap-2">
+                    @if (schedule.lastRunId) {
+                      <a
+                        [routerLink]="['/runs', schedule.lastRunId]"
+                        class="text-sm text-[var(--text-muted)] underline decoration-dotted"
+                      >
+                        {{ schedule.lastRunAt | date: 'MMM d, h:mm a' }}
+                      </a>
+                    } @else {
+                      <span class="text-sm text-[var(--text-muted)]">{{ schedule.lastRunAt | date: 'MMM d, h:mm a' }}</span>
+                    }
+                    @if (schedule.lastRunStatus) {
+                      <p-tag [value]="schedule.lastRunStatus" [severity]="statusSeverity(schedule.lastRunStatus)" />
+                    }
+                  </div>
+                } @else {
+                  <span class="text-sm text-[var(--text-dim)]">—</span>
+                }
+              </td>
+              <td class="text-right">
+                <div class="inline-flex items-center justify-end gap-2">
+                  <p-button
+                    type="button"
+                    severity="secondary"
+                    size="small"
+                    icon="pi pi-pencil"
+                    [routerLink]="['/schedules', schedule.id, 'edit']"
+                    pTooltip="Edit schedule"
+                    tooltipPosition="top"
+                    [attr.aria-label]="'Edit schedule ' + (schedule.label || schedule.id)"
+                  />
+                  <p-button
+                    type="button"
+                    severity="secondary"
+                    size="small"
+                    [icon]="schedule.enabled ? 'pi pi-pause' : 'pi pi-play'"
+                    (onClick)="toggleEnabled(schedule)"
+                    [pTooltip]="schedule.enabled ? 'Pause schedule' : 'Resume schedule'"
+                    tooltipPosition="top"
+                    [attr.aria-label]="(schedule.enabled ? 'Pause' : 'Resume') + ' schedule ' + (schedule.label || schedule.id)"
+                  />
+                  <p-button
+                    type="button"
+                    severity="secondary"
+                    size="small"
+                    icon="pi pi-bolt"
+                    [loading]="runningNowId() === schedule.id"
+                    (onClick)="runNow(schedule)"
+                    pTooltip="Run now, outside the normal schedule"
+                    tooltipPosition="top"
+                    [attr.aria-label]="'Run schedule ' + (schedule.label || schedule.id) + ' now'"
+                  />
+                  <p-button
+                    type="button"
+                    severity="danger"
+                    size="small"
+                    icon="pi pi-trash"
+                    (onClick)="deleteSchedule(schedule, $event)"
+                    pTooltip="Delete schedule"
+                    tooltipPosition="top"
+                    [attr.aria-label]="'Delete schedule ' + (schedule.label || schedule.id)"
+                  />
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    }
+  </section>
+</div>

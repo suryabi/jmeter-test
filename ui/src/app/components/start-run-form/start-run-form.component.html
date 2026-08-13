@@ -1,5 +1,5 @@
 <section class="form-shell flat-panel">
-  <form class="form-grid" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="onFormSubmit()">
     <!-- Header -->
     <header class="form-header">
       <div class="form-header-main">
@@ -32,10 +32,14 @@
           }
           <p-button
             type="submit"
-            icon="pi pi-play-circle"
+            [icon]="mode === 'schedule' ? 'pi pi-clock' : 'pi pi-play-circle'"
             [loading]="submitting"
-            [disabled]="form.invalid || submitting"
-            label="Start population run"
+            [disabled]="form.invalid || submitting || recurrenceOnceInPast() || recurrenceCronMissing()"
+            [label]="
+              mode === 'schedule'
+                ? (initialSchedule ? 'Update schedule' : 'Save schedule')
+                : 'Start population run'
+            "
           />
         </div>
       }
@@ -50,7 +54,7 @@
       <p-message severity="error" [text]="loadError" />
     } @else {
       <!-- Plan + label row -->
-      <div class="run-meta-row">
+      <div class="run-meta-row" [class.run-meta-row-schedule]="mode === 'schedule'">
         @if (plans.length > 0) {
           <div class="run-meta-field run-meta-plan">
             <label class="field-label" for="planSelect">
@@ -105,7 +109,124 @@
             />
           </div>
         }
+        @if (mode === 'schedule') {
+          <div class="run-meta-field">
+            <label class="field-label">
+              <i class="pi pi-calendar-clock"></i>
+              Recurrence
+            </label>
+            <div class="recurrence-toggle">
+              <label class="recurrence-option">
+                <p-radiobutton
+                  name="recurrenceType"
+                  value="daily"
+                  [ngModel]="recurrenceType"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="onRecurrenceTypeChange($event)"
+                />
+                Daily
+              </label>
+              <label class="recurrence-option">
+                <p-radiobutton
+                  name="recurrenceType"
+                  value="once"
+                  [ngModel]="recurrenceType"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="onRecurrenceTypeChange($event)"
+                />
+                Once
+              </label>
+              <label class="recurrence-option">
+                <p-radiobutton
+                  name="recurrenceType"
+                  value="cron"
+                  [ngModel]="recurrenceType"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="onRecurrenceTypeChange($event)"
+                />
+                Cron
+              </label>
+            </div>
+          </div>
+          @if (recurrenceType === 'daily') {
+            <div class="run-meta-field">
+              <label class="field-label" for="recurrenceTime">
+                <i class="pi pi-clock"></i>
+                Time (every day)
+              </label>
+              <input
+                type="time"
+                id="recurrenceTime"
+                class="surface-input w-full"
+                [(ngModel)]="recurrenceTime"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+          } @else if (recurrenceType === 'once') {
+            <div class="run-meta-field">
+              <label class="field-label" for="recurrenceOnceAt">
+                <i class="pi pi-calendar"></i>
+                Date &amp; time
+              </label>
+              <p-datepicker
+                inputId="recurrenceOnceAt"
+                class="surface-datepicker w-full"
+                panelStyleClass="surface-datepicker-panel"
+                appendTo="body"
+                [(ngModel)]="recurrenceOnceAt"
+                [ngModelOptions]="{ standalone: true }"
+                [showTime]="true"
+                dateFormat="yy-mm-dd"
+              />
+              @if (recurrenceOnceInPast()) {
+                <small class="field-help field-error">Pick a date/time in the future.</small>
+              }
+            </div>
+          } @else {
+            <div class="run-meta-field run-meta-cron">
+              <label class="field-label" for="recurrenceCron">
+                <i class="pi pi-code"></i>
+                Cron expression
+              </label>
+              <input
+                pInputText
+                variant="outlined"
+                id="recurrenceCron"
+                class="surface-input w-full font-mono"
+                placeholder="*/15 9-17 * * 1-5"
+                [ngModel]="recurrenceCronExpression"
+                [ngModelOptions]="{ standalone: true }"
+                (ngModelChange)="onCronExpressionChange($event)"
+                (blur)="onRecurrenceCronBlur()"
+              />
+              @if (recurrenceCronMissing() && recurrenceCronTouched) {
+                <small class="field-help field-error">Enter a cron expression.</small>
+              } @else if (cronPreviewLoading) {
+                <small class="field-help">
+                  <i class="pi pi-spin pi-spinner"></i>
+                  Checking…
+                </small>
+              } @else if (cronPreviewError) {
+                <small class="field-help field-error">{{ cronPreviewError }}</small>
+              } @else if (cronPreview) {
+                <small class="field-help field-success">
+                  <i class="pi pi-check-circle"></i>
+                  Next run: {{ cronPreview | date: 'medium' }}
+                </small>
+              } @else {
+                <small class="field-help">Standard 5-field cron: minute hour day month weekday.</small>
+              }
+            </div>
+          }
+        }
       </div>
+
+      @if (mode === 'schedule') {
+        <p class="schedule-recurrence-hint">
+          <i class="pi pi-info-circle"></i>
+          Only date fields can be computed automatically (below); every other field uses the value set in the form.
+        </p>
+      }
 
       @if (propsLoadNotice) {
         <p-message severity="info" [text]="propsLoadNotice" />
@@ -195,18 +316,55 @@
                         @if (param.required) { <span class="required">*</span> }
                       </label>
                       @if (param.type === 'date') {
-                        <p-datepicker
-                          [inputId]="param.name"
-                          class="surface-datepicker w-full"
-                          panelStyleClass="surface-datepicker-panel"
-                          appendTo="body"
-                          [formControlName]="param.name"
-                          [iconDisplay]="'input'"
-                          [showIcon]="true"
-                          dateFormat="yy-mm-dd"
-                          dataType="string"
-                          placeholder="yyyy-mm-dd"
-                        />
+                        @if (mode === 'schedule') {
+                          <div class="date-field-row">
+                            <p-datepicker
+                              [inputId]="param.name"
+                              class="surface-datepicker date-field-picker"
+                              panelStyleClass="surface-datepicker-panel"
+                              appendTo="body"
+                              [formControlName]="param.name"
+                              [iconDisplay]="'input'"
+                              [showIcon]="true"
+                              dateFormat="yy-mm-dd"
+                              dataType="string"
+                              placeholder="yyyy-mm-dd"
+                            />
+                            <span class="date-rule-inline" [class.date-rule-inline-active]="isDateRuleEnabled(param)">
+                              <p-checkbox
+                                [inputId]="param.name + '-auto'"
+                                [ngModel]="isDateRuleEnabled(param)"
+                                [ngModelOptions]="{ standalone: true }"
+                                [binary]="true"
+                                (ngModelChange)="toggleDateRule(param, $event)"
+                              />
+                              <label [for]="param.name + '-auto'" class="date-rule-label">today +</label>
+                              @if (isDateRuleEnabled(param)) {
+                                <input
+                                  type="number"
+                                  class="surface-input date-rule-input"
+                                  [ngModel]="dateRules[param.name]"
+                                  [ngModelOptions]="{ standalone: true }"
+                                  (ngModelChange)="setDateRuleDays(param, $event)"
+                                />
+                                <span class="date-rule-label">d</span>
+                              }
+                            </span>
+                          </div>
+                        } @else {
+                          <p-datepicker
+                            [inputId]="param.name"
+                            class="surface-datepicker w-full"
+                            panelStyleClass="surface-datepicker-panel"
+                            appendTo="body"
+                            [formControlName]="param.name"
+                            [iconDisplay]="'input'"
+                            [showIcon]="true"
+                            dateFormat="yy-mm-dd"
+                            dataType="string"
+                            placeholder="yyyy-mm-dd"
+                          />
+                        }
                       } @else if (param.type === 'dropdown') {
                         <div
                           class="field-control-wrap"

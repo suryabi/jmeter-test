@@ -109,6 +109,17 @@
   }
 }
 
+@media (min-width: 1280px) {
+  .run-meta-row-schedule {
+    grid-template-columns:
+      minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(0, 0.9fr) minmax(0, 0.9fr);
+  }
+}
+
+.run-meta-cron {
+  grid-column: 1 / -1;
+}
+
 .run-meta-field {
   display: flex;
   flex-direction: column;
@@ -150,6 +161,87 @@
 
 .field-cell .p-inputtext.surface-input {
   display: block;
+}
+
+.schedule-recurrence-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.recurrence-toggle {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  height: 2.5rem;
+}
+
+.recurrence-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: #e6e1f5;
+  cursor: pointer;
+}
+
+.schedule-recurrence-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  background: rgba(19, 12, 39, 0.45);
+  border: 1px dashed rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+}
+
+.schedule-recurrence-hint i {
+  color: var(--accent);
+  margin-top: 0.1rem;
+}
+
+.date-field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.date-field-picker {
+  flex: 1 1 9rem;
+  min-width: 0;
+}
+
+.date-rule-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  white-space: nowrap;
+}
+
+.date-rule-inline-active {
+  border-color: rgba(167, 139, 250, 0.5);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.date-rule-label {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.date-rule-input {
+  width: 3.4rem;
+  padding: 0.2rem 0.4rem;
+  text-align: center;
 }
 
 .hidden-fields-toggle {
@@ -450,6 +542,13 @@
 
 .field-error {
   color: #fda4af;
+}
+
+.field-success {
+  color: #86efac;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 

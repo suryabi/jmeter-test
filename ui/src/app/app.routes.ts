@@ -12,6 +12,25 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/plans-page/plans-page.component').then(m => m.PlansPageComponent)
   },
   {
+    path: 'schedules',
+    loadComponent: () =>
+      import('./pages/schedules-page/schedules-page.component').then(m => m.SchedulesPageComponent)
+  },
+  {
+    path: 'schedules/new',
+    loadComponent: () =>
+      import('./pages/create-schedule-page/create-schedule-page.component').then(
+        m => m.CreateSchedulePageComponent
+      )
+  },
+  {
+    path: 'schedules/:id/edit',
+    loadComponent: () =>
+      import('./pages/create-schedule-page/create-schedule-page.component').then(
+        m => m.CreateSchedulePageComponent
+      )
+  },
+  {
     path: 'plans/:planFile/insights',
     loadComponent: () =>
       import('./pages/plan-insights-page/plan-insights-page.component').then(m => m.PlanInsightsPageComponent)

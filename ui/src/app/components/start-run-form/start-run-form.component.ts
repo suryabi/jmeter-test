@@ -17,14 +17,18 @@ import {
   Validators
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, of } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import {
   FieldOption,
   ParameterDef,
   ParameterGroup,
   PlanInfo,
   RunProps,
-  RunSummary
+  RunSummary,
+  Schedule,
+  ScheduleRecurrence,
+  ScheduleRule
 } from '../../core/models/runner.models';
 import { RunnerService } from '../../core/services/runner.service';
 import { formatFieldLabel, parameterFieldLabel } from '../../core/utils/format-field-label';
@@ -37,6 +41,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
   selector: 'app-start-run-form',
@@ -52,19 +57,73 @@ import { MultiSelectModule } from 'primeng/multiselect';
     DatePickerModule,
     InputTextModule,
     CheckboxModule,
-    MultiSelectModule
+    MultiSelectModule,
+    RadioButtonModule
   ],
   templateUrl: './start-run-form.component.html',
   styleUrl: './start-run-form.component.scss'
 })
 export class StartRunFormComponent implements OnInit, OnDestroy {
   @Input() priorRuns: RunSummary[] = [];
+  @Input() mode: 'run' | 'schedule' = 'run';
+  /** Schedule mode only: an existing schedule to pre-fill for editing. */
+  @Input() initialSchedule: Schedule | null = null;
   @Output() start = new EventEmitter<{ label: string; planFile: string; props: RunProps }>();
+  @Output() scheduleSave = new EventEmitter<{
+    label: string;
+    planFile: string;
+    baseProps: RunProps;
+    rules: ScheduleRule[];
+    recurrence: ScheduleRecurrence;
+  }>();
+
+  /** Schedule mode only: date-type param name -> "today + N days" offset. */
+  dateRules: Record<string, number | null> = {};
+  recurrenceType: 'once' | 'daily' | 'cron' = 'daily';
+  recurrenceTime = '00:00';
+  recurrenceOnceAt: Date | null = null;
+  recurrenceCronExpression = '';
+  recurrenceCronTouched = false;
+  cronPreview: string | null = null;
+  cronPreviewLoading = false;
+  cronPreviewError = '';
+
+  onRecurrenceTypeChange(type: 'once' | 'daily' | 'cron'): void {
+    this.recurrenceType = type;
+    if (type === 'once' && (!this.recurrenceOnceAt || this.recurrenceOnceAt <= new Date())) {
+      const defaultAt = new Date();
+      defaultAt.setHours(defaultAt.getHours() + 1, 0, 0, 0);
+      this.recurrenceOnceAt = defaultAt;
+    }
+    if (type === 'cron') {
+      this.recurrenceCronTouched = false;
+      this.cronExpressionChanges.next(this.recurrenceCronExpression);
+    }
+  }
+
+  onRecurrenceCronBlur(): void {
+    this.recurrenceCronTouched = true;
+  }
+
+  onCronExpressionChange(value: string): void {
+    this.recurrenceCronExpression = value;
+    this.cronExpressionChanges.next(value);
+  }
+
+  recurrenceOnceInPast(): boolean {
+    return this.recurrenceType === 'once' && (!this.recurrenceOnceAt || this.recurrenceOnceAt <= new Date());
+  }
+
+  recurrenceCronMissing(): boolean {
+    return this.recurrenceType === 'cron' && !this.recurrenceCronExpression.trim();
+  }
 
   private readonly fb = inject(FormBuilder);
   private readonly runner = inject(RunnerService);
   private readonly cdr = inject(ChangeDetectorRef);
   private enableIfSub?: Subscription;
+  private readonly cronExpressionChanges = new Subject<string>();
+  private cronPreviewSub?: Subscription;
 
   form: FormGroup = this.fb.group({
     label: this.fb.nonNullable.control('sample-run')
@@ -87,12 +146,15 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
   private pendingPropsSourceLabel = '';
   /** Set when applyPropsFromRun is called before plans/parameters finished loading. */
   private pendingApplyRun: RunSummary | null = null;
+  private appliedInitialSchedule = false;
 
   ngOnInit(): void {
     this.runner.getPlans().subscribe({
       next: ({ plans }) => {
         this.plans = plans;
-        this.selectedPlan = plans[0] ?? null;
+        this.selectedPlan = this.initialSchedule
+          ? plans.find((plan) => plan.file === this.initialSchedule!.planFile) ?? plans[0] ?? null
+          : plans[0] ?? null;
         this.fetchParameters(this.selectedPlan?.file ?? null);
       },
       error: (err) => {
@@ -100,10 +162,36 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
         this.loading = false;
       }
     });
+
+    this.cronPreviewSub = this.cronExpressionChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap((expression) => {
+          if (!expression.trim()) {
+            this.cronPreviewLoading = false;
+            return of({ nextRunAt: null, error: '' });
+          }
+          this.cronPreviewLoading = true;
+          return this.runner.previewRecurrence({ type: 'cron', expression }).pipe(
+            map((res) => ({ nextRunAt: res.nextRunAt, error: '' })),
+            catchError((err) =>
+              of({ nextRunAt: null, error: err?.error?.error || 'Invalid cron expression' })
+            )
+          );
+        })
+      )
+      .subscribe(({ nextRunAt, error }) => {
+        this.cronPreviewLoading = false;
+        this.cronPreview = nextRunAt;
+        this.cronPreviewError = error;
+        this.cdr.markForCheck();
+      });
   }
 
   ngOnDestroy(): void {
     this.enableIfSub?.unsubscribe();
+    this.cronPreviewSub?.unsubscribe();
   }
 
   onPlanChange(plan: PlanInfo | null): void {
@@ -144,6 +232,7 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
         this.fieldOptions = {};
         this.fieldOptionsLoading = {};
         this.fieldOptionsError = {};
+        this.dateRules = {};
         this.buildForm(schema.groups);
         this.loadDropdownOptions();
         if (schema.groups.length > 0) {
@@ -156,6 +245,10 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
           const run = this.pendingApplyRun;
           this.pendingApplyRun = null;
           this.applyPropsFromRun(run);
+        }
+        if (this.initialSchedule && !this.appliedInitialSchedule) {
+          this.appliedInitialSchedule = true;
+          this.applyScheduleToForm(this.initialSchedule);
         }
       },
       error: (err) => {
@@ -312,6 +405,72 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
     }
 
     this.start.emit({ label, planFile, props });
+  }
+
+  onFormSubmit(): void {
+    if (this.mode === 'schedule') {
+      this.onSubmitSchedule();
+    } else {
+      this.onSubmit();
+    }
+  }
+
+  isDateRuleEnabled(param: ParameterDef): boolean {
+    return this.dateRules[param.name] != null;
+  }
+
+  toggleDateRule(param: ParameterDef, enabled: boolean): void {
+    const control = this.form.get(param.name);
+    if (enabled) {
+      this.dateRules[param.name] = this.dateRules[param.name] ?? 15;
+      control?.disable({ emitEvent: false });
+    } else {
+      delete this.dateRules[param.name];
+      control?.enable({ emitEvent: false });
+    }
+  }
+
+  setDateRuleDays(param: ParameterDef, value: string | number): void {
+    const days = Number(value);
+    this.dateRules[param.name] = Number.isFinite(days) ? days : 0;
+  }
+
+  private onSubmitSchedule(): void {
+    if (
+      this.form.invalid ||
+      this.submitting ||
+      this.loading ||
+      this.recurrenceOnceInPast() ||
+      this.recurrenceCronMissing()
+    ) {
+      return;
+    }
+
+    const raw = this.form.getRawValue() as Record<string, string | boolean | string[]>;
+    const label = String(raw['label'] ?? 'sample-run');
+    const planFile = this.selectedPlan?.file ?? '';
+    const baseProps: RunProps = {};
+
+    for (const group of this.parameterGroups) {
+      for (const param of group.parameters) {
+        baseProps[param.name] = this.serializeValue(param, raw[param.name]);
+      }
+    }
+
+    const rules: ScheduleRule[] = Object.entries(this.dateRules)
+      .filter(([, days]) => days != null && Number.isFinite(days))
+      .map(([field, days]) => ({ field, type: 'dateOffset' as const, days: Number(days) }));
+
+    let recurrence: ScheduleRecurrence;
+    if (this.recurrenceType === 'once') {
+      recurrence = { type: 'once', at: (this.recurrenceOnceAt ?? new Date()).toISOString() };
+    } else if (this.recurrenceType === 'cron') {
+      recurrence = { type: 'cron', expression: this.recurrenceCronExpression.trim() };
+    } else {
+      recurrence = { type: 'daily', time: this.recurrenceTime };
+    }
+
+    this.scheduleSave.emit({ label, planFile, baseProps, rules, recurrence });
   }
 
   setSubmitting(value: boolean): void {
@@ -483,6 +642,36 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
       this.propsLoadNotice =
         'Selected run has parameters, but none matched the current plan schema. Using defaults.';
     }
+  }
+
+  private applyScheduleToForm(schedule: Schedule): void {
+    this.form.get('label')?.setValue(schedule.label, { emitEvent: false });
+    this.applyPropsToForm(schedule.baseProps);
+
+    this.dateRules = {};
+    for (const rule of schedule.rules) {
+      if (rule.type === 'dateOffset') {
+        this.dateRules[rule.field] = rule.days;
+        this.form.get(rule.field)?.disable({ emitEvent: false });
+      }
+    }
+
+    if (schedule.recurrence.type === 'once') {
+      this.recurrenceType = 'once';
+      this.recurrenceOnceAt = new Date(schedule.recurrence.at);
+    } else if (schedule.recurrence.type === 'cron') {
+      this.recurrenceType = 'cron';
+      this.recurrenceCronExpression = schedule.recurrence.expression;
+      this.recurrenceCronTouched = true;
+      this.cronExpressionChanges.next(schedule.recurrence.expression);
+    } else {
+      this.recurrenceType = 'daily';
+      this.recurrenceTime = schedule.recurrence.time;
+    }
+
+    this.loadDropdownOptions();
+    this.syncEnableIfStates();
+    this.cdr.markForCheck();
   }
 
   private controlValueFromProp(

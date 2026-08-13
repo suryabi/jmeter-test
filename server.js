@@ -26,6 +26,7 @@ const {
   planRequiresJsonPlugins
 } = require("./scripts/validate");
 const { installJmeterPlugins } = require("./scripts/install-jmeter-plugins");
+const { startScheduler, isValidCronExpression, computeNextRunAt } = require("./scheduler");
 
 const PORT = Number(process.env.PORT || 5050);
 const JMETER_BIN = process.env.JMETER_BIN || "jmeter";
@@ -33,6 +34,7 @@ const PLANS_DIR = process.env.PLANS_DIR || path.join(__dirname, "plans");
 // Legacy single-plan fallback for JMETER_TEST_PLAN env var.
 const LEGACY_PLAN_PATH = process.env.JMETER_TEST_PLAN || null;
 const RUNS_DIR = process.env.RUNS_DIR || path.join(__dirname, "runs");
+const SCHEDULES_DIR = process.env.SCHEDULES_DIR || path.join(__dirname, "schedules");
 const ALLOW_CONCURRENT_RUNS = process.env.ALLOW_CONCURRENT_RUNS === "true";
 const DEFAULT_LOG_TAIL_LINES = Number(process.env.DEFAULT_LOG_TAIL_LINES || 100);
 const MAX_LOG_CHUNK_BYTES = Number(process.env.MAX_LOG_CHUNK_BYTES || 256 * 1024);
@@ -44,6 +46,9 @@ if (!fs.existsSync(RUNS_DIR)) {
 }
 if (!fs.existsSync(PLANS_DIR)) {
   fs.mkdirSync(PLANS_DIR, { recursive: true });
+}
+if (!fs.existsSync(SCHEDULES_DIR)) {
+  fs.mkdirSync(SCHEDULES_DIR, { recursive: true });
 }
 
 // ----------------------------
@@ -117,6 +122,9 @@ const RUN_DIR_UUID_RE =
 
 // In-memory run index. Hydrated from disk on-demand.
 const runs = new Map();
+
+// Set once the scheduler starts listening (server.listen callback).
+let scheduler = null;
 
 // ----------------------------
 // Run directory + metadata helpers
@@ -774,6 +782,38 @@ function handleHtmlReport(runId, pathname, res) {
 // Run object shaping + lifecycle
 // ----------------------------
 
+function validateScheduleRules(planPath, rules) {
+  if (!rules.length) return null;
+  const schema = parseJmxParameters(planPath);
+  const dateFields = new Set(
+    schema.groups.flatMap((group) => group.parameters)
+      .filter((param) => param.type === "date")
+      .map((param) => param.name)
+  );
+  for (const rule of rules) {
+    if (rule.type !== "dateOffset" || !dateFields.has(rule.field)) {
+      return `"${rule.field}" is not a date-type parameter on this plan`;
+    }
+  }
+  return null;
+}
+
+function validateRecurrence(recurrence) {
+  if (!recurrence || !["once", "daily", "cron"].includes(recurrence.type)) {
+    return "recurrence must be { type: 'once', at }, { type: 'daily', time }, or { type: 'cron', expression }";
+  }
+  if (recurrence.type === "once") {
+    const at = new Date(recurrence.at);
+    if (Number.isNaN(at.getTime()) || at <= new Date()) {
+      return "Once recurrence must be a date/time in the future";
+    }
+  }
+  if (recurrence.type === "cron" && !isValidCronExpression(recurrence.expression)) {
+    return "Invalid cron expression (expected 5-field standard cron syntax, e.g. \"0 0 * * *\")";
+  }
+  return null;
+}
+
 function normalizeRunSource(value) {
   if (value == null) return null;
   const trimmed = String(value).trim();
@@ -788,6 +828,7 @@ function getRunSummary(run) {
     label: run.label || "",
     planFile: run.planFile || null,
     source: run.source || null,
+    scheduleId: run.scheduleId || null,
     status: run.status,
     pid: run.pid,
     startedAt: run.startedAt,
@@ -852,6 +893,7 @@ function hydrateRunFromDisk(id, runDirHint = null) {
     label: meta?.label || parsed.label || "",
     planFile: meta?.planFile || null,
     source: normalizeRunSource(meta?.source),
+    scheduleId: meta?.scheduleId || null,
     status,
     pid: null,
     startedAt: meta?.startedAt || fs.statSync(runDir).birthtime.toISOString(),
@@ -1099,7 +1141,7 @@ function ensureJmeterRuntimeReady() {
 }
 
 // Launch a JMeter non-GUI run with a per-run patched plan copy.
-function startRun({ props = {}, runLabel = "", planFile = null, source = null }) {
+function startRun({ props = {}, runLabel = "", planFile = null, source = null, scheduleId = null }) {
   const sourcePlanPath = resolvePlanPath(planFile);
   const resolvedPlanFile = planFile || path.basename(sourcePlanPath);
   const runSource = normalizeRunSource(source);
@@ -1132,6 +1174,7 @@ function startRun({ props = {}, runLabel = "", planFile = null, source = null })
     label: runLabel,
     planFile: resolvedPlanFile,
     source: runSource,
+    scheduleId,
     props: parameterOverrides,
     startedAt
   });
@@ -1187,6 +1230,7 @@ function startRun({ props = {}, runLabel = "", planFile = null, source = null })
     label: runLabel,
     planFile: resolvedPlanFile,
     source: runSource,
+    scheduleId,
     status: "running",
     pid: child.pid,
     startedAt,
@@ -1473,6 +1517,88 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
+    if (req.method === "GET" && pathname === "/schedules") {
+      return sendJson(res, 200, { schedules: scheduler.listSchedules() });
+    }
+
+    // Live "next run" preview while composing a recurrence in the UI (e.g. cron expressions
+    // aren't self-explanatory the way "Daily at 09:00" is).
+    if (req.method === "POST" && pathname === "/schedules/preview") {
+      const raw = await readBody(req);
+      const body = raw ? JSON.parse(raw) : {};
+      const validationError = validateRecurrence(body.recurrence);
+      if (validationError) return sendJson(res, 400, { error: validationError });
+      const next = computeNextRunAt(body.recurrence);
+      return sendJson(res, 200, { nextRunAt: next ? next.toISOString() : null });
+    }
+
+    if (req.method === "POST" && pathname === "/schedules") {
+      const raw = await readBody(req);
+      const body = raw ? JSON.parse(raw) : {};
+      const planFile = body.planFile || null;
+      const planPath = resolvePlanPath(planFile);
+      const resolvedPlanFile = planFile || path.basename(planPath);
+      const rules = Array.isArray(body.rules) ? body.rules : [];
+
+      const validationError = validateScheduleRules(planPath, rules) || validateRecurrence(body.recurrence);
+      if (validationError) return sendJson(res, 400, { error: validationError });
+
+      const schedule = scheduler.createSchedule({
+        label: body.label || "",
+        planFile: resolvedPlanFile,
+        baseProps: body.baseProps || {},
+        rules,
+        recurrence: body.recurrence
+      });
+      return sendJson(res, 201, { schedule });
+    }
+
+    const scheduleRunNowMatch = pathname.match(/^\/schedules\/([0-9a-f-]{36})\/run-now$/i);
+    if (req.method === "POST" && scheduleRunNowMatch) {
+      try {
+        const run = scheduler.runScheduleNow(scheduleRunNowMatch[1]);
+        return sendJson(res, 202, { run: getRunDetail(run, { logTailLines: 20 }) });
+      } catch (err) {
+        return sendJson(res, 409, { error: err.message || "Failed to run schedule" });
+      }
+    }
+
+    const scheduleMatch = pathname.match(/^\/schedules\/([0-9a-f-]{36})$/i);
+    if (scheduleMatch) {
+      const scheduleId = scheduleMatch[1];
+
+      if (req.method === "GET") {
+        const schedule = scheduler.getSchedule(scheduleId);
+        if (!schedule) return sendJson(res, 404, { error: "Schedule not found" });
+        return sendJson(res, 200, { schedule });
+      }
+
+      if (req.method === "PUT") {
+        const raw = await readBody(req);
+        const body = raw ? JSON.parse(raw) : {};
+
+        if (body.rules) {
+          const planFile = body.planFile || scheduler.getSchedule(scheduleId)?.planFile || null;
+          const validationError = validateScheduleRules(resolvePlanPath(planFile), body.rules);
+          if (validationError) return sendJson(res, 400, { error: validationError });
+        }
+        if (body.recurrence) {
+          const validationError = validateRecurrence(body.recurrence);
+          if (validationError) return sendJson(res, 400, { error: validationError });
+        }
+
+        const schedule = scheduler.updateSchedule(scheduleId, body);
+        if (!schedule) return sendJson(res, 404, { error: "Schedule not found" });
+        return sendJson(res, 200, { schedule });
+      }
+
+      if (req.method === "DELETE") {
+        const deleted = scheduler.deleteSchedule(scheduleId);
+        if (!deleted) return sendJson(res, 404, { error: "Schedule not found" });
+        return sendJson(res, 200, { deleted: true, id: scheduleId });
+      }
+    }
+
     if (req.method === "GET" && pathname === "/runs") {
       const diskDirs = fs.existsSync(RUNS_DIR)
         ? fs.readdirSync(RUNS_DIR).filter((name) =>
@@ -1599,4 +1725,11 @@ server.listen(PORT, () => {
       runtime.pluginsOk === null ? "unknown" : runtime.pluginsOk ? "ready" : "missing";
     console.log(`JMeter home: ${runtime.jmeterHome} (json plugins: ${pluginLabel})`);
   }
+
+  scheduler = startScheduler({
+    schedulesDir: SCHEDULES_DIR,
+    startRun,
+    isBusy: () => !ALLOW_CONCURRENT_RUNS && activeRunExists()
+  });
+  console.log(`Schedules dir: ${SCHEDULES_DIR} (${scheduler.listSchedules().length} schedule(s))`);
 });
