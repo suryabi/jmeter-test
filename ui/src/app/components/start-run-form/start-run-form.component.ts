@@ -32,6 +32,7 @@ import {
 } from '../../core/models/runner.models';
 import { RunnerService } from '../../core/services/runner.service';
 import { formatFieldLabel, parameterFieldLabel } from '../../core/utils/format-field-label';
+import { utcTimeToLocalLabel } from '../../core/utils/describe-recurrence';
 import { parameterFieldColumnClass } from '../../core/utils/parameter-grid-column';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -80,6 +81,7 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
   /** Schedule mode only: date-type param name -> "today + N days" offset. */
   dateRules: Record<string, number | null> = {};
   recurrenceType: 'once' | 'daily' | 'cron' = 'daily';
+  /** UTC time, entered and displayed as-is (no local-timezone conversion). */
   recurrenceTime = '00:00';
   recurrenceOnceAt: Date | null = null;
   recurrenceCronExpression = '';
@@ -116,6 +118,24 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
 
   recurrenceCronMissing(): boolean {
     return this.recurrenceType === 'cron' && !this.recurrenceCronExpression.trim();
+  }
+
+  /** e.g. "2:30 PM" — the daily UTC time the user entered, shown in their own local time. */
+  recurrenceTimeLocalLabel(): string {
+    return utcTimeToLocalLabel(this.recurrenceTime);
+  }
+
+  /** e.g. "Aug 14, 2026, 3:30 AM UTC" — the local date/time the user picked, shown as the UTC instant that's actually sent. */
+  recurrenceOnceUtcLabel(): string {
+    if (!this.recurrenceOnceAt) return '';
+    return `${this.recurrenceOnceAt.toLocaleString(undefined, {
+      timeZone: 'UTC',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    })} UTC`;
   }
 
   private readonly fb = inject(FormBuilder);

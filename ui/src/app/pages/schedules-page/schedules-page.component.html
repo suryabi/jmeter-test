@@ -9,8 +9,9 @@
       </span>
       <h1 class="page-hero-title">Recurring <span class="gradient-text">population runs</span></h1>
       <p class="page-hero-sub">
-        Fires automatically while the runner (<code>npm run dev</code> / <code>npm start</code>) is
-        running. If the server is down at the scheduled time, it catches up once on next startup.
+        Fires automatically while the application is running. If it's down at the scheduled time,
+        that occurrence is skipped &mdash; it resumes on its next natural occurrence and does not
+        fire late or replay missed runs.
       </p>
       <div class="page-hero-actions">
         <p-button icon="pi pi-plus" label="New schedule" routerLink="/schedules/new" />
@@ -61,9 +62,9 @@
             <tr>
               <th>Schedule</th>
               <th>Plan</th>
-              <th>Recurrence</th>
-              <th>Next run</th>
-              <th>Last run</th>
+              <th>Recurrence <span class="text-xs font-normal text-[var(--text-dim)]">(UTC)</span></th>
+              <th>Next run <span class="text-xs font-normal text-[var(--text-dim)]">(local time)</span></th>
+              <th>Last run <span class="text-xs font-normal text-[var(--text-dim)]">(local time)</span></th>
               <th class="w-64 text-right">Actions</th>
             </tr>
           </ng-template>

@@ -20,22 +20,27 @@ function addDays(date, days) {
   return result;
 }
 
-/** Next local Date at HH:MM strictly after `after`. */
+/**
+ * Next UTC-wall-clock instant at HH:MM strictly after `after`.
+ * `time` is stored/interpreted as UTC (not the server host's local timezone) so
+ * behavior is identical regardless of where the Node process is deployed; the UI
+ * converts to/from the viewer's local time at the edit/display boundary.
+ */
 function nextDailyOccurrence(time, after) {
   const [hours, minutes] = String(time || "00:00")
     .split(":")
     .map((part) => Number(part));
   const candidate = new Date(after);
-  candidate.setHours(hours || 0, minutes || 0, 0, 0);
+  candidate.setUTCHours(hours || 0, minutes || 0, 0, 0);
   if (candidate <= after) {
-    candidate.setDate(candidate.getDate() + 1);
+    candidate.setUTCDate(candidate.getUTCDate() + 1);
   }
   return candidate;
 }
 
 function isValidCronExpression(expression) {
   try {
-    CronExpressionParser.parse(String(expression || ""));
+    CronExpressionParser.parse(String(expression || ""), { tz: "UTC" });
     return true;
   } catch {
     return false;
@@ -53,7 +58,10 @@ function computeNextRunAt(recurrence, after = new Date()) {
   }
   if (recurrence.type === "cron") {
     try {
-      return CronExpressionParser.parse(recurrence.expression, { currentDate: after })
+      // Fields (e.g. "0 9 * * *") are evaluated as UTC, matching the "daily" convention
+      // above — deployment-host-timezone-independent. The UI shows fired-run timestamps
+      // in the viewer's local time, same as it does for "Next run"/"Last run" elsewhere.
+      return CronExpressionParser.parse(recurrence.expression, { currentDate: after, tz: "UTC" })
         .next()
         .toDate();
     } catch {
@@ -231,8 +239,25 @@ function startScheduler({ schedulesDir, startRun, isBusy }) {
     }
   }
 
-  // Catch up anything overdue from before the server was (re)started, then start ticking.
-  tick();
+  // If the server was down when a schedule was due, that occurrence is skipped (not
+  // fired late) — just move it forward to its next natural occurrence. A "once"
+  // schedule that's now overdue has no future occurrence, so it's disabled instead.
+  function skipOverdueSchedules() {
+    const now = new Date();
+    for (const schedule of store.listSchedules()) {
+      if (!schedule.enabled || !schedule.nextRunAt) continue;
+      if (new Date(schedule.nextRunAt) > now) continue;
+      if (schedule.recurrence?.type === "once") {
+        store.updateSchedule(schedule.id, { nextRunAt: null, enabled: false });
+      } else {
+        store.updateSchedule(schedule.id, {
+          nextRunAt: computeNextRunAt(schedule.recurrence, now)?.toISOString() || null
+        });
+      }
+    }
+  }
+
+  skipOverdueSchedules();
   setInterval(tick, TICK_MS);
 
   return {

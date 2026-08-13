@@ -149,10 +149,10 @@
             </div>
           </div>
           @if (recurrenceType === 'daily') {
-            <div class="run-meta-field">
+            <div class="run-meta-field run-meta-wide">
               <label class="field-label" for="recurrenceTime">
                 <i class="pi pi-clock"></i>
-                Time (every day)
+                Time (UTC, every day)
               </label>
               <input
                 type="time"
@@ -161,12 +161,15 @@
                 [(ngModel)]="recurrenceTime"
                 [ngModelOptions]="{ standalone: true }"
               />
+              @if (recurrenceTimeLocalLabel()) {
+                <small class="field-help">= {{ recurrenceTimeLocalLabel() }} your local time</small>
+              }
             </div>
           } @else if (recurrenceType === 'once') {
-            <div class="run-meta-field">
+            <div class="run-meta-field run-meta-wide">
               <label class="field-label" for="recurrenceOnceAt">
                 <i class="pi pi-calendar"></i>
-                Date &amp; time
+                Date &amp; time (your local time)
               </label>
               <p-datepicker
                 inputId="recurrenceOnceAt"
@@ -180,13 +183,15 @@
               />
               @if (recurrenceOnceInPast()) {
                 <small class="field-help field-error">Pick a date/time in the future.</small>
+              } @else if (recurrenceOnceUtcLabel()) {
+                <small class="field-help">= {{ recurrenceOnceUtcLabel() }}</small>
               }
             </div>
           } @else {
-            <div class="run-meta-field run-meta-cron">
+            <div class="run-meta-field run-meta-wide">
               <label class="field-label" for="recurrenceCron">
                 <i class="pi pi-code"></i>
-                Cron expression
+                Cron expression (UTC)
               </label>
               <input
                 pInputText
@@ -211,7 +216,7 @@
               } @else if (cronPreview) {
                 <small class="field-help field-success">
                   <i class="pi pi-check-circle"></i>
-                  Next run: {{ cronPreview | date: 'medium' }}
+                  Next run: {{ cronPreview | date: 'medium' }} (your local time)
                 </small>
               } @else {
                 <small class="field-help">Standard 5-field cron: minute hour day month weekday.</small>
