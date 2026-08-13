@@ -25,35 +25,57 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Set Daily Target Date" enabled="false">
+          <stringProp name="script">SampleResult.setIgnore()
+
+// Runs once at the start of every execution (single-thread, single-loop ThreadGroup).
+// Overrides the static requestStartDate/requestEndDate defaults set in &quot;Request Variables&quot;
+// so each daily run always targets a single day, 15 days ahead of today.
+// requestsPerDay (existing UDV) is left untouched and still controls how many requests
+// get created on that day.
+def cal = Calendar.getInstance()
+cal.add(Calendar.DAY_OF_MONTH, 15)
+def targetDate = cal.getTime().format(&quot;yyyy-MM-dd&quot;)
+
+vars.put(&quot;requestStartDate&quot;, targetDate)
+vars.put(&quot;requestEndDate&quot;, targetDate)
+
+log.info(&quot;Daily population target date set to: &quot; + targetDate)</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
-              <stringProp name="Argument.value">2026-08-03</stringProp>
+              <stringProp name="Argument.value">2026-12-03</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
             </elementProp>
             <elementProp name="requestEndDate" elementType="Argument">
               <stringProp name="Argument.name">requestEndDate</stringProp>
-              <stringProp name="Argument.value">2026-08-03</stringProp>
+              <stringProp name="Argument.value">2026-12-03</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
             </elementProp>
             <elementProp name="requestsPerDay" elementType="Argument">
               <stringProp name="Argument.name">requestsPerDay</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">2,3,4</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=requestsPerDay. The number of requests to create per day (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
             <elementProp name="requestStartTimes" elementType="Argument">
               <stringProp name="Argument.name">requestStartTimes</stringProp>
-              <stringProp name="Argument.value">08:00, 08:30, 09:00, 09:30, 10:00, 10:30</stringProp>
+              <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=requestDayStartTime. Request start time (HH:mm, e.g., 07:00,08:00). One value is selected randomly and validated against Location Hours. Leave empty to auto-pick a random time that fits within Location Hours.</stringProp>
             </elementProp>
@@ -1028,6 +1050,7 @@ def _fn_numberFieldValue = { field -&gt;
         if (s.startsWith(&quot;MIN:&quot;)) min = s.split(&quot;:&quot;)[1].trim().toInteger()
         if (s.startsWith(&quot;MAX:&quot;)) max = s.split(&quot;:&quot;)[1].trim().toInteger()
     }
+    if (min &lt; 1) min = 1
     if (max &lt; min) max = min
     return props.get(&quot;fn_generateRandomNumber&quot;)(min, max)
 }
