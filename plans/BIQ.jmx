@@ -51,25 +51,25 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
-              <stringProp name="Argument.value">2026-12-03</stringProp>
+              <stringProp name="Argument.value">2026-08-10</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
             </elementProp>
             <elementProp name="requestEndDate" elementType="Argument">
               <stringProp name="Argument.name">requestEndDate</stringProp>
-              <stringProp name="Argument.value">2026-12-03</stringProp>
+              <stringProp name="Argument.value">2026-08-10</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
             </elementProp>
             <elementProp name="requestsPerDay" elementType="Argument">
               <stringProp name="Argument.name">requestsPerDay</stringProp>
-              <stringProp name="Argument.value">2,3,4</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=requestsPerDay. The number of requests to create per day (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
+              <stringProp name="Argument.value">1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
@@ -105,7 +105,7 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             </elementProp>
             <elementProp name="targetActions" elementType="Argument">
               <stringProp name="Argument.name">targetActions</stringProp>
-              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
+              <stringProp name="Argument.value">CONFIRM, HOLD</stringProp>
               <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Actions to perform after SUBMIT. Processing stops after the first selected action is performed. Empty = all available actions are allowed</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -123,7 +123,7 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
           <collectionProp name="Arguments.arguments">
             <elementProp name="user" elementType="Argument">
               <stringProp name="Argument.name">user</stringProp>
-              <stringProp name="Argument.value">admin@allianceit.com</stringProp>
+              <stringProp name="Argument.value">admin@briefingiq.com</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">REQUIRED. Email address of the user who will process the requests (e.g. admin@allianceit.com)</stringProp>
             </elementProp>
@@ -272,7 +272,7 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             </elementProp>
             <elementProp name="roomBufferMinutes" elementType="Argument">
               <stringProp name="Argument.name">roomBufferMinutes</stringProp>
-              <stringProp name="Argument.value">30,60,90</stringProp>
+              <stringProp name="Argument.value">30,60</stringProp>
               <stringProp name="Argument.desc">Minutes to adjust logistics room timings. Comma-separated list of any length (e.g., 30,60,90). Start and end buffers are each picked independently at random per room</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -284,19 +284,19 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             </elementProp>
             <elementProp name="caterings" elementType="Argument">
               <stringProp name="Argument.name">caterings</stringProp>
-              <stringProp name="Argument.value">10%</stringProp>
+              <stringProp name="Argument.value">20%</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Caterings per room. Enter percentage values (e.g., 50%, 80%). One value is chosen randomly. 0 or empty = none</stringProp>
             </elementProp>
             <elementProp name="cateringTimings" elementType="Argument">
               <stringProp name="Argument.name">cateringTimings</stringProp>
-              <stringProp name="Argument.value">11:30, 12:00, 12:30, 13:00, 19:00, 19:30, 20:00, 20:30</stringProp>
+              <stringProp name="Argument.value">11:00, 11:30, 12:00, 12:30, 13:00, 19:00, 19:30, 20:00, 20:30</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Allowed catering start times. Enter comma-separated times in HH:mm format (e.g., 11:00,11:30); one value is selected randomly. Empty = any available slot</stringProp>
             </elementProp>
             <elementProp name="topics" elementType="Argument">
               <stringProp name="Argument.name">topics</stringProp>
-              <stringProp name="Argument.value">50%</stringProp>
+              <stringProp name="Argument.value">60%</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Topics per room. Enter percentage values (e.g., 50%, 80%). One value is chosen randomly. 0 or empty = none</stringProp>
             </elementProp>
@@ -1050,6 +1050,8 @@ def _fn_numberFieldValue = { field -&gt;
         if (s.startsWith(&quot;MIN:&quot;)) min = s.split(&quot;:&quot;)[1].trim().toInteger()
         if (s.startsWith(&quot;MAX:&quot;)) max = s.split(&quot;:&quot;)[1].trim().toInteger()
     }
+    // Test data should always populate a real value - 0 reads as &quot;empty&quot; on required
+    // NUMBER/CURRENCY fields in the UI, even though it&apos;s a technically valid MIN. Floor to 1.
     if (min &lt; 1) min = 1
     if (max &lt; min) max = min
     return props.get(&quot;fn_generateRandomNumber&quot;)(min, max)
@@ -8118,6 +8120,12 @@ for (int d = 1; d &lt;= maxDaySafety; d++) {
         vars.remove(&quot;createdRoom_Day${d}_${r}_name&quot;)
         vars.remove(&quot;selectedRoomId_&quot; + r)
         vars.remove(&quot;selectedRoomName_&quot; + r)
+        // BUGFIX: totalSlotsUsed_DayN_RoomN (read/written by Calculate Activities Count and
+        // Smart Slot Selector) is keyed only by this same small Day+Room index and is never
+        // cleared by &quot;Reset Room Counter (Day Level)&quot; across requests - without this it keeps
+        // accumulating slot usage from every prior request&apos;s same Day/Room index, silently
+        // starving availableSlots (and therefore Topic/Catering creation) for later requests.
+        vars.remove(&quot;totalSlotsUsed_Day${d}_Room${r}&quot;)
     }
 }
 // Buffer/time system props are keyed by the actual roomId, not a small integer, so they age out
@@ -13587,6 +13595,16 @@ for (int r = 1; r &lt;= maxRooms; r++) {
     allActTypes.each { actType -&gt; vars.remove(&quot;usedActivityRanges_${actType}_Day${dayIndex}_Room${r}&quot;) }
     vars.remove(&quot;usedCateringTimes_Day&quot; + dayIndex + &quot;_Room&quot; + r)
     vars.remove(&quot;usedCateringDurations_Day&quot; + dayIndex + &quot;_Room&quot; + r)
+    // BUGFIX: totalSlotsUsed_DayN_RoomN is never reset anywhere else and would otherwise
+    // keep accumulating across every request/day that reuses this same small Day+Room index
+    // (e.g. Request 2&apos;s Day1/Room1 inheriting Request 1&apos;s slot usage count), silently
+    // starving availableSlots for later activity types/rooms (Topics/Catering &quot;Calculate
+    // Activities Count&quot; and Smart Slot Selector both read/write this key) even though the
+    // physical room still has open time.
+    def totalUsedKey = &quot;totalSlotsUsed_Day&quot; + dayIndex + &quot;_Room&quot; + r
+    def oldTotalUsed = vars.get(totalUsedKey) ?: &quot;&quot;
+    if (oldTotalUsed) log.info(&quot;Clearing stale ${totalUsedKey}: ${oldTotalUsed}&quot;)
+    vars.remove(totalUsedKey)
     def roomId = vars.get(&quot;selectedRoomId_&quot; + r) ?: &quot;&quot;
     if (roomId) clearedRoomIds.add(roomId)
     def sysRoomId = System.getProperty(&quot;jmeter.room.Day${dayIndex}_${r}_id&quot;.toString()) ?: &quot;&quot;
@@ -15403,7 +15421,13 @@ int dayDurationMins = dayEndMins - dayStartMins
 
 int totalSlotsPerDay = (dayDurationMins &gt; 0 &amp;&amp; vacantSlotDuration &gt; 0) ? (int)(dayDurationMins / vacantSlotDuration) : 18
 
-def slotKey = &quot;Day&quot; + dayIndex + &quot;_Room&quot; + currentRoomCounter
+// ✅ FIX: Use roomIndex (roomLoopCounter) here, NOT currentRoomCounter - this key gets
+// READ back a few lines below using roomIndex-based slotKey. Writing under a different
+// counter (currentRoomCounter) than the one used to read it back means the two can drift
+// out of sync, causing the read to silently miss and default to 0 available slots even
+// when real capacity exists - which is why catering/topics randomly appeared to have &quot;0
+// available slots&quot; for rooms that were actually open.
+def slotKey = &quot;Day&quot; + dayIndex + &quot;_Room&quot; + roomIndex
 int totalSlotsUsed = vars.get(&quot;totalSlotsUsed_&quot; + slotKey)?.toInteger() ?: 0
 
 int availableSlots = Math.max(0, totalSlotsPerDay - totalSlotsUsed)
@@ -15433,11 +15457,14 @@ if (!udvValue) {
         slotKey = &quot;Day${dayIndex}_Room${roomIndex}&quot;
         int availSlotsForActivity = vars.get(&quot;availableSlotsFor_&quot; + slotKey)?.toInteger() ?: 0
         double rawActivityCount = availSlotsForActivity * parsed.value / 100.0
-        loopCount = (int) Math.round(rawActivityCount)
+        // Guarantee at least 1 activity whenever the percentage is nonzero and slots exist,
+        // instead of silently rounding down to 0 (e.g. 10% of 3 slots = 0.3 -&gt; 0). A nonzero
+        // percentage setting should never result in zero coverage for a room that has slots.
+        loopCount = (rawActivityCount &gt; 0 &amp;&amp; availSlotsForActivity &gt; 0) ? Math.max(1, (int) Math.round(rawActivityCount)) : 0
         loopCountSource = &quot;${udvName}=${udvValue} (${parsed.value}% of ${availSlotsForActivity} available slots = ${loopCount})&quot;
         log.info(&quot;Activity ${activityType}: ${parsed.value}% of ${availSlotsForActivity} available slots = ${loopCount}&quot;)
-        if (loopCount == 0 &amp;&amp; rawActivityCount &gt; 0) {
-            log.warn(&quot;[${udvName}] Percentage rounds to 0: ${parsed.value}% of ${availSlotsForActivity} available slot(s) = ${String.format(&apos;%.2f&apos;, rawActivityCount)}, rounded down to 0 - no ${activityType} will be created for Day ${dayIndex}, Room ${roomIndex}. Increase &apos;${udvName}&apos; percentage or available slots if activities are expected.&quot;)
+        if (rawActivityCount &gt; 0 &amp;&amp; rawActivityCount &lt; 1) {
+            log.info(&quot;[${udvName}] Percentage would have rounded to 0: ${parsed.value}% of ${availSlotsForActivity} available slot(s) = ${String.format(&apos;%.2f&apos;, rawActivityCount)} - floored up to 1 for Day ${dayIndex}, Room ${roomIndex} so this room still gets coverage.&quot;)
         }
     } else {
         loopCount = parsed.value
@@ -16072,10 +16099,26 @@ if (!props.get(&quot;fn_smartSlotSelectorLogic&quot;)) {
                 varsRef.put(&quot;currentVacantSlotEndTime&quot;, &quot;&quot;)
                 return
             } else {
-                roomSlots = roomSlots.findAll { slot -&gt;
-                    int slotMins = getTimeMinutes(slot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
-                    availableTimeMins.contains(slotMins)
+                // ✅ FIX: API slots are open-ended RANGES (startTime\u2192endTime), not fixed grid
+                // points. A configured time (e.g. 11:30) is usable as long as it falls INSIDE
+                // some slot&apos;s [start, end) window with enough room for the duration - it does
+                // NOT require an API slot whose startTime exactly equals that minute. The old
+                // exact-match check silently failed for any room whose open block happened to
+                // start a few minutes off a configured mark (e.g. slot starts 09:35 but 11:30
+                // is clearly free inside it) - which is why this only broke for some rooms.
+                def matchedSlots = availableTimeMins.findResults { candidateMins -&gt;
+                    def hostSlot = roomSlots.find { slot -&gt;
+                        int slotStartMins = getTimeMinutes(slot?.startTime?.context?.contextZoneDate ?: &quot;&quot;)
+                        int slotEndMins   = getTimeMinutes(slot?.endTime?.context?.contextZoneDate ?: &quot;&quot;)
+                        slotStartMins &gt;= 0 &amp;&amp; slotEndMins &gt; slotStartMins &amp;&amp;
+                        candidateMins &gt;= slotStartMins &amp;&amp; (candidateMins + actualDuration) &lt;= slotEndMins
+                    }
+                    hostSlot ? [
+                        startTime: [context: [contextZoneDate: formatMinutesToDateTime(candidateMins, targetDateStr)]],
+                        endTime: hostSlot.endTime
+                    ] : null
                 }
+                roomSlots = matchedSlots
                 if (roomSlots.size() == 0) {
                     logRef.info(&quot;⚠️ [${activityTimingsUdvName}] Times ${availableTimeMins.collect { h -&gt; (int)(h/60) + &apos;:&apos; + String.format(&apos;%02d&apos;, h%60) }} not available in API slots for Day ${dayIndex} Room ${roomIndex} - stopping ${currentActivityType} loop&quot;)
                     varsRef.put(&quot;skipActivity&quot;, &quot;true&quot;)
