@@ -35,19 +35,19 @@
             </elementProp>
             <elementProp name="category" elementType="Argument">
               <stringProp name="Argument.name">category</stringProp>
-              <stringProp name="Argument.value">de83BC6A-472E-41A0-BE2C-E0429C85D015</stringProp>
+              <stringProp name="Argument.value">7E653109-3C5F-420F-9487-DF7E4F07DD65</stringProp>
               <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED. Select the category to use</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="presenters" elementType="Argument">
               <stringProp name="Argument.name">presenters</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">50</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=NoOfPresenters. REQUIRED. Min,max number of presenters to create</stringProp>
             </elementProp>
             <elementProp name="topicsPerPresenter" elementType="Argument">
               <stringProp name="Argument.name">topicsPerPresenter</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.value">1,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Min,max topics to assign per presenter</stringProp>
             </elementProp>
@@ -59,25 +59,25 @@
             </elementProp>
             <elementProp name="blockFromDate" elementType="Argument">
               <stringProp name="Argument.name">blockFromDate</stringProp>
-              <stringProp name="Argument.value">2026-11-01</stringProp>
+              <stringProp name="Argument.value">2026-08-01</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE. LABEL=blockStartDate. Start date of the blocked slot range (yyyy-MM-dd).</stringProp>
+              <stringProp name="Argument.desc">DATE. LABEL=blockStartDate. Start date of the blocked slot range (yyyy-MM-dd)</stringProp>
             </elementProp>
             <elementProp name="blockToDate" elementType="Argument">
               <stringProp name="Argument.name">blockToDate</stringProp>
-              <stringProp name="Argument.value">2026-11-30</stringProp>
+              <stringProp name="Argument.value">2026-09-30</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE. LABEL=blockEndDate. End date of the blocked slot range (yyyy-MM-dd).</stringProp>
+              <stringProp name="Argument.desc">DATE. LABEL=blockEndDate. End date of the blocked slot range (yyyy-MM-dd)</stringProp>
             </elementProp>
             <elementProp name="blockSlots" elementType="Argument">
               <stringProp name="Argument.name">blockSlots</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">12</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfBlockedDays. Min,max number of blocked days to create within the specified date range</stringProp>
             </elementProp>
             <elementProp name="blockSlotsPerDay" elementType="Argument">
               <stringProp name="Argument.name">blockSlotsPerDay</stringProp>
-              <stringProp name="Argument.value">1,3</stringProp>
+              <stringProp name="Argument.value">1,2</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=blockSlotsPerDay. Min,max number of blocked slots to create per day from configured blocked slots</stringProp>
             </elementProp>
@@ -85,7 +85,7 @@
               <stringProp name="Argument.name">blockSlotFullDay</stringProp>
               <stringProp name="Argument.value">false</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">BOOLEAN, LABEL=fullDayBlock. If true, each blocked slot spans the entire day; otherwise each blocked slot uses a random time &amp; duration.</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN, LABEL=fullDayBlock. If true, each blocked slot spans the entire day; otherwise each blocked slot uses a random time &amp; duration</stringProp>
             </elementProp>
             <elementProp name="blockTimes" elementType="Argument">
               <stringProp name="Argument.name">blockTimes</stringProp>
@@ -101,7 +101,7 @@
             </elementProp>
             <elementProp name="isNewPresenter" elementType="Argument">
               <stringProp name="Argument.name">isNewPresenter</stringProp>
-              <stringProp name="Argument.value">false</stringProp>
+              <stringProp name="Argument.value">true</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">BOOLEAN, REQUIRED, LABEL=createNewPresenters. true = create new presenters, topics, and blocked slots. false = add blocked slots to existing presenters that do not already have blocked slots within the specified date range</stringProp>
             </elementProp>
@@ -118,7 +118,7 @@
           <collectionProp name="Arguments.arguments">
             <elementProp name="user" elementType="Argument">
               <stringProp name="Argument.name">user</stringProp>
-              <stringProp name="Argument.value">admin@allianceit.com</stringProp>
+              <stringProp name="Argument.value">admin@briefingiq.com</stringProp>
               <stringProp name="Argument.desc">REQUIRED. User used to create presenters, topics, and blocked slots</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -256,125 +256,6 @@
               <stringProp name="Argument.value">/${contextname}/api/resourcetypes/${presenterResourceTypeId}/resources</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">items=_embedded.resources display=`data.presenterName (data.primaryEmail)` value=data.primaryEmail depends=presenterResourceTypeId,category,categoryType multi=true header.x-cloud-customerid=field:customerId header.x-cloud-categoryid=field:category header.x-cloud-categorytypeid=field:categoryType</stringProp>
-            </elementProp>
-          </collectionProp>
-        </Arguments>
-        <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Insight Fields" enabled="false">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="runPresentersPlanned" elementType="Argument">
-              <stringProp name="Argument.name">runPresentersPlanned</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=run_field match=`Presenters to create\s*:\s*\d+\s*-\&gt;\s*(\d+) this run` set=presentersPlanned group=1</stringProp>
-            </elementProp>
-            <elementProp name="presenterOpenPlan" elementType="Argument">
-              <stringProp name="Argument.name">presenterOpenPlan</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=scope_open entity=presenter match=`Presenter #(\d+): will be assigned \d+ topic` index=$1 total=$presentersPlanned status=started stepLabel=`Presenter $1/$presentersPlanned started` stepStatus=info</stringProp>
-            </elementProp>
-            <elementProp name="presenterOpenExisting" elementType="Argument">
-              <stringProp name="Argument.name">presenterOpenExisting</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=scope_open entity=presenter match=`Existing Presenter Flow: processing presenter (\d+)/(\d+) id=(\S+)` index=$1 total=$2 status=started stepLabel=`Processing presenter $1/$2` stepStatus=info</stringProp>
-            </elementProp>
-            <elementProp name="presenterIdField" elementType="Argument">
-              <stringProp name="Argument.name">presenterIdField</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=field entity=presenter match=`Presenter created (\d+)/(\d+) id=(\S+)` set=presenterId group=3 link.index=$1 onlyIfEmpty=true</stringProp>
-            </elementProp>
-            <elementProp name="presenterIdExisting" elementType="Argument">
-              <stringProp name="Argument.name">presenterIdExisting</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=field entity=presenter match=`Existing Presenter Flow: processing presenter (\d+)/(\d+) id=(\S+)` set=presenterId group=3 onlyIfEmpty=true</stringProp>
-            </elementProp>
-            <elementProp name="presenterCreated" elementType="Argument">
-              <stringProp name="Argument.name">presenterCreated</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=field entity=presenter match=`Presenter created (\d+)/(\d+) id=(\S+)` set=status value=created link.index=$1</stringProp>
-            </elementProp>
-            <elementProp name="stepPresenterCreated" elementType="Argument">
-              <stringProp name="Argument.name">stepPresenterCreated</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=presenter match=`Presenter created (\d+)/(\d+) id=(\S+)` link.index=$1 label=`Presenter $index/$total created (id=$presenterId)` status=success</stringProp>
-            </elementProp>
-            <elementProp name="presenterFailed" elementType="Argument">
-              <stringProp name="Argument.name">presenterFailed</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=field entity=presenter match=`Presenter created (\d+)/(\d+) failed` set=status value=failed link.index=$1</stringProp>
-            </elementProp>
-            <elementProp name="stepPresenterFailed" elementType="Argument">
-              <stringProp name="Argument.name">stepPresenterFailed</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=presenter match=`Presenter created (\d+)/(\d+) failed` link.index=$1 label=`Presenter $index/$total: creation failed` status=failed</stringProp>
-            </elementProp>
-            <elementProp name="topicOpen" elementType="Argument">
-              <stringProp name="Argument.name">topicOpen</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=scope_open entity=topic parent=presenter link.index=$1 match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): '(.+)' added successfully` index=$2 total=$3 status=created</stringProp>
-            </elementProp>
-            <elementProp name="topicNameField" elementType="Argument">
-              <stringProp name="Argument.name">topicNameField</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=field entity=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): '(.+)' added successfully` set=topicName group=4 link.index=$1</stringProp>
-            </elementProp>
-            <elementProp name="stepTopicAdded" elementType="Argument">
-              <stringProp name="Argument.name">stepTopicAdded</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=topic match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): '(.+)' added successfully` link.index=$1 label=`Topic $index/$total: $topicName added` status=success</stringProp>
-            </elementProp>
-            <elementProp name="stepTopicFailed" elementType="Argument">
-              <stringProp name="Argument.name">stepTopicFailed</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=presenter match=`Add Topic to Presenter #(\d+), topic (\d+)/(\d+): failed` link.index=$1 label=`Presenter $index/$total: topic $2/$3 failed` status=warn</stringProp>
-            </elementProp>
-            <elementProp name="stepBlockedSlotBuilt" elementType="Argument">
-              <stringProp name="Argument.name">stepBlockedSlotBuilt</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=presenter match=`Presenter #(\d+), blocked slot (\d+)/(\d+): blocked slot date=` link.index=$1 label=`Presenter $index/$total: blocked slot $2/$3 planned` status=info</stringProp>
-            </elementProp>
-            <elementProp name="stepBlockedSlot" elementType="Argument">
-              <stringProp name="Argument.name">stepBlockedSlot</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=presenter match=`Blocked slot created for Presenter #(\d+) slot (\d+)/(\d+)` link.index=$1 label=`Presenter $index/$total: blocked slot $2/$3 created` status=success</stringProp>
-            </elementProp>
-            <elementProp name="runTopicsLoaded" elementType="Argument">
-              <stringProp name="Argument.name">runTopicsLoaded</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=step scope=run match=`Get Topics: loaded (\d+) topic` label=`Loaded $1 topic(s)` status=info</stringProp>
-            </elementProp>
-            <elementProp name="presenterSummary" elementType="Argument">
-              <stringProp name="Argument.name">presenterSummary</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=summary entity=presenter field=status counts=created,failed,started</stringProp>
-            </elementProp>
-            <elementProp name="uiPresenterList" elementType="Argument">
-              <stringProp name="Argument.name">uiPresenterList</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=ui entity=presenter list=true title=`Presenter $index/$total`</stringProp>
-            </elementProp>
-            <elementProp name="uiPresenterId" elementType="Argument">
-              <stringProp name="Argument.name">uiPresenterId</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">kind=ui entity=presenter field=presenterId label=`Presenter ID`</stringProp>
             </elementProp>
           </collectionProp>
         </Arguments>
@@ -1267,30 +1148,30 @@ def abort = { String msg, String responseMsg = &quot;&quot; -&gt;
 
 // ===== Required field presence checks =====
 [
-    [presentersStr,   &quot;presenters is empty&quot;],
-    [user,            &quot;user is empty&quot;],
-    [clientTimeZone,  &quot;clientTimeZone is empty&quot;],
-    [categoryTypeStr, &quot;categoryType is required&quot;],
+    [presentersStr,   &quot;No of Presenters is required&quot;],
+    [user,            &quot;User is required&quot;],
+    [clientTimeZone,  &quot;Client Time Zone is empty&quot;],
+    [categoryTypeStr, &quot;Category Type is required&quot;],
     [categoryStr,     &quot;Category is required&quot;],
-    [isNewPresenterStr, &quot;isNewPresenter is empty&quot;]
+    [isNewPresenterStr, &quot;Create New Presenters is required&quot;]
 ].each { val, msg -&gt; if (!val) errors.add(msg) }
 
 if (user) {
     if (user.contains(&quot;,&quot;)) {
-        errors.add(&quot;user must be a single email — multiple comma-separated values are not supported&quot;)
+        errors.add(&quot;User must be a single email — multiple comma-separated values are not supported&quot;)
     } else if (!(user ==~ /^[^@]+@[^@]+\.[^@]+$/)) {
-        errors.add(&quot;user has invalid format: &apos;${user}&apos; — expected format user@domain.com&quot;)
+        errors.add(&quot;User has invalid format: &apos;${user}&apos; — expected format user@domain.com&quot;)
     }
 }
 
 if (clientTimeZone) {
     try { ZoneId.of(clientTimeZone) }
-    catch (Exception e) { errors.add(&quot;clientTimeZone &apos;${clientTimeZone}&apos; is not a valid IANA zone id (e.g. Asia/Calcutta)&quot;) }
+    catch (Exception e) { errors.add(&quot;Invalid time zone &apos;${clientTimeZone}&apos;. Please enter a valid time zone, for example (e.g. Asia/Calcutta)&quot;) }
 }
 
 if (isNewPresenterStr) {
     if (!(isNewPresenterStr.equalsIgnoreCase(&quot;true&quot;) || isNewPresenterStr.equalsIgnoreCase(&quot;false&quot;))) {
-        errors.add(&quot;isNewPresenter &apos;${isNewPresenterStr}&apos; is invalid — must be exactly &apos;true&apos; or &apos;false&apos;&quot;)
+        errors.add(&quot;Create New Presenters &apos;${isNewPresenterStr}&apos; is invalid — must be exactly &apos;true&apos; or &apos;false&apos;&quot;)
     } else {
         vars.put(&quot;isNewPresenter&quot;, isNewPresenterStr.toLowerCase())
     }
@@ -1302,16 +1183,16 @@ if (isNewPresenterStr) {
 if (presentersStr) {
     def presentersParts = presentersStr.split(&quot;,&quot;)*.trim()
     if (!presentersParts.every { it.isInteger() }) {
-        errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — expected a positive integer (e.g. 5) or a min,max range (e.g. 2,5)&quot;)
+        errors.add(&quot;No of Presenters &apos;${presentersStr}&apos; is invalid — expected a positive integer (e.g. 5) or a min,max range (e.g. 2,5)&quot;)
     } else if (presentersParts.size() &gt; 2) {
-        errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — expected a single value (e.g. 5) or a range (e.g. 2,5)&quot;)
+        errors.add(&quot;No of Presenters &apos;${presentersStr}&apos; is invalid — expected a single value (e.g. 5) or a range (e.g. 2,5)&quot;)
     } else {
         int presentersMin = presentersParts[0].toInteger()
         int presentersMax = (presentersParts.size() &gt; 1 ? presentersParts[1].toInteger() : presentersMin)
         if (presentersMin &lt;= 0 || presentersMax &lt;= 0) {
-            errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — values must be positive (at least 1)&quot;)
+            errors.add(&quot;No of Presenters &apos;${presentersStr}&apos; is invalid — values must be positive&quot;)
         } else if (presentersMin &gt; presentersMax) {
-            errors.add(&quot;presenters &apos;${presentersStr}&apos; is invalid — min (${presentersMin}) cannot be greater than max (${presentersMax})&quot;)
+            errors.add(&quot;No of Presenters &apos;${presentersStr}&apos; is invalid — min (${presentersMin}) cannot be greater than max (${presentersMax})&quot;)
         }
     }
 }
@@ -1335,15 +1216,15 @@ def validateRange = { String varName, String raw, String exampleRange -&gt;
     int min = parts[0].toInteger()
     int max = (parts.size() &gt; 1 ? parts[1].toInteger() : min)
     if (min &gt; max) {
-        log.warn(&quot;${varName} &apos;${raw}&apos; has min (${min}) &gt; max (${max}) — treating as disabled (feature will be skipped), not aborting&quot;)
-        return [0, 0]
+        errors.add(&quot;${varName} &apos;${raw}&apos; is invalid — min (${min}) cannot be greater than max (${max})&quot;)
+        return null
     }
     return [min, max]
 }
 
-def topicsRange = validateRange(&quot;topicsPerPresenter&quot;, topicsPerPresenterStr, &quot;1,3&quot;)
-def blockRange  = validateRange(&quot;blockSlotsPerDay&quot;, blockSlotsPerDayStr, &quot;1,3&quot;)
-def blockSlotsRange = validateRange(&quot;blockSlots&quot;, blockSlotsStr, &quot;2,4&quot;)
+def topicsRange = validateRange(&quot;Topics Per Presenter&quot;, topicsPerPresenterStr, &quot;1,3&quot;)
+def blockRange  = validateRange(&quot;Block Slots Per Day&quot;, blockSlotsPerDayStr, &quot;1,3&quot;)
+def blockSlotsRange = validateRange(&quot;No of Blocked Days&quot;, blockSlotsStr, &quot;2,4&quot;)
 
 // Blocked slots are only actually created when BOTH a non-zero pool of presenters is
 // requested (blockSlots) AND a non-zero per-presenter slot count is requested
@@ -1362,13 +1243,40 @@ if (blockedSlotsRequested) {
     }
     validateDate(blockFromDate, &quot;blockFromDate&quot;)
     validateDate(blockToDate, &quot;blockToDate&quot;)
+
+    // ===== Cross-field check: blockFromDate must not be after blockToDate =====
+    // Each date is validated individually above (format + parseability), but that alone
+    // never compares the two against each other — a reversed range (e.g. From=Nov,
+    // To=Oct) would pass silently and only surface later as a broken/negative day-count
+    // when the blocked-day picking logic computes the range span. Catch it here instead.
+    if (blockFromDate &amp;&amp; blockToDate &amp;&amp;
+        (blockFromDate ==~ /\d{4}-\d{2}-\d{2}/) &amp;&amp; (blockToDate ==~ /\d{4}-\d{2}-\d{2}/)) {
+        try {
+            def fromLD = LocalDate.parse(blockFromDate, dateFormatter)
+            def toLD   = LocalDate.parse(blockToDate, dateFormatter)
+            if (fromLD.isAfter(toLD)) {
+                errors.add(&quot;Block Start Date &apos;${blockFromDate}&apos; cannot be after Block End Date &apos;${blockToDate}&apos;&quot;)
+            } else if (blockSlotsRange != null) {
+                // ===== Cross-field check: requested blocked-day count must fit in the date range =====
+                // blockSlots is &quot;how many distinct days to block&quot; — it can&apos;t exceed the number
+                // of calendar days actually available between blockFromDate and blockToDate.
+                long availableDays = java.time.temporal.ChronoUnit.DAYS.between(fromLD, toLD) + 1
+                int requestedMaxDays = blockSlotsRange[1]
+                if (requestedMaxDays &gt; availableDays) {
+                    errors.add(&quot;No of Blocked Days &apos;${blockSlotsStr}&apos; is invalid — up to ${requestedMaxDays} day(s) requested, but ${blockFromDate} to ${blockToDate} only has ${availableDays} day(s) available&quot;)
+                }
+            }
+        } catch (Exception ignored) {
+            // Already reported by validateDate above; avoid double-reporting.
+        }
+    }
 }
 
 // ===== blockSlotFullDay: optional boolean flag. When true, blockSlotsPerDay&apos;s
 // count is irrelevant (see &quot;Build Presenter Payload&quot;/&quot;Load Next Existing Presenter&quot;),
 // and blockTimes/blockDurations are skipped entirely since each slot already spans the whole day. =====
 if (blockSlotFullDay &amp;&amp; !(blockSlotFullDay.equalsIgnoreCase(&quot;true&quot;) || blockSlotFullDay.equalsIgnoreCase(&quot;false&quot;))) {
-    errors.add(&quot;blockSlotFullDay &apos;${blockSlotFullDay}&apos; is invalid — expected true or false&quot;)
+    errors.add(&quot;Block Full Day &apos;${blockSlotFullDay}&apos; is invalid — expected true or false&quot;)
 }
 def blockFullDayRequested = blockSlotFullDay?.equalsIgnoreCase(&quot;true&quot;)
 
@@ -1378,7 +1286,7 @@ if (blockTimesStr &amp;&amp; !blockFullDayRequested) {
         !(t ==~ /^([01]?\d|2[0-3]):(00|30)$/)
     }
     if (badTimes) {
-        errors.add(&quot;blockTimes &apos;${blockTimesStr}&apos; is invalid — each entry must be HH:mm with minutes 00 or 30 (e.g. 11:00, 03:30), got invalid: ${badTimes.join(&apos;, &apos;)}&quot;)
+        errors.add(&quot;Block Times &apos;${blockTimesStr}&apos; is invalid — each entry must be HH:mm with minutes 00 or 30 (e.g. 11:00, 03:30), got invalid: ${badTimes.join(&apos;, &apos;)}&quot;)
     }
 }
 
@@ -1386,7 +1294,7 @@ if (blockTimesStr &amp;&amp; !blockFullDayRequested) {
 if (blockDurationsStr &amp;&amp; !blockFullDayRequested) {
     def durParts = blockDurationsStr.split(&quot;,&quot;)*.trim().findAll { it }
     if (!durParts.every { it.isInteger() &amp;&amp; it.toInteger() &gt; 0 }) {
-        errors.add(&quot;blockDurations &apos;${blockDurationsStr}&apos; is invalid — must be a comma-separated list of positive integer minutes, e.g. 30,60&quot;)
+        errors.add(&quot;Block Durations &apos;${blockDurationsStr}&apos; is invalid — must be a comma-separated list of positive integer minutes, e.g. 30,60&quot;)
     }
 }
 
@@ -1409,8 +1317,8 @@ sb.append(&quot;PRESENTER RUN SUMMARY\n&quot;)
 sb.append(&quot;========================================\n&quot;)
 sb.append(&quot;Presenters to create    : ${presentersStr} -&gt; ${presentersToCreate} this run\n&quot;)
 sb.append(&quot;Topics per presenter    : ${topicsPerPresenterStr ?: &apos;0 (disabled)&apos;}\n&quot;)
-sb.append(&quot;Block days (per pres.)  : ${blockSlotsStr ?: &apos;0 (disabled)&apos;}\n&quot;)
-sb.append(&quot;Blocked slots/presenter : ${blockSlotsPerDayStr ?: &apos;0 (disabled)&apos;}\n&quot;)
+sb.append(&quot;Block days (per pres)  : ${blockSlotsStr ?: &apos;0 (disabled)&apos;}\n&quot;)
+sb.append(&quot;Blocked slots : ${blockSlotsPerDayStr ?: &apos;0 (disabled)&apos;}\n&quot;)
 if (blockedSlotsRequested) {
     sb.append(&quot;Block date range        : ${blockFromDate} to ${blockToDate}\n&quot;)
 }
