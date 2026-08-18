@@ -47,409 +47,6 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
           <stringProp name="cacheKey">true</stringProp>
         </JSR223Sampler>
         <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="requestStartDate" elementType="Argument">
-              <stringProp name="Argument.name">requestStartDate</stringProp>
-              <stringProp name="Argument.value">2026-08-10</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
-            </elementProp>
-            <elementProp name="requestEndDate" elementType="Argument">
-              <stringProp name="Argument.name">requestEndDate</stringProp>
-              <stringProp name="Argument.value">2026-08-10</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
-            </elementProp>
-            <elementProp name="requestsPerDay" elementType="Argument">
-              <stringProp name="Argument.name">requestsPerDay</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">LABEL=requestsPerDay. The number of requests to create per day (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
-            </elementProp>
-            <elementProp name="requestDays" elementType="Argument">
-              <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
-            </elementProp>
-            <elementProp name="requestStartTimes" elementType="Argument">
-              <stringProp name="Argument.name">requestStartTimes</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">LABEL=requestDayStartTime. Request start time (HH:mm, e.g., 07:00,08:00). One value is selected randomly and validated against Location Hours. Leave empty to auto-pick a random time that fits within Location Hours.</stringProp>
-            </elementProp>
-            <elementProp name="requestDurations" elementType="Argument">
-              <stringProp name="Argument.name">requestDurations</stringProp>
-              <stringProp name="Argument.value">420, 480, 540, 600</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED, LABEL=requestDayDuration. Request duration in minutes (e.g., 420,480). One value is selected randomly. Minimum: 30 </stringProp>
-            </elementProp>
-            <elementProp name="categoryType" elementType="Argument">
-              <stringProp name="Argument.name">categoryType</stringProp>
-              <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, HIDE. Select the category type to use</stringProp>
-            </elementProp>
-            <elementProp name="parentCategory" elementType="Argument">
-              <stringProp name="Argument.name">parentCategory</stringProp>
-              <stringProp name="Argument.value">72DCAF42-C7C0-4006-8F31-7952185E5D61</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=location. Select the location where requests will be created</stringProp>
-            </elementProp>
-            <elementProp name="category" elementType="Argument">
-              <stringProp name="Argument.name">category</stringProp>
-              <stringProp name="Argument.value">D06189A1-69AF-4D17-AC5B-480F7589D427</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=requestType. Select the request type for the requests to be created</stringProp>
-            </elementProp>
-            <elementProp name="targetActions" elementType="Argument">
-              <stringProp name="Argument.name">targetActions</stringProp>
-              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Actions to perform after SUBMIT. Processing stops after the first selected action is performed. Empty = all available actions are allowed</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="excludedActions" elementType="Argument">
-              <stringProp name="Argument.name">excludedActions</stringProp>
-              <stringProp name="Argument.value">RESCHEDULE, DUPLICATE, SAVE, REQUEST_TRANSFER, DOWNLOAD_AGENDA_PDF, DOWNLOAD_AGENDA_DOC, SEND_PROPOSED_AGENDA, SEND_FINAL_AGENDA, SEND_EVITE</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE. Actions to always exclude from selection, even when targetActions is empty</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-          </collectionProp>
-        </Arguments>
-        <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Customer Variables" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="user" elementType="Argument">
-              <stringProp name="Argument.name">user</stringProp>
-              <stringProp name="Argument.value">admin@briefingiq.com</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Email address of the user who will process the requests (e.g. admin@allianceit.com)</stringProp>
-            </elementProp>
-            <elementProp name="customerName" elementType="Argument">
-              <stringProp name="Argument.name">customerName</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Specify the customer name for the request (e.g. AllianceIT). If the customer already exists, request creation is skipped. Leave blank to select a unique random customer</stringProp>
-            </elementProp>
-            <elementProp name="checkDuplicateCustomer" elementType="Argument">
-              <stringProp name="Argument.name">checkDuplicateCustomer</stringProp>
-              <stringProp name="Argument.value">true</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">BOOLEAN. Checks whether a customer with the same name already exists.</stringProp>
-            </elementProp>
-            <elementProp name="duplicateCustomerFromDate" elementType="Argument">
-              <stringProp name="Argument.name">duplicateCustomerFromDate</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE. Start date for checking duplicate customers. Leave blank to search across all requests for the selected request type</stringProp>
-            </elementProp>
-            <elementProp name="duplicateCustomerToDate" elementType="Argument">
-              <stringProp name="Argument.name">duplicateCustomerToDate</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE. End date for checking duplicate customers. Leave blank to search across all requests for the selected request type</stringProp>
-            </elementProp>
-            <elementProp name="clientTimeZone" elementType="Argument">
-              <stringProp name="Argument.name">clientTimeZone</stringProp>
-              <stringProp name="Argument.value">Asia/Calcutta</stringProp>
-              <stringProp name="Argument.desc">REQUIRED. Time zone of the user creating the request (e.g. Asia/Kolkata)</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-          </collectionProp>
-          <stringProp name="TestPlan.comments">admin@briefingiq.com</stringProp>
-        </Arguments>
-        <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Form Variables" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="multiDropDownRange" elementType="Argument">
-              <stringProp name="Argument.name">multiDropDownRange</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6. Multi-select dropdown range (e.g. 1,3 = 1 to 3, 1 = exactly 1). 0 or empty = skip, negative = error</stringProp>
-            </elementProp>
-            <elementProp name="multiFormRange" elementType="Argument">
-              <stringProp name="Argument.name">multiFormRange</stringProp>
-              <stringProp name="Argument.value">1,2</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6. Min and max range for all multi-entry forms (e.g. 1,3 = 1 to 3, 2 = exactly 2). Fallback when no form-specific range is set. 0 or empty = skip. Negative = error</stringProp>
-            </elementProp>
-            <elementProp name="form1" elementType="Argument">
-              <stringProp name="Argument.name">form1</stringProp>
-              <stringProp name="Argument.value">6D6976DA-916C-42C0-9C91-06591482877A</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_1. Select a multi-entry form for per-form entry override. Pair with form1Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form1Range" elementType="Argument">
-              <stringProp name="Argument.name">form1Range</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_1_range. Entry count range for Form 1 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form1 matches</stringProp>
-            </elementProp>
-            <elementProp name="form2" elementType="Argument">
-              <stringProp name="Argument.name">form2</stringProp>
-              <stringProp name="Argument.value">F58538AF-166E-44BB-991C-CB4605A395A8</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_2. Select a multi-entry form for per-form entry override. Pair with form2Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form2Range" elementType="Argument">
-              <stringProp name="Argument.name">form2Range</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_2_range. Entry count range for Form 2 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form2 matches</stringProp>
-            </elementProp>
-            <elementProp name="form3" elementType="Argument">
-              <stringProp name="Argument.name">form3</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_3. Select a multi-entry form for per-form entry override. Pair with form3Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form3Range" elementType="Argument">
-              <stringProp name="Argument.name">form3Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_3_range. Entry count range for Form 3 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form3 matches</stringProp>
-            </elementProp>
-            <elementProp name="form4" elementType="Argument">
-              <stringProp name="Argument.name">form4</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_4. Select a multi-entry form for per-form entry override. Pair with form4Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form4Range" elementType="Argument">
-              <stringProp name="Argument.name">form4Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_4_range. Entry count range for Form 4 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form4 matches</stringProp>
-            </elementProp>
-            <elementProp name="form5" elementType="Argument">
-              <stringProp name="Argument.name">form5</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_5. Select a multi-entry form for per-form entry override. Pair with form5Range. Empty = unused slot</stringProp>
-            </elementProp>
-            <elementProp name="form5Range" elementType="Argument">
-              <stringProp name="Argument.name">form5Range</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6, LABEL=form_5_range. Entry count range for Form 5 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form5 matches</stringProp>
-            </elementProp>
-            <elementProp name="secondaryOpportunities" elementType="Argument">
-              <stringProp name="Argument.name">secondaryOpportunities</stringProp>
-              <stringProp name="Argument.value">1,4</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">COLS=6. Number of Secondary opportunities to create (e.g. 1,3 = 1 to 3, 1 = exactly 1). 0 or leave blank to use the multiDropDownRange values. negative = error</stringProp>
-            </elementProp>
-          </collectionProp>
-        </Arguments>
-        <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Agenda Variables" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="rooms" elementType="Argument">
-              <stringProp name="Argument.name">rooms</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Rooms to create per activity day — randomly picked (e.g. 1,2,3). 0 or empty = no rooms. Ignored if Allowed Rooms variable value is set</stringProp>
-            </elementProp>
-            <elementProp name="locationResourceType" elementType="Argument">
-              <stringProp name="Argument.name">locationResourceType</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, LABEL=locationResourceType. Resource type used to load location resources</stringProp>
-            </elementProp>
-            <elementProp name="locationResourceUniqueId" elementType="Argument">
-              <stringProp name="Argument.name">locationResourceUniqueId</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, LABEL=locationResource. Used as the parent location for loading allowed rooms. Requires a Location Resource Type</stringProp>
-            </elementProp>
-            <elementProp name="allowedRooms" elementType="Argument">
-              <stringProp name="Argument.name">allowedRooms</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Limit room creation to specific rooms only. Empty = selects from all vacant rooms based on the room count. When specified, only the selected rooms are used. Requires a Location Resource</stringProp>
-            </elementProp>
-            <elementProp name="roomBufferMinutes" elementType="Argument">
-              <stringProp name="Argument.name">roomBufferMinutes</stringProp>
-              <stringProp name="Argument.value">30,60</stringProp>
-              <stringProp name="Argument.desc">Minutes to adjust logistics room timings. Comma-separated list of any length (e.g., 30,60,90). Start and end buffers are each picked independently at random per room</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="vacantSlotDurations" elementType="Argument">
-              <stringProp name="Argument.name">vacantSlotDurations</stringProp>
-              <stringProp name="Argument.value">30,60</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Vacant slot duration in minutes for activity types like topics, caterings (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
-            </elementProp>
-            <elementProp name="caterings" elementType="Argument">
-              <stringProp name="Argument.name">caterings</stringProp>
-              <stringProp name="Argument.value">20%</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Caterings per room. Enter percentage values (e.g., 50%, 80%). One value is chosen randomly. 0 or empty = none</stringProp>
-            </elementProp>
-            <elementProp name="cateringTimings" elementType="Argument">
-              <stringProp name="Argument.name">cateringTimings</stringProp>
-              <stringProp name="Argument.value">11:00, 11:30, 12:00, 12:30, 13:00, 19:00, 19:30, 20:00, 20:30</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Allowed catering start times. Enter comma-separated times in HH:mm format (e.g., 11:00,11:30); one value is selected randomly. Empty = any available slot</stringProp>
-            </elementProp>
-            <elementProp name="topics" elementType="Argument">
-              <stringProp name="Argument.name">topics</stringProp>
-              <stringProp name="Argument.value">60%</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Topics per room. Enter percentage values (e.g., 50%, 80%). One value is chosen randomly. 0 or empty = none</stringProp>
-            </elementProp>
-            <elementProp name="topicTimings" elementType="Argument">
-              <stringProp name="Argument.name">topicTimings</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Allowed start times for topics. Enter comma-separated times in HH:mm format (e.g., 10:00,10:30). Empty = any available slot in the room</stringProp>
-            </elementProp>
-            <elementProp name="presenters" elementType="Argument">
-              <stringProp name="Argument.name">presenters</stringProp>
-              <stringProp name="Argument.value">5</stringProp>
-              <stringProp name="Argument.desc">Presenters to create per request. Comma-separated values (e.g., 3,5); one value is selected randomly. 0 or empty = none</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="presentersPerTopic" elementType="Argument">
-              <stringProp name="Argument.name">presentersPerTopic</stringProp>
-              <stringProp name="Argument.value">1,2,3</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">Presenters to assign per topic. Enter comma-separated values (e.g., 1,2,3); one value is selected randomly. 0 or empty = skip</stringProp>
-            </elementProp>
-          </collectionProp>
-        </Arguments>
-        <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Configuration Variables" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="journeyModuleType" elementType="Argument">
-              <stringProp name="Argument.name">journeyModuleType</stringProp>
-              <stringProp name="Argument.value">JOURNEY</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Journey</stringProp>
-            </elementProp>
-            <elementProp name="logisticsModuleType" elementType="Argument">
-              <stringProp name="Argument.name">logisticsModuleType</stringProp>
-              <stringProp name="Argument.value">LOGISTICS</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Logistics</stringProp>
-            </elementProp>
-            <elementProp name="agendaModuleType" elementType="Argument">
-              <stringProp name="Argument.name">agendaModuleType</stringProp>
-              <stringProp name="Argument.value">CALENDAR_LISTING, CALENDER, LISTING</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE. Module types treated as Agenda (first match per module pass)</stringProp>
-            </elementProp>
-            <elementProp name="virtualConnectionModuleType" elementType="Argument">
-              <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
-              <stringProp name="Argument.value">VIRTUAL_CONNECTION</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Virtual Connection</stringProp>
-            </elementProp>
-            <elementProp name="logisticsFormType" elementType="Argument">
-              <stringProp name="Argument.name">logisticsFormType</stringProp>
-              <stringProp name="Argument.value">LOGISTICS_FORM</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Form Type of Logistics</stringProp>
-            </elementProp>
-            <elementProp name="activityTypesPriority" elementType="Argument">
-              <stringProp name="Argument.name">activityTypesPriority</stringProp>
-              <stringProp name="Argument.value">catering</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">HIDE. Order of the Activity Type priority</stringProp>
-            </elementProp>
-            <elementProp name="skipActivityTypes" elementType="Argument">
-              <stringProp name="Argument.name">skipActivityTypes</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">HIDE. Activity types to exclude from creation (comma-separated). Leave empty to create all</stringProp>
-            </elementProp>
-            <elementProp name="roomResourceTypeId" elementType="Argument">
-              <stringProp name="Argument.name">roomResourceTypeId</stringProp>
-              <stringProp name="Argument.value">EAC8F953-99D0-43DF-8E15-CA03F21EA92D</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, HIDE, LABEL=roomResourceType. Resource Type to be used for Room</stringProp>
-            </elementProp>
-            <elementProp name="activityFormId" elementType="Argument">
-              <stringProp name="Argument.name">activityFormId</stringProp>
-              <stringProp name="Argument.value">5622B58C-55BA-4473-9B3A-38D732DDD04B</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, HIDE, LABEL=activityForm. Topic Activity Form used to populate agenda</stringProp>
-            </elementProp>
-            <elementProp name="excludedModuleIds" elementType="Argument">
-              <stringProp name="Argument.name">excludedModuleIds</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE, LABEL=excludedModules. Modules to exclude from data population</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-          </collectionProp>
-        </Arguments>
-        <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Environment Variables" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="protocol" elementType="Argument">
-              <stringProp name="Argument.name">protocol</stringProp>
-              <stringProp name="Argument.value">https</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">HIDE. HTTP protocol</stringProp>
-            </elementProp>
-            <elementProp name="host" elementType="Argument">
-              <stringProp name="Argument.name">host</stringProp>
-              <stringProp name="Argument.value">briefings.briefingiq.com</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">HIDE. Server hostname</stringProp>
-            </elementProp>
-            <elementProp name="port" elementType="Argument">
-              <stringProp name="Argument.name">port</stringProp>
-              <stringProp name="Argument.value">443</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">HIDE. Server port number</stringProp>
-            </elementProp>
-            <elementProp name="contextname" elementType="Argument">
-              <stringProp name="Argument.name">contextname</stringProp>
-              <stringProp name="Argument.value">events</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">HIDE. Application context/root path</stringProp>
-            </elementProp>
-          </collectionProp>
-          <stringProp name="TestPlan.comments">443</stringProp>
-        </Arguments>
-        <hashTree/>
-        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-          <collectionProp name="HeaderManager.headers">
-            <elementProp name="" elementType="Header">
-              <stringProp name="Header.name">Accept</stringProp>
-              <stringProp name="Header.value">application/json</stringProp>
-            </elementProp>
-            <elementProp name="" elementType="Header">
-              <stringProp name="Header.name">Content-Type</stringProp>
-              <stringProp name="Header.value">application/json</stringProp>
-            </elementProp>
-            <elementProp name="" elementType="Header">
-              <stringProp name="Header.name">Authorization</stringProp>
-              <stringProp name="Header.value">Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6InR6SXBITi1GYi1CSnJoX3NsVTVXS1hBby1wR05UX2toN0V4QmluNVJFa3MiLCJhbGciOiJSUzI1NiIsIng1dCI6ImZFdHFyaEtUMWJYQUdhZlNkUW9OMXZYVFJwSSIsImtpZCI6ImZFdHFyaEtUMWJYQUdhZlNkUW9OMXZYVFJwSSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zZjRhNDA4MC0xMTUzLTRmMDYtOTQwMC1mZGFjMzA4NDY1ZDEvIiwiaWF0IjoxNzg1ODIxMTg2LCJuYmYiOjE3ODU4MjExODYsImV4cCI6MTc4NTgyNTU1OSwiYWNjdCI6MCwiYWNyIjoiMSIsImFjcnMiOlsicGZkciJdLCJhaW8iOiJBVVFBdS84Y0FBQUE1M2RIcTgwZFNuK2ZSOXVMSTNBZnc4L2JYcVhvSThKenZlMU5sQmhDMDc3ZkRIMkVtanB3RjUrRVpGTjgycjFDblVBZXIxYWE5RU94M1RJdjFmRW5vdz09IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJCSVEtRUlRIiwiYXBwaWQiOiJhZDgzNjY0NC0yNzc2LTQyY2MtYmRiMi0wNzFlMmMzZjlmYzciLCJhcHBpZGFjciI6IjEiLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIxMDMuNDQuMi4yOSIsIm5hbWUiOiJTdXBwb3J0IFVzZXIiLCJvaWQiOiI1ZmJiOGNhMC00ZTMxLTRmNzMtYjgyOC1jYmQ1MGUyMmQyMjgiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzIwMDVBNjJDRUU2QyIsInJoIjoiMS5BVVlBZ0VCS1AxTVJCay1VQVAyc01JUmwwUU1BQUFBQUFBQUF3QUFBQUFBQUFBQUFBQVZHQUEuIiwic2NwIjoiQ2FsZW5kYXJzLlJlYWQgQ2FsZW5kYXJzLlJlYWRCYXNpYyBlbWFpbCBPbmxpbmVNZWV0aW5ncy5SZWFkV3JpdGUgb3BlbmlkIHByb2ZpbGUgVXNlci5SZWFkIiwic2lkIjoiMDA3YWI2MmEtMTExMi0yY2Y5LWQ0ZmItNzhhY2Y0YTBlMWZiIiwic2lnbmluX3N0YXRlIjpbImttc2kiXSwic3ViIjoiQ2NxV0cwZzcyTHJGSWtkUTdPN1JGU0tETzJZRXBINThvb3JrOUprdUVRcyIsInRlbmFudF9yZWdpb25fc2NvcGUiOiJOQSIsInRpZCI6IjNmNGE0MDgwLTExNTMtNGYwNi05NDAwLWZkYWMzMDg0NjVkMSIsInVuaXF1ZV9uYW1lIjoic3VwcG9ydHVzZXJAYWxsaWFuY2VpdC5jb20iLCJ1cG4iOiJzdXBwb3J0dXNlckBhbGxpYW5jZWl0LmNvbSIsInV0aSI6IlhVMkszYlB2dEVxNGxQUjNYRGs1QUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfYWNkIjoxNzcyNTA5NjUxLCJ4bXNfYWN0X2ZjdCI6IjMgOSIsInhtc19mdGQiOiIyM3hsd0dwVHdYdlpiSTJIVWhiSm5zT2RNQl96LVdLZXl2Y3BDR0pyVm4wQmRYTmxZWE4wTFdSemJYTSIsInhtc19pZHJlbCI6IjEgNCIsInhtc19wZnRleHAiOjE3ODU5MTE5NTksInhtc19zdCI6eyJzdWIiOiJtcUdyY1hyeVRHcks3RlJ1QmR5N0xiR1kwcnI1Rmwzcmk3SEhYcFk4Xy13In0sInhtc19zdWJfZmN0IjoiMyA4IiwieG1zX3RjZHQiOjE1NzU2NjE4NzYsInhtc190bnRfZmN0IjoiMyAxNCJ9.ZhypSR2Pdd5o0Rxq_pwUn4YX4F4Lg0ZCG6V9B8BQTI9nsXEY196TLeBxoXDk_6jBw8mAdm4qFHL2gVP4MVXBEJA5N40ukRWMheodArNTxLYNAmqdxKlLn0rocMbzuzu_Hm_zLTpwCrBgYi8tXPyucAGpD7Cp50tgg__NjlptcJLb3r-eZFyFNNlXKfN-eh-eHhTgDTULGytQxmvJfZxLX6pBshv7EnNKyrTM_dee1BuxZ0Mscx9w0czXorDglhj5SmRVlyq_B9FQ2TUXHIUa21OrHbIJjOjRYluJl-k_oUqeBZXyV6YA9ZAkq3mVyt7nnursedKl5gtBdKNFH06Rmw</stringProp>
-            </elementProp>
-            <elementProp name="" elementType="Header">
-              <stringProp name="Header.name">x_cloud_user</stringProp>
-              <stringProp name="Header.value">${user}</stringProp>
-            </elementProp>
-          </collectionProp>
-        </HeaderManager>
-        <hashTree/>
-        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${host}</stringProp>
-          <stringProp name="HTTPSampler.port">${port}</stringProp>
-          <stringProp name="HTTPSampler.protocol">${protocol}</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
-          <stringProp name="HTTPSampler.path"></stringProp>
-          <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
-          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
-        </ConfigTestElement>
-        <hashTree/>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="API Field Variables" enabled="false">
           <collectionProp name="Arguments.arguments">
             <elementProp name="categoryType" elementType="Argument">
@@ -777,6 +374,439 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             </elementProp>
           </collectionProp>
         </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="requestStartDate" elementType="Argument">
+              <stringProp name="Argument.name">requestStartDate</stringProp>
+              <stringProp name="Argument.value">2026-12-01</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
+            </elementProp>
+            <elementProp name="requestEndDate" elementType="Argument">
+              <stringProp name="Argument.name">requestEndDate</stringProp>
+              <stringProp name="Argument.value">2026-12-03</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
+            </elementProp>
+            <elementProp name="requestsPerDay" elementType="Argument">
+              <stringProp name="Argument.name">requestsPerDay</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=requestsPerDay. The number of requests to create per day (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
+            </elementProp>
+            <elementProp name="requestDays" elementType="Argument">
+              <stringProp name="Argument.name">requestDays</stringProp>
+              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
+            </elementProp>
+            <elementProp name="requestStartTimes" elementType="Argument">
+              <stringProp name="Argument.name">requestStartTimes</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=requestDayStartTime. Request start time (HH:mm, e.g., 07:00,08:00). One value is selected randomly and validated against Location Hours. Leave empty to auto-pick a random time that fits within Location Hours.</stringProp>
+            </elementProp>
+            <elementProp name="requestDurations" elementType="Argument">
+              <stringProp name="Argument.name">requestDurations</stringProp>
+              <stringProp name="Argument.value">420, 480, 540, 600</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">REQUIRED, LABEL=requestDayDuration. Request duration in minutes (e.g., 420,480). One value is selected randomly. Minimum: 30 </stringProp>
+            </elementProp>
+            <elementProp name="categoryType" elementType="Argument">
+              <stringProp name="Argument.name">categoryType</stringProp>
+              <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, HIDE. Select the category type to use</stringProp>
+            </elementProp>
+            <elementProp name="parentCategory" elementType="Argument">
+              <stringProp name="Argument.name">parentCategory</stringProp>
+              <stringProp name="Argument.value">72DCAF42-C7C0-4006-8F31-7952185E5D61</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=location. Select the location where requests will be created</stringProp>
+            </elementProp>
+            <elementProp name="category" elementType="Argument">
+              <stringProp name="Argument.name">category</stringProp>
+              <stringProp name="Argument.value">D06189A1-69AF-4D17-AC5B-480F7589D427</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=requestType. Select the request type for the requests to be created</stringProp>
+            </elementProp>
+            <elementProp name="targetActions" elementType="Argument">
+              <stringProp name="Argument.name">targetActions</stringProp>
+              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Actions to perform after SUBMIT. Processing stops after the first selected action is performed. Empty = all available actions are allowed</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="excludedActions" elementType="Argument">
+              <stringProp name="Argument.name">excludedActions</stringProp>
+              <stringProp name="Argument.value">RESCHEDULE, DUPLICATE, SAVE, REQUEST_TRANSFER, DOWNLOAD_AGENDA_PDF, DOWNLOAD_AGENDA_DOC, SEND_PROPOSED_AGENDA, SEND_FINAL_AGENDA, SEND_EVITE</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE. Actions to always exclude from selection, even when targetActions is empty</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Customer Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="user" elementType="Argument">
+              <stringProp name="Argument.name">user</stringProp>
+              <stringProp name="Argument.value">admin@briefingiq.com</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">REQUIRED. Email address of the user who will process the requests (e.g. admin@allianceit.com)</stringProp>
+            </elementProp>
+            <elementProp name="customerName" elementType="Argument">
+              <stringProp name="Argument.name">customerName</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Specify the customer name for the request (e.g. AllianceIT). If the customer already exists, request creation is skipped. Leave blank to select a unique random customer</stringProp>
+            </elementProp>
+            <elementProp name="checkDuplicateCustomer" elementType="Argument">
+              <stringProp name="Argument.name">checkDuplicateCustomer</stringProp>
+              <stringProp name="Argument.value">true</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">BOOLEAN. Checks whether a customer with the same name already exists</stringProp>
+            </elementProp>
+            <elementProp name="duplicateCustomerFromDate" elementType="Argument">
+              <stringProp name="Argument.name">duplicateCustomerFromDate</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE. Start date for checking duplicate customers. Leave blank to auto-default to the 1st of the month prior to the request start date</stringProp>
+            </elementProp>
+            <elementProp name="duplicateCustomerToDate" elementType="Argument">
+              <stringProp name="Argument.name">duplicateCustomerToDate</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE. End date for checking duplicate customers. Leave blank to auto-default to the last day of the request end date&apos;s month</stringProp>
+            </elementProp>
+            <elementProp name="clientTimeZone" elementType="Argument">
+              <stringProp name="Argument.name">clientTimeZone</stringProp>
+              <stringProp name="Argument.value">Asia/Calcutta</stringProp>
+              <stringProp name="Argument.desc">REQUIRED. Time zone of the user creating the request (e.g. Asia/Kolkata)</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">admin@briefingiq.com</stringProp>
+        </Arguments>
+        <hashTree/>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="Duplicate Customer" enabled="true">
+          <stringProp name="script">SampleResult.setIgnore()
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+def fmt = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&quot;)
+
+def existingFrom = vars.get(&quot;duplicateCustomerFromDate&quot;)?.trim()
+def existingTo = vars.get(&quot;duplicateCustomerToDate&quot;)?.trim()
+
+if (!existingFrom) {
+    def start = LocalDate.parse(vars.get(&quot;requestStartDate&quot;).trim(), fmt)
+    def monthStart = start.minusMonths(1).withDayOfMonth(1)
+    vars.put(&quot;duplicateCustomerFromDate&quot;, monthStart.format(fmt))
+}
+
+if (!existingTo) {
+    def end = LocalDate.parse(vars.get(&quot;requestEndDate&quot;).trim(), fmt)
+    def monthEnd = end.withDayOfMonth(end.lengthOfMonth())
+    vars.put(&quot;duplicateCustomerToDate&quot;, monthEnd.format(fmt))
+}
+
+log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicateCustomerFromDate&quot;) + &quot; to &quot; + vars.get(&quot;duplicateCustomerToDate&quot;))</stringProp>
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Form Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="multiDropDownRange" elementType="Argument">
+              <stringProp name="Argument.name">multiDropDownRange</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6. Multi-select dropdown range (e.g. 1,3 = 1 to 3, 1 = exactly 1). 0 or empty = skip, negative = error</stringProp>
+            </elementProp>
+            <elementProp name="multiFormRange" elementType="Argument">
+              <stringProp name="Argument.name">multiFormRange</stringProp>
+              <stringProp name="Argument.value">1,2</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6. Min and max range for all multi-entry forms (e.g. 1,3 = 1 to 3, 2 = exactly 2). Fallback when no form-specific range is set. 0 or empty = skip. Negative = error</stringProp>
+            </elementProp>
+            <elementProp name="form1" elementType="Argument">
+              <stringProp name="Argument.name">form1</stringProp>
+              <stringProp name="Argument.value">6D6976DA-916C-42C0-9C91-06591482877A</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_1. Select a multi-entry form for per-form entry override. Pair with form1Range. Empty = unused slot</stringProp>
+            </elementProp>
+            <elementProp name="form1Range" elementType="Argument">
+              <stringProp name="Argument.name">form1Range</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6, LABEL=form_1_range. Entry count range for Form 1 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form1 matches</stringProp>
+            </elementProp>
+            <elementProp name="form2" elementType="Argument">
+              <stringProp name="Argument.name">form2</stringProp>
+              <stringProp name="Argument.value">F58538AF-166E-44BB-991C-CB4605A395A8</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_2. Select a multi-entry form for per-form entry override. Pair with form2Range. Empty = unused slot</stringProp>
+            </elementProp>
+            <elementProp name="form2Range" elementType="Argument">
+              <stringProp name="Argument.name">form2Range</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6, LABEL=form_2_range. Entry count range for Form 2 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form2 matches</stringProp>
+            </elementProp>
+            <elementProp name="form3" elementType="Argument">
+              <stringProp name="Argument.name">form3</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_3. Select a multi-entry form for per-form entry override. Pair with form3Range. Empty = unused slot</stringProp>
+            </elementProp>
+            <elementProp name="form3Range" elementType="Argument">
+              <stringProp name="Argument.name">form3Range</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6, LABEL=form_3_range. Entry count range for Form 3 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form3 matches</stringProp>
+            </elementProp>
+            <elementProp name="form4" elementType="Argument">
+              <stringProp name="Argument.name">form4</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_4. Select a multi-entry form for per-form entry override. Pair with form4Range. Empty = unused slot</stringProp>
+            </elementProp>
+            <elementProp name="form4Range" elementType="Argument">
+              <stringProp name="Argument.name">form4Range</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6, LABEL=form_4_range. Entry count range for Form 4 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form4 matches</stringProp>
+            </elementProp>
+            <elementProp name="form5" elementType="Argument">
+              <stringProp name="Argument.name">form5</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, COLS=6, LABEL=form_5. Select a multi-entry form for per-form entry override. Pair with form5Range. Empty = unused slot</stringProp>
+            </elementProp>
+            <elementProp name="form5Range" elementType="Argument">
+              <stringProp name="Argument.name">form5Range</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6, LABEL=form_5_range. Entry count range for Form 5 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form5 matches</stringProp>
+            </elementProp>
+            <elementProp name="secondaryOpportunities" elementType="Argument">
+              <stringProp name="Argument.name">secondaryOpportunities</stringProp>
+              <stringProp name="Argument.value">1,4</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">COLS=6. Number of Secondary opportunities to create (e.g. 1,3 = 1 to 3, 1 = exactly 1). 0 or leave blank to use the multiDropDownRange values. negative = error</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Agenda Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="rooms" elementType="Argument">
+              <stringProp name="Argument.name">rooms</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Rooms to create per activity day — randomly picked (e.g. 1,2,3). 0 or empty = no rooms. Ignored if Allowed Rooms variable value is set</stringProp>
+            </elementProp>
+            <elementProp name="locationResourceType" elementType="Argument">
+              <stringProp name="Argument.name">locationResourceType</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, LABEL=locationResourceType. Resource type used to load location resources</stringProp>
+            </elementProp>
+            <elementProp name="locationResourceUniqueId" elementType="Argument">
+              <stringProp name="Argument.name">locationResourceUniqueId</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, LABEL=locationResource. Used as the parent location for loading allowed rooms. Requires a Location Resource Type</stringProp>
+            </elementProp>
+            <elementProp name="allowedRooms" elementType="Argument">
+              <stringProp name="Argument.name">allowedRooms</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Limit room creation to specific rooms only. Empty = selects from all vacant rooms based on the room count. When specified, only the selected rooms are used. Requires a Location Resource</stringProp>
+            </elementProp>
+            <elementProp name="roomBufferMinutes" elementType="Argument">
+              <stringProp name="Argument.name">roomBufferMinutes</stringProp>
+              <stringProp name="Argument.value">30,60</stringProp>
+              <stringProp name="Argument.desc">Minutes to adjust logistics room timings. Comma-separated list of any length (e.g., 30,60,90). Start and end buffers are each picked independently at random per room</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="vacantSlotDurations" elementType="Argument">
+              <stringProp name="Argument.name">vacantSlotDurations</stringProp>
+              <stringProp name="Argument.value">30,60</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Vacant slot duration in minutes for activity types like topics, caterings (positive integers, comma-separated, e.g. 30,60). 0 or empty = skip</stringProp>
+            </elementProp>
+            <elementProp name="caterings" elementType="Argument">
+              <stringProp name="Argument.name">caterings</stringProp>
+              <stringProp name="Argument.value">20%</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Caterings per room. Enter percentage values (e.g., 50%, 80%). One value is chosen randomly. 0 or empty = none</stringProp>
+            </elementProp>
+            <elementProp name="cateringTimings" elementType="Argument">
+              <stringProp name="Argument.name">cateringTimings</stringProp>
+              <stringProp name="Argument.value">11:00, 11:30, 12:00, 12:30, 13:00, 19:00, 19:30, 20:00, 20:30</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Allowed catering start times. Enter comma-separated times in HH:mm format (e.g., 11:00,11:30); one value is selected randomly. Empty = any available slot</stringProp>
+            </elementProp>
+            <elementProp name="topics" elementType="Argument">
+              <stringProp name="Argument.name">topics</stringProp>
+              <stringProp name="Argument.value">60%</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Topics per room. Enter percentage values (e.g., 50%, 80%). One value is chosen randomly. 0 or empty = none</stringProp>
+            </elementProp>
+            <elementProp name="topicTimings" elementType="Argument">
+              <stringProp name="Argument.name">topicTimings</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Allowed start times for topics. Enter comma-separated times in HH:mm format (e.g., 10:00,10:30). Empty = any available slot in the room</stringProp>
+            </elementProp>
+            <elementProp name="presenters" elementType="Argument">
+              <stringProp name="Argument.name">presenters</stringProp>
+              <stringProp name="Argument.value">5</stringProp>
+              <stringProp name="Argument.desc">Presenters to create per request. Comma-separated values (e.g., 3,5); one value is selected randomly. 0 or empty = none</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="presentersPerTopic" elementType="Argument">
+              <stringProp name="Argument.name">presentersPerTopic</stringProp>
+              <stringProp name="Argument.value">1,2,3</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">Presenters to assign per topic. Enter comma-separated values (e.g., 1,2,3); one value is selected randomly. 0 or empty = skip</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Configuration Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="journeyModuleType" elementType="Argument">
+              <stringProp name="Argument.name">journeyModuleType</stringProp>
+              <stringProp name="Argument.value">JOURNEY</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Journey</stringProp>
+            </elementProp>
+            <elementProp name="logisticsModuleType" elementType="Argument">
+              <stringProp name="Argument.name">logisticsModuleType</stringProp>
+              <stringProp name="Argument.value">LOGISTICS</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Logistics</stringProp>
+            </elementProp>
+            <elementProp name="agendaModuleType" elementType="Argument">
+              <stringProp name="Argument.name">agendaModuleType</stringProp>
+              <stringProp name="Argument.value">CALENDAR_LISTING, CALENDER, LISTING</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE. Module types treated as Agenda (first match per module pass)</stringProp>
+            </elementProp>
+            <elementProp name="virtualConnectionModuleType" elementType="Argument">
+              <stringProp name="Argument.name">virtualConnectionModuleType</stringProp>
+              <stringProp name="Argument.value">VIRTUAL_CONNECTION</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Module type of Virtual Connection</stringProp>
+            </elementProp>
+            <elementProp name="logisticsFormType" elementType="Argument">
+              <stringProp name="Argument.name">logisticsFormType</stringProp>
+              <stringProp name="Argument.value">LOGISTICS_FORM</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE. Form Type of Logistics</stringProp>
+            </elementProp>
+            <elementProp name="activityTypesPriority" elementType="Argument">
+              <stringProp name="Argument.name">activityTypesPriority</stringProp>
+              <stringProp name="Argument.value">catering</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Order of the Activity Type priority</stringProp>
+            </elementProp>
+            <elementProp name="skipActivityTypes" elementType="Argument">
+              <stringProp name="Argument.name">skipActivityTypes</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Activity types to exclude from creation (comma-separated). Leave empty to create all</stringProp>
+            </elementProp>
+            <elementProp name="roomResourceTypeId" elementType="Argument">
+              <stringProp name="Argument.name">roomResourceTypeId</stringProp>
+              <stringProp name="Argument.value">EAC8F953-99D0-43DF-8E15-CA03F21EA92D</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE, LABEL=roomResourceType. Resource Type to be used for Room</stringProp>
+            </elementProp>
+            <elementProp name="activityFormId" elementType="Argument">
+              <stringProp name="Argument.name">activityFormId</stringProp>
+              <stringProp name="Argument.value">5622B58C-55BA-4473-9B3A-38D732DDD04B</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, HIDE, LABEL=activityForm. Topic Activity Form used to populate agenda</stringProp>
+            </elementProp>
+            <elementProp name="excludedModuleIds" elementType="Argument">
+              <stringProp name="Argument.name">excludedModuleIds</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE, LABEL=excludedModules. Modules to exclude from data population</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Environment Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="protocol" elementType="Argument">
+              <stringProp name="Argument.name">protocol</stringProp>
+              <stringProp name="Argument.value">https</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. HTTP protocol</stringProp>
+            </elementProp>
+            <elementProp name="host" elementType="Argument">
+              <stringProp name="Argument.name">host</stringProp>
+              <stringProp name="Argument.value">briefings.briefingiq.com</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Server hostname</stringProp>
+            </elementProp>
+            <elementProp name="port" elementType="Argument">
+              <stringProp name="Argument.name">port</stringProp>
+              <stringProp name="Argument.value">443</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Server port number</stringProp>
+            </elementProp>
+            <elementProp name="contextname" elementType="Argument">
+              <stringProp name="Argument.name">contextname</stringProp>
+              <stringProp name="Argument.value">events</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">HIDE. Application context/root path</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">443</stringProp>
+        </Arguments>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Accept</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Authorization</stringProp>
+              <stringProp name="Header.value">Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6InR6SXBITi1GYi1CSnJoX3NsVTVXS1hBby1wR05UX2toN0V4QmluNVJFa3MiLCJhbGciOiJSUzI1NiIsIng1dCI6ImZFdHFyaEtUMWJYQUdhZlNkUW9OMXZYVFJwSSIsImtpZCI6ImZFdHFyaEtUMWJYQUdhZlNkUW9OMXZYVFJwSSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDAiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zZjRhNDA4MC0xMTUzLTRmMDYtOTQwMC1mZGFjMzA4NDY1ZDEvIiwiaWF0IjoxNzg1ODIxMTg2LCJuYmYiOjE3ODU4MjExODYsImV4cCI6MTc4NTgyNTU1OSwiYWNjdCI6MCwiYWNyIjoiMSIsImFjcnMiOlsicGZkciJdLCJhaW8iOiJBVVFBdS84Y0FBQUE1M2RIcTgwZFNuK2ZSOXVMSTNBZnc4L2JYcVhvSThKenZlMU5sQmhDMDc3ZkRIMkVtanB3RjUrRVpGTjgycjFDblVBZXIxYWE5RU94M1RJdjFmRW5vdz09IiwiYW1yIjpbInB3ZCJdLCJhcHBfZGlzcGxheW5hbWUiOiJCSVEtRUlRIiwiYXBwaWQiOiJhZDgzNjY0NC0yNzc2LTQyY2MtYmRiMi0wNzFlMmMzZjlmYzciLCJhcHBpZGFjciI6IjEiLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiIxMDMuNDQuMi4yOSIsIm5hbWUiOiJTdXBwb3J0IFVzZXIiLCJvaWQiOiI1ZmJiOGNhMC00ZTMxLTRmNzMtYjgyOC1jYmQ1MGUyMmQyMjgiLCJwbGF0ZiI6IjMiLCJwdWlkIjoiMTAwMzIwMDVBNjJDRUU2QyIsInJoIjoiMS5BVVlBZ0VCS1AxTVJCay1VQVAyc01JUmwwUU1BQUFBQUFBQUF3QUFBQUFBQUFBQUFBQVZHQUEuIiwic2NwIjoiQ2FsZW5kYXJzLlJlYWQgQ2FsZW5kYXJzLlJlYWRCYXNpYyBlbWFpbCBPbmxpbmVNZWV0aW5ncy5SZWFkV3JpdGUgb3BlbmlkIHByb2ZpbGUgVXNlci5SZWFkIiwic2lkIjoiMDA3YWI2MmEtMTExMi0yY2Y5LWQ0ZmItNzhhY2Y0YTBlMWZiIiwic2lnbmluX3N0YXRlIjpbImttc2kiXSwic3ViIjoiQ2NxV0cwZzcyTHJGSWtkUTdPN1JGU0tETzJZRXBINThvb3JrOUprdUVRcyIsInRlbmFudF9yZWdpb25fc2NvcGUiOiJOQSIsInRpZCI6IjNmNGE0MDgwLTExNTMtNGYwNi05NDAwLWZkYWMzMDg0NjVkMSIsInVuaXF1ZV9uYW1lIjoic3VwcG9ydHVzZXJAYWxsaWFuY2VpdC5jb20iLCJ1cG4iOiJzdXBwb3J0dXNlckBhbGxpYW5jZWl0LmNvbSIsInV0aSI6IlhVMkszYlB2dEVxNGxQUjNYRGs1QUEiLCJ2ZXIiOiIxLjAiLCJ3aWRzIjpbImI3OWZiZjRkLTNlZjktNDY4OS04MTQzLTc2YjE5NGU4NTUwOSJdLCJ4bXNfYWNkIjoxNzcyNTA5NjUxLCJ4bXNfYWN0X2ZjdCI6IjMgOSIsInhtc19mdGQiOiIyM3hsd0dwVHdYdlpiSTJIVWhiSm5zT2RNQl96LVdLZXl2Y3BDR0pyVm4wQmRYTmxZWE4wTFdSemJYTSIsInhtc19pZHJlbCI6IjEgNCIsInhtc19wZnRleHAiOjE3ODU5MTE5NTksInhtc19zdCI6eyJzdWIiOiJtcUdyY1hyeVRHcks3RlJ1QmR5N0xiR1kwcnI1Rmwzcmk3SEhYcFk4Xy13In0sInhtc19zdWJfZmN0IjoiMyA4IiwieG1zX3RjZHQiOjE1NzU2NjE4NzYsInhtc190bnRfZmN0IjoiMyAxNCJ9.ZhypSR2Pdd5o0Rxq_pwUn4YX4F4Lg0ZCG6V9B8BQTI9nsXEY196TLeBxoXDk_6jBw8mAdm4qFHL2gVP4MVXBEJA5N40ukRWMheodArNTxLYNAmqdxKlLn0rocMbzuzu_Hm_zLTpwCrBgYi8tXPyucAGpD7Cp50tgg__NjlptcJLb3r-eZFyFNNlXKfN-eh-eHhTgDTULGytQxmvJfZxLX6pBshv7EnNKyrTM_dee1BuxZ0Mscx9w0czXorDglhj5SmRVlyq_B9FQ2TUXHIUa21OrHbIJjOjRYluJl-k_oUqeBZXyV6YA9ZAkq3mVyt7nnursedKl5gtBdKNFH06Rmw</stringProp>
+            </elementProp>
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">x_cloud_user</stringProp>
+              <stringProp name="Header.value">${user}</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${host}</stringProp>
+          <stringProp name="HTTPSampler.port">${port}</stringProp>
+          <stringProp name="HTTPSampler.protocol">${protocol}</stringProp>
+          <stringProp name="HTTPSampler.contentEncoding">UTF-8</stringProp>
+          <stringProp name="HTTPSampler.path"></stringProp>
+          <stringProp name="HTTPSampler.concurrentPool">6</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout">30000</stringProp>
+          <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        </ConfigTestElement>
         <hashTree/>
         <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Global Response Assertion" enabled="true">
           <collectionProp name="Asserion.test_strings">
