@@ -69,7 +69,7 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
@@ -105,7 +105,7 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             </elementProp>
             <elementProp name="targetActions" elementType="Argument">
               <stringProp name="Argument.name">targetActions</stringProp>
-              <stringProp name="Argument.value">CONFIRM, HOLD</stringProp>
+              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
               <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Actions to perform after SUBMIT. Processing stops after the first selected action is performed. Empty = all available actions are allowed</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
@@ -116,7 +116,6 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
-          <stringProp name="TestPlan.comments">CONFIRM, HOLD, WAITLIST</stringProp>
         </Arguments>
         <hashTree/>
         <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Customer Variables" enabled="true">
