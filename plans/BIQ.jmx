@@ -11468,15 +11468,30 @@ int endBuffer = 0
 
 if (activityStart &amp;&amp; activityEnd) {
     try {
-        def formatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&quot;)
+        // ✅ FIX (end buffer not applied): the previous implementation parsed both times
+        // with a STRICT LocalDateTime formatter (&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&quot;). Any leftover
+        // character after seconds (e.g. a timezone offset like +05:30 that survives the
+        // Z/millisecond strip) makes LocalDateTime.parse() throw — the catch below then
+        // swallows it silently and roomEndTime falls back to the RAW unbuffered
+        // activityEnd for every room. Rewritten to use plain minutes-since-midnight
+        // arithmetic (same proven pattern already used in &quot;Register Room Buffer Zones&quot;
+        // and &quot;Smart Slot Selector&quot; elsewhere in this file), which only needs the
+        // HH:mm:ss portion of the string and can&apos;t be tripped up by a trailing offset.
+        def startClean = activityStart.replace(&quot;Z&quot;, &quot;&quot;).replaceAll(/\.[0-9]+/, &quot;&quot;)
+        def endClean   = activityEnd.replace(&quot;Z&quot;, &quot;&quot;).replaceAll(/\.[0-9]+/, &quot;&quot;)
 
-        def startStr = activityStart.replace(&quot;Z&quot;, &quot;&quot;).replaceAll(/\.[0-9]+/, &quot;&quot;)
-        def endStr   = activityEnd.replace(&quot;Z&quot;, &quot;&quot;).replaceAll(/\.[0-9]+/, &quot;&quot;)
+        def startDatePart = startClean.contains(&quot;T&quot;) ? startClean.substring(0, startClean.indexOf(&quot;T&quot;)) : startClean.substring(0, 10)
+        def endDatePart   = endClean.contains(&quot;T&quot;)   ? endClean.substring(0, endClean.indexOf(&quot;T&quot;))     : endClean.substring(0, 10)
+        def startTimePart = (startClean.contains(&quot;T&quot;) ? startClean.substring(startClean.indexOf(&quot;T&quot;) + 1) : startClean.substring(11)).substring(0, 8)
+        def endTimePart   = (endClean.contains(&quot;T&quot;)   ? endClean.substring(endClean.indexOf(&quot;T&quot;) + 1)     : endClean.substring(11)).substring(0, 8)
 
-        def startDt = LocalDateTime.parse(startStr, formatter)
-        def endDt   = LocalDateTime.parse(endStr, formatter)
+        def toMins = { String hms -&gt; def p = hms.split(&quot;:&quot;); return p[0].toInteger() * 60 + p[1].toInteger() }
+        def toHms  = { int m -&gt; String.format(&quot;%02d:%02d:00&quot;, (int) (m / 60), m % 60) }
 
-        def totalDurationMins = java.time.Duration.between(startDt, endDt).toMinutes()
+        int startMins = toMins(startTimePart)
+        int endMins   = toMins(endTimePart)
+
+        def totalDurationMins = endMins - startMins
         def minRoomDuration   = 30 // minimum viable room window after both buffers applied
 
         // Independent picks — start and end buffer are each drawn separately,
@@ -11491,16 +11506,15 @@ if (activityStart &amp;&amp; activityEnd) {
             endBuffer = 0
         }
 
-        def newStartDt = startDt.plusMinutes(startBuffer)
-        def newEndDt   = endDt.minusMinutes(endBuffer)
+        int newStartMins = startMins + startBuffer
+        int newEndMins   = endMins - endBuffer
 
-        def outputFormatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&quot;)
-        roomStartTime = newStartDt.format(outputFormatter)
-        roomEndTime   = newEndDt.format(outputFormatter)
+        roomStartTime = &quot;${startDatePart}T${toHms(newStartMins)}&quot;
+        roomEndTime   = &quot;${endDatePart}T${toHms(newEndMins)}&quot;
 
-        log.info(&quot;[RoomBuffer] Room ${roomIndex}: start+${startBuffer}min / end-${endBuffer}min (independently picked) | Day: ${startStr} to ${endStr} | Room: ${roomStartTime} to ${roomEndTime}&quot;)
+        log.info(&quot;[RoomBuffer] Room ${roomIndex}: start+${startBuffer}min / end-${endBuffer}min (independently picked) | Day: ${startTimePart} to ${endTimePart} | Room: ${roomStartTime} to ${roomEndTime}&quot;)
     } catch (Exception e) {
-        log.warn(&quot;[RoomBuffer] Error applying buffer: ${e.message}&quot;)
+        log.warn(&quot;[RoomBuffer] Error applying buffer: ${e.message} - roomStartTime/roomEndTime left UNBUFFERED for this room&quot;)
     }
 }
 
