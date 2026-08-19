@@ -178,6 +178,7 @@ function startScheduler({ schedulesDir, startRun, isBusy }) {
 
   function fireSchedule(schedule) {
     const props = resolveScheduledProps(schedule.baseProps, schedule.rules);
+    const firedAt = new Date();
     const run = startRun({
       props,
       runLabel: schedule.label,
@@ -186,28 +187,35 @@ function startScheduler({ schedulesDir, startRun, isBusy }) {
       scheduleId: schedule.id
     });
 
-    store.updateSchedule(schedule.id, { lastRunAt: new Date().toISOString(), lastRunId: run.id, lastRunStatus: "running" });
+    // Advance nextRunAt/enabled immediately at fire time, not when the process later
+    // closes: stopRun() flips a run's status synchronously well before the OS process
+    // actually emits "close" (SIGTERM has a grace period), so if we waited for close,
+    // a tick landing in that gap would see the schedule still "due" and fire it again.
+    let nextRunAt = schedule.nextRunAt;
+    let enabled = schedule.enabled;
+    if (schedule.recurrence?.type === "daily" || schedule.recurrence?.type === "cron") {
+      nextRunAt = computeNextRunAt(schedule.recurrence, firedAt)?.toISOString() || null;
+    } else if (schedule.recurrence?.type === "once") {
+      // Only consume a "once" schedule once its actual scheduled time has passed —
+      // an early "run now" test-fire must not cancel the real future run.
+      const due = new Date(schedule.recurrence.at) <= firedAt;
+      if (due) {
+        nextRunAt = null;
+        enabled = false;
+      }
+    }
+
+    store.updateSchedule(schedule.id, {
+      lastRunAt: firedAt.toISOString(),
+      lastRunId: run.id,
+      lastRunStatus: "running",
+      nextRunAt,
+      enabled
+    });
 
     const finalize = () => {
-      const current = store.getSchedule(schedule.id);
-      if (!current) return;
-      const nextAfter = new Date();
-
-      let nextRunAt = current.nextRunAt;
-      let enabled = current.enabled;
-      if (current.recurrence?.type === "daily" || current.recurrence?.type === "cron") {
-        nextRunAt = computeNextRunAt(current.recurrence, nextAfter)?.toISOString() || null;
-      } else if (current.recurrence?.type === "once") {
-        // Only consume a "once" schedule once its actual scheduled time has passed —
-        // an early "run now" test-fire must not cancel the real future run.
-        const due = new Date(current.recurrence.at) <= nextAfter;
-        if (due) {
-          nextRunAt = null;
-          enabled = false;
-        }
-      }
-
-      store.updateSchedule(schedule.id, { lastRunStatus: run.status, nextRunAt, enabled });
+      if (!store.getSchedule(schedule.id)) return;
+      store.updateSchedule(schedule.id, { lastRunStatus: run.status });
     };
 
     if (run.process) {
