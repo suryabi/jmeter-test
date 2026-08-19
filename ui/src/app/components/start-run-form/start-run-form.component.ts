@@ -32,7 +32,14 @@ import {
 } from '../../core/models/runner.models';
 import { RunnerService } from '../../core/services/runner.service';
 import { formatFieldLabel, parameterFieldLabel } from '../../core/utils/format-field-label';
-import { utcTimeToLocalLabel } from '../../core/utils/describe-recurrence';
+import {
+  localTimeToUtcTimeValue,
+  pickerDateToTimeString,
+  pickerDateToUtcInstant,
+  timeStringToPickerDate,
+  utcInstantToPickerDate,
+  utcTimeToLocalTimeValue
+} from '../../core/utils/describe-recurrence';
 import { parameterFieldColumnClass } from '../../core/utils/parameter-grid-column';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -83,7 +90,14 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
   recurrenceType: 'once' | 'daily' | 'cron' = 'daily';
   /** UTC time, entered and displayed as-is (no local-timezone conversion). */
   recurrenceTime = '00:00';
+  /** recurrenceTime as a timeOnly-picker Date — kept in sync explicitly (see recurrenceOnceAtLocal note). */
+  recurrenceTimeUtcPickerDate: Date = timeStringToPickerDate('00:00');
+  /** recurrenceTime converted to local, as a timeOnly-picker Date. */
+  recurrenceTimeLocalPickerDate: Date = timeStringToPickerDate(utcTimeToLocalTimeValue('00:00'));
+  /** UTC date/time, "dressed" as a picker-local Date — see utcInstantToPickerDate. */
   recurrenceOnceAt: Date | null = null;
+  /** Same instant as recurrenceOnceAt, as a real local Date — kept in sync explicitly (not recomputed per CD cycle) to avoid feeding the datepicker a new object reference on every check. */
+  recurrenceOnceAtLocal: Date | null = null;
   recurrenceCronExpression = '';
   recurrenceCronTouched = false;
   cronPreview: string | null = null;
@@ -92,10 +106,11 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
 
   onRecurrenceTypeChange(type: 'once' | 'daily' | 'cron'): void {
     this.recurrenceType = type;
-    if (type === 'once' && (!this.recurrenceOnceAt || this.recurrenceOnceAt <= new Date())) {
-      const defaultAt = new Date();
-      defaultAt.setHours(defaultAt.getHours() + 1, 0, 0, 0);
-      this.recurrenceOnceAt = defaultAt;
+    if (type === 'once' && this.recurrenceOnceInPast()) {
+      const defaultInstant = new Date();
+      defaultInstant.setUTCHours(defaultInstant.getUTCHours() + 1, 0, 0, 0);
+      this.recurrenceOnceAt = utcInstantToPickerDate(defaultInstant);
+      this.recurrenceOnceAtLocal = defaultInstant;
     }
     if (type === 'cron') {
       this.recurrenceCronTouched = false;
@@ -113,29 +128,61 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
   }
 
   recurrenceOnceInPast(): boolean {
-    return this.recurrenceType === 'once' && (!this.recurrenceOnceAt || this.recurrenceOnceAt <= new Date());
+    if (this.recurrenceType !== 'once') return false;
+    if (!this.recurrenceOnceAt) return true;
+    return pickerDateToUtcInstant(this.recurrenceOnceAt) <= new Date();
   }
 
   recurrenceCronMissing(): boolean {
     return this.recurrenceType === 'cron' && !this.recurrenceCronExpression.trim();
   }
 
-  /** e.g. "2:30 PM" — the daily UTC time the user entered, shown in their own local time. */
-  recurrenceTimeLocalLabel(): string {
-    return utcTimeToLocalLabel(this.recurrenceTime);
+  /** UTC time picker changed directly. */
+  onRecurrenceTimeUtcPickerChange(value: Date | null): void {
+    const time = value ? pickerDateToTimeString(value) : '00:00';
+    this.recurrenceTime = time;
+    this.recurrenceTimeUtcPickerDate = value ?? timeStringToPickerDate(time);
+    this.recurrenceTimeLocalPickerDate = timeStringToPickerDate(utcTimeToLocalTimeValue(time));
   }
 
-  /** e.g. "Aug 14, 2026, 3:30 AM UTC" — the local date/time the user picked, shown as the UTC instant that's actually sent. */
-  recurrenceOnceUtcLabel(): string {
+  /** Local time picker changed — convert back to the UTC source of truth. */
+  onRecurrenceTimeLocalPickerChange(value: Date | null): void {
+    const localTime = value ? pickerDateToTimeString(value) : '00:00';
+    this.recurrenceTime = localTimeToUtcTimeValue(localTime);
+    this.recurrenceTimeLocalPickerDate = value ?? timeStringToPickerDate(localTime);
+    this.recurrenceTimeUtcPickerDate = timeStringToPickerDate(this.recurrenceTime);
+  }
+
+  /** Recompute both time pickers from recurrenceTime (call after setting it directly, e.g. from a loaded schedule). */
+  private syncTimePickers(): void {
+    this.recurrenceTimeUtcPickerDate = timeStringToPickerDate(this.recurrenceTime);
+    this.recurrenceTimeLocalPickerDate = timeStringToPickerDate(
+      utcTimeToLocalTimeValue(this.recurrenceTime)
+    );
+  }
+
+  /** e.g. "Aug 14, 2026, 9:00 AM" — the UTC date/time the user picked, shown in their own local time. */
+  recurrenceOnceLocalLabel(): string {
     if (!this.recurrenceOnceAt) return '';
-    return `${this.recurrenceOnceAt.toLocaleString(undefined, {
-      timeZone: 'UTC',
+    return pickerDateToUtcInstant(this.recurrenceOnceAt).toLocaleString(undefined, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit'
-    })} UTC`;
+    });
+  }
+
+  /** UTC datepicker changed directly. */
+  onRecurrenceOnceUtcChange(value: Date | null): void {
+    this.recurrenceOnceAt = value;
+    this.recurrenceOnceAtLocal = value ? pickerDateToUtcInstant(value) : null;
+  }
+
+  /** Local datepicker changed — re-dress as the UTC picker value. */
+  onRecurrenceOnceLocalChange(value: Date | null): void {
+    this.recurrenceOnceAtLocal = value;
+    this.recurrenceOnceAt = value ? utcInstantToPickerDate(value) : null;
   }
 
   private readonly fb = inject(FormBuilder);
@@ -483,7 +530,10 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
 
     let recurrence: ScheduleRecurrence;
     if (this.recurrenceType === 'once') {
-      recurrence = { type: 'once', at: (this.recurrenceOnceAt ?? new Date()).toISOString() };
+      recurrence = {
+        type: 'once',
+        at: pickerDateToUtcInstant(this.recurrenceOnceAt ?? new Date()).toISOString()
+      };
     } else if (this.recurrenceType === 'cron') {
       recurrence = { type: 'cron', expression: this.recurrenceCronExpression.trim() };
     } else {
@@ -678,7 +728,9 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
 
     if (schedule.recurrence.type === 'once') {
       this.recurrenceType = 'once';
-      this.recurrenceOnceAt = new Date(schedule.recurrence.at);
+      const at = new Date(schedule.recurrence.at);
+      this.recurrenceOnceAt = utcInstantToPickerDate(at);
+      this.recurrenceOnceAtLocal = at;
     } else if (schedule.recurrence.type === 'cron') {
       this.recurrenceType = 'cron';
       this.recurrenceCronExpression = schedule.recurrence.expression;
@@ -687,6 +739,7 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
     } else {
       this.recurrenceType = 'daily';
       this.recurrenceTime = schedule.recurrence.time;
+      this.syncTimePickers();
     }
 
     this.loadDropdownOptions();

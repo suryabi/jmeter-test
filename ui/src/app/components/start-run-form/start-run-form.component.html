@@ -110,119 +110,162 @@
           </div>
         }
         @if (mode === 'schedule') {
-          <div class="run-meta-field">
+          <div class="run-meta-field run-meta-wide run-meta-recurrence">
             <label class="field-label">
               <i class="pi pi-calendar-clock"></i>
               Recurrence
             </label>
-            <div class="recurrence-toggle">
-              <label class="recurrence-option">
-                <p-radiobutton
-                  name="recurrenceType"
-                  value="daily"
-                  [ngModel]="recurrenceType"
-                  [ngModelOptions]="{ standalone: true }"
-                  (ngModelChange)="onRecurrenceTypeChange($event)"
-                />
-                Daily
-              </label>
-              <label class="recurrence-option">
-                <p-radiobutton
-                  name="recurrenceType"
-                  value="once"
-                  [ngModel]="recurrenceType"
-                  [ngModelOptions]="{ standalone: true }"
-                  (ngModelChange)="onRecurrenceTypeChange($event)"
-                />
-                Once
-              </label>
-              <label class="recurrence-option">
-                <p-radiobutton
-                  name="recurrenceType"
-                  value="cron"
-                  [ngModel]="recurrenceType"
-                  [ngModelOptions]="{ standalone: true }"
-                  (ngModelChange)="onRecurrenceTypeChange($event)"
-                />
-                Cron
-              </label>
+            <div class="recurrence-panel">
+              <div class="recurrence-toggle">
+                <label class="recurrence-option">
+                  <p-radiobutton
+                    name="recurrenceType"
+                    value="daily"
+                    [ngModel]="recurrenceType"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="onRecurrenceTypeChange($event)"
+                  />
+                  Daily
+                </label>
+                <label class="recurrence-option">
+                  <p-radiobutton
+                    name="recurrenceType"
+                    value="once"
+                    [ngModel]="recurrenceType"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="onRecurrenceTypeChange($event)"
+                  />
+                  Once
+                </label>
+                <label class="recurrence-option">
+                  <p-radiobutton
+                    name="recurrenceType"
+                    value="cron"
+                    [ngModel]="recurrenceType"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="onRecurrenceTypeChange($event)"
+                  />
+                  Cron
+                </label>
+              </div>
+
+              @if (recurrenceType === 'daily') {
+                <div class="recurrence-config">
+                  <label class="field-label">
+                    <i class="pi pi-clock"></i>
+                    Select time
+                  </label>
+                  <div class="dual-field-row">
+                    <div class="dual-field">
+                      <p-datepicker
+                        inputId="recurrenceTimeUtc"
+                        class="surface-datepicker"
+                        panelStyleClass="surface-datepicker-panel"
+                        appendTo="body"
+                        [ngModel]="recurrenceTimeUtcPickerDate"
+                        [ngModelOptions]="{ standalone: true }"
+                        [timeOnly]="true"
+                        [showIcon]="true"
+                        iconDisplay="input"
+                        (ngModelChange)="onRecurrenceTimeUtcPickerChange($event)"
+                      />
+                      <small class="field-help dual-field-tag">UTC</small>
+                    </div>
+                    <div class="dual-field">
+                      <p-datepicker
+                        inputId="recurrenceTimeLocal"
+                        class="surface-datepicker"
+                        panelStyleClass="surface-datepicker-panel"
+                        appendTo="body"
+                        [ngModel]="recurrenceTimeLocalPickerDate"
+                        [ngModelOptions]="{ standalone: true }"
+                        [timeOnly]="true"
+                        [showIcon]="true"
+                        iconDisplay="input"
+                        (ngModelChange)="onRecurrenceTimeLocalPickerChange($event)"
+                      />
+                      <small class="field-help dual-field-tag">Local time</small>
+                    </div>
+                  </div>
+                </div>
+              } @else if (recurrenceType === 'once') {
+                <div class="recurrence-config">
+                  <label class="field-label">
+                    <i class="pi pi-calendar"></i>
+                    Select date
+                  </label>
+                  <div class="dual-field-row">
+                    <div class="dual-field">
+                      <p-datepicker
+                        inputId="recurrenceOnceAtUtc"
+                        class="surface-datepicker"
+                        panelStyleClass="surface-datepicker-panel"
+                        appendTo="body"
+                        [ngModel]="recurrenceOnceAt"
+                        [ngModelOptions]="{ standalone: true }"
+                        [showTime]="true"
+                        dateFormat="yy-mm-dd"
+                        (ngModelChange)="onRecurrenceOnceUtcChange($event)"
+                      />
+                      <small class="field-help dual-field-tag">UTC</small>
+                    </div>
+                    <div class="dual-field">
+                      <p-datepicker
+                        inputId="recurrenceOnceAtLocal"
+                        class="surface-datepicker"
+                        panelStyleClass="surface-datepicker-panel"
+                        appendTo="body"
+                        [ngModel]="recurrenceOnceAtLocal"
+                        [ngModelOptions]="{ standalone: true }"
+                        [showTime]="true"
+                        dateFormat="yy-mm-dd"
+                        (ngModelChange)="onRecurrenceOnceLocalChange($event)"
+                      />
+                      <small class="field-help dual-field-tag">Local time</small>
+                    </div>
+                  </div>
+                  @if (recurrenceOnceInPast()) {
+                    <small class="field-help field-error">Pick a date/time in the future.</small>
+                  }
+                </div>
+              } @else {
+                <div class="recurrence-config">
+                  <label class="field-label" for="recurrenceCron">
+                    <i class="pi pi-code"></i>
+                    Cron expression (UTC)
+                  </label>
+                  <input
+                    pInputText
+                    variant="outlined"
+                    id="recurrenceCron"
+                    class="surface-input font-mono"
+                    placeholder="*/15 9-17 * * 1-5"
+                    [ngModel]="recurrenceCronExpression"
+                    [ngModelOptions]="{ standalone: true }"
+                    (ngModelChange)="onCronExpressionChange($event)"
+                    (blur)="onRecurrenceCronBlur()"
+                  />
+                  @if (recurrenceCronMissing() && recurrenceCronTouched) {
+                    <small class="field-help field-error">Enter a cron expression.</small>
+                  } @else if (cronPreviewLoading) {
+                    <small class="field-help">
+                      <i class="pi pi-spin pi-spinner"></i>
+                      Checking…
+                    </small>
+                  } @else if (cronPreviewError) {
+                    <small class="field-help field-error">{{ cronPreviewError }}</small>
+                  } @else if (cronPreview) {
+                    <small class="field-help field-success">
+                      <i class="pi pi-check-circle"></i>
+                      Next run: {{ cronPreview | date: 'medium' }} (your local time)
+                    </small>
+                  } @else {
+                    <small class="field-help">Standard 5-field cron: minute hour day month weekday.</small>
+                  }
+                </div>
+              }
             </div>
           </div>
-          @if (recurrenceType === 'daily') {
-            <div class="run-meta-field run-meta-wide">
-              <label class="field-label" for="recurrenceTime">
-                <i class="pi pi-clock"></i>
-                Time (UTC, every day)
-              </label>
-              <input
-                type="time"
-                id="recurrenceTime"
-                class="surface-input w-full"
-                [(ngModel)]="recurrenceTime"
-                [ngModelOptions]="{ standalone: true }"
-              />
-              @if (recurrenceTimeLocalLabel()) {
-                <small class="field-help">= {{ recurrenceTimeLocalLabel() }} your local time</small>
-              }
-            </div>
-          } @else if (recurrenceType === 'once') {
-            <div class="run-meta-field run-meta-wide">
-              <label class="field-label" for="recurrenceOnceAt">
-                <i class="pi pi-calendar"></i>
-                Date &amp; time (your local time)
-              </label>
-              <p-datepicker
-                inputId="recurrenceOnceAt"
-                class="surface-datepicker w-full"
-                panelStyleClass="surface-datepicker-panel"
-                appendTo="body"
-                [(ngModel)]="recurrenceOnceAt"
-                [ngModelOptions]="{ standalone: true }"
-                [showTime]="true"
-                dateFormat="yy-mm-dd"
-              />
-              @if (recurrenceOnceInPast()) {
-                <small class="field-help field-error">Pick a date/time in the future.</small>
-              } @else if (recurrenceOnceUtcLabel()) {
-                <small class="field-help">= {{ recurrenceOnceUtcLabel() }}</small>
-              }
-            </div>
-          } @else {
-            <div class="run-meta-field run-meta-wide">
-              <label class="field-label" for="recurrenceCron">
-                <i class="pi pi-code"></i>
-                Cron expression (UTC)
-              </label>
-              <input
-                pInputText
-                variant="outlined"
-                id="recurrenceCron"
-                class="surface-input w-full font-mono"
-                placeholder="*/15 9-17 * * 1-5"
-                [ngModel]="recurrenceCronExpression"
-                [ngModelOptions]="{ standalone: true }"
-                (ngModelChange)="onCronExpressionChange($event)"
-                (blur)="onRecurrenceCronBlur()"
-              />
-              @if (recurrenceCronMissing() && recurrenceCronTouched) {
-                <small class="field-help field-error">Enter a cron expression.</small>
-              } @else if (cronPreviewLoading) {
-                <small class="field-help">
-                  <i class="pi pi-spin pi-spinner"></i>
-                  Checking…
-                </small>
-              } @else if (cronPreviewError) {
-                <small class="field-help field-error">{{ cronPreviewError }}</small>
-              } @else if (cronPreview) {
-                <small class="field-help field-success">
-                  <i class="pi pi-check-circle"></i>
-                  Next run: {{ cronPreview | date: 'medium' }} (your local time)
-                </small>
-              } @else {
-                <small class="field-help">Standard 5-field cron: minute hour day month weekday.</small>
-              }
-            </div>
-          }
         }
       </div>
 

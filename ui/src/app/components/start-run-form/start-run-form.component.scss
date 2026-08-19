@@ -126,6 +126,76 @@
   gap: 0.4rem;
 }
 
+.run-meta-recurrence {
+  gap: 0.6rem;
+}
+
+.recurrence-panel {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem 1.25rem;
+  padding: 0.85rem 1rem;
+  background: rgba(19, 12, 39, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.recurrence-toggle {
+  padding-top: 0.6rem;
+  flex-shrink: 0;
+}
+
+.recurrence-config {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding-left: 1.25rem;
+  border-left: 1px dashed rgba(148, 163, 184, 0.24);
+
+  input.surface-input {
+    width: 100%;
+    max-width: 14rem;
+  }
+
+  .surface-datepicker {
+    width: 100%;
+    max-width: 14rem;
+  }
+
+  .surface-datepicker .p-datepicker-input {
+    width: 100%;
+  }
+}
+
+.dual-field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dual-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  input.surface-input,
+  .surface-datepicker {
+    max-width: 9.5rem;
+  }
+}
+
+.dual-field-tag {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
 .run-meta-field .p-inputtext.surface-input {
   display: block;
 }
