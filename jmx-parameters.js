@@ -86,11 +86,28 @@ function parseEnableIf(description) {
   };
 }
 
+/**
+ * DISABLE_IF=fieldName:nonempty|empty — UI disables the field when the other
+ * argument is non-empty (nonempty) or empty (empty). Example mutual exclusion:
+ * DISABLE_IF=excludedRooms:nonempty on allowedRooms.
+ */
+function parseDisableIf(description) {
+  const match = String(description || "").match(
+    /\bDISABLE_IF=([a-zA-Z][a-zA-Z0-9_]*):([^\s,]+)/i
+  );
+  if (!match) return null;
+  return {
+    field: match[1],
+    value: match[2].replace(/[.,;:]+$/g, "").toLowerCase()
+  };
+}
+
 function cleanDescription(description) {
   return String(description || "")
     .replace(/\bLABEL=[a-zA-Z][a-zA-Z0-9_]*\s*[,.]?\s*/gi, "")
     .replace(/\bCOLS=\d+\s*[,.]?\s*/gi, "")
     .replace(/\bENABLE_IF=[a-zA-Z][a-zA-Z0-9_]*(?::[^\s,]+)?\s*[,.]?\s*/gi, "")
+    .replace(/\bDISABLE_IF=[a-zA-Z][a-zA-Z0-9_]*:[^\s,]+\s*[,.]?\s*/gi, "")
     .replace(/\bHIDE\b\s*[,.]?\s*/gi, "")
     .replace(/,\s*,/g, ",")
     .replace(/^,\s*/, "")
@@ -522,6 +539,7 @@ function parseArgumentsBlock(blockXml) {
     const label = parseParameterLabel(description);
     const cols = parseParameterCols(description);
     const enableIf = parseEnableIf(description);
+    const disableIf = parseDisableIf(description);
     params.push({
       name,
       defaultValue,
@@ -532,6 +550,7 @@ function parseArgumentsBlock(blockXml) {
       cols,
       ...(label ? { label } : {}),
       ...(enableIf ? { enableIf } : {}),
+      ...(disableIf ? { disableIf } : {}),
       kind: "argument"
     });
   }

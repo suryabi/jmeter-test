@@ -467,7 +467,7 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
 
     for (const group of this.parameterGroups) {
       for (const param of group.parameters) {
-        props[param.name] = this.serializeValue(param, raw[param.name]);
+        props[param.name] = this.serializeValue(param, this.valueForProp(param, raw));
       }
     }
 
@@ -520,7 +520,7 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
 
     for (const group of this.parameterGroups) {
       for (const param of group.parameters) {
-        baseProps[param.name] = this.serializeValue(param, raw[param.name]);
+        baseProps[param.name] = this.serializeValue(param, this.valueForProp(param, raw));
       }
     }
 
@@ -555,13 +555,22 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
     return parameterFieldColumnClass(param);
   }
 
-  /** True when ENABLE_IF is absent or the controlling field matches. */
+  /** True when ENABLE_IF / DISABLE_IF conditions allow editing this field. */
   isParamEnabled(param: ParameterDef): boolean {
-    const condition = param.enableIf;
-    if (!condition?.field) return true;
-    const current = this.normalizeEnableIfValue(this.form.get(condition.field)?.value);
-    const expected = this.normalizeEnableIfValue(condition.value);
-    return current === expected;
+    const enable = param.enableIf;
+    if (enable?.field) {
+      const current = this.normalizeEnableIfValue(this.form.get(enable.field)?.value);
+      const expected = this.normalizeEnableIfValue(enable.value);
+      if (current !== expected) return false;
+    }
+    const disable = param.disableIf;
+    if (disable?.field) {
+      const parentValue = this.form.get(disable.field)?.value;
+      const nonempty = this.isFieldNonEmpty(parentValue);
+      if (disable.value === 'nonempty' && nonempty) return false;
+      if (disable.value === 'empty' && !nonempty) return false;
+    }
+    return true;
   }
 
   isUiHiddenParam(param: ParameterDef): boolean {
@@ -647,7 +656,7 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
   private syncEnableIfStates(): void {
     for (const group of this.parameterGroups) {
       for (const param of group.parameters) {
-        if (!param.enableIf) continue;
+        if (!param.enableIf && !param.disableIf) continue;
         const control = this.form.get(param.name);
         if (!control) continue;
         const enabled = this.isParamEnabled(param);
@@ -655,9 +664,36 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
           control.enable({ emitEvent: false });
         } else if (!enabled && control.enabled) {
           control.disable({ emitEvent: false });
+          control.setValue(this.clearedControlValue(param), { emitEvent: false });
         }
       }
     }
+  }
+
+  private clearedControlValue(
+    param: ParameterDef
+  ): string | boolean | string[] | null {
+    if (param.type === 'boolean') return false;
+    if (param.type === 'multiselect') return [];
+    if (param.type === 'dropdown' && !param.required) return null;
+    return '';
+  }
+
+  private isFieldNonEmpty(value: unknown): boolean {
+    if (value == null) return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'boolean') return value;
+    const text = String(value).trim();
+    if (!text) return false;
+    if (text.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(text) as unknown;
+        if (Array.isArray(parsed)) return parsed.length > 0;
+      } catch {
+        /* treat as non-empty string */
+      }
+    }
+    return true;
   }
 
   private normalizeEnableIfValue(value: unknown): string {
@@ -828,13 +864,24 @@ export class StartRunFormComponent implements OnInit, OnDestroy {
     return String(value ?? '');
   }
 
+  private valueForProp(
+    param: ParameterDef,
+    raw: Record<string, string | boolean | string[] | null | undefined>
+  ): string | boolean | string[] | null {
+    if (!this.isParamEnabled(param)) {
+      return this.clearedControlValue(param);
+    }
+    const value = raw[param.name];
+    return value === undefined ? this.clearedControlValue(param) : value;
+  }
+
   private collectPropsForApi(): RunProps {
     const raw = this.form.getRawValue() as Record<string, string | boolean | string[]>;
     const props: RunProps = {};
 
     for (const group of this.parameterGroups) {
       for (const param of group.parameters) {
-        props[param.name] = this.serializeValue(param, raw[param.name]);
+        props[param.name] = this.serializeValue(param, this.valueForProp(param, raw));
       }
     }
 

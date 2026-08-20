@@ -169,12 +169,6 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">items=_embedded.resources display=metaData.searchDisplayText value=uniqueId depends=roomResourceTypeId,locationResourceUniqueId,category,categoryType header.x-cloud-customerid=field:customerId header.x-cloud-categorytypeid=field:categoryType header.x-cloud-categoryid=field:category header.x-cloud-parentid=field:locationResourceUniqueId multi=true</stringProp>
             </elementProp>
-            <elementProp name="excludedRooms" elementType="Argument">
-              <stringProp name="Argument.name">excludedRooms</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/resourcetypes/${roomResourceTypeId}/resources</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.resources display=metaData.searchDisplayText value=uniqueId depends=roomResourceTypeId,categoryType header.x-cloud-customerid=field:customerId header.x-cloud-categorytypeid=field:categoryType multi=true</stringProp>
-            </elementProp>
             <elementProp name="logisticsFormType" elementType="Argument">
               <stringProp name="Argument.name">logisticsFormType</stringProp>
               <stringProp name="Argument.value">/${contextname}/api/formtypes</stringProp>
@@ -637,13 +631,13 @@ log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicat
               <stringProp name="Argument.name">allowedRooms</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Limit room creation to specific rooms only. Empty = selects from all vacant rooms based on the room count. When specified, only the selected rooms are used. Requires a Location Resource</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, DISABLE_IF=excludedRooms:nonempty. Limit room creation to specific rooms only. Empty = selects from all vacant rooms based on the room count. When specified, only the selected rooms are used. Requires a Location Resource</stringProp>
             </elementProp>
             <elementProp name="excludedRooms" elementType="Argument">
               <stringProp name="Argument.name">excludedRooms</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Exclude specific rooms from creation. Ignored if Allowed Rooms is set.</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, DISABLE_IF=allowedRooms:nonempty. Exclude specific rooms from creation. Ignored if Allowed Rooms is set.</stringProp>
             </elementProp>
             <elementProp name="roomBufferMinutes" elementType="Argument">
               <stringProp name="Argument.name">roomBufferMinutes</stringProp>

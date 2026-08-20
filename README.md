@@ -369,6 +369,8 @@ Parameters are parsed from JMX — no backend code change needed when adding fie
 | `LABEL=camelCase` | UI display label (e.g. `LABEL=requestType`) |
 | `COLS=n` | Grid width on a 12-column layout (`COLS=4` default, `COLS=6` → 2 per row) |
 | `ENABLE_IF=field:value` | Enable the field only when another argument equals `value` (e.g. `ENABLE_IF=blockSlotFullDay:false`). Booleans compare as `true` / `false`. |
+| `DISABLE_IF=field:nonempty` | Disable the field when another argument has a value (e.g. mutual exclusion: `DISABLE_IF=excludedRooms:nonempty` on `allowedRooms`). Cleared when disabled. |
+| `DISABLE_IF=field:empty` | Disable the field when another argument is empty. |
 
 ### API Field Variables group
 
@@ -589,7 +591,7 @@ curl -X DELETE http://localhost:5050/runs/<run-id>
 
 - Owns `plans/*.jmx` — **primary: `plans/BIQ.jmx`**
 - Add parameters under existing `Arguments` groups with `Argument.name`, `Argument.value`, `Argument.desc`
-- Use `LABEL=`, `HIDE`, `COLS=`, `ENABLE_IF=`, `DROPDOWN, API` tags as needed
+- Use `LABEL=`, `HIDE`, `COLS=`, `ENABLE_IF=`, `DISABLE_IF=`, `DROPDOWN, API` tags as needed
 - API dropdown mappings go in **API Field Variables** (`items` / `display` / `value` / `depends` / headers; use backtick `display=` for multi-field labels)
 - Smoke test: upload or replace plan → refresh UI → launch run → verify logs + samples
 

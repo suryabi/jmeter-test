@@ -62,6 +62,7 @@ curl "http://localhost:5050/parameters?plan=BIQ.jmx"
 Parameter schema tags (full contract in root `README.md` § JMX parameter contract):
 
 - `ENABLE_IF=field:value` — UI enables the field only when that argument matches
+- `DISABLE_IF=field:nonempty|empty` — UI disables when another argument is non-empty or empty
 - API Field Variables: `display=path` or backtick template `` display=`a.b (c.d)` ``; `depends=` clears and reloads child options when parents change
 
 ## Run detail

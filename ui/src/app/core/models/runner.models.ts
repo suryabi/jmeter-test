@@ -37,6 +37,11 @@ export interface ParameterDef {
    * named argument currently equals `value` (booleans compare as "true"/"false").
    */
   enableIf?: { field: string; value: string };
+  /**
+   * From JMX `DISABLE_IF=field:nonempty|empty` — UI disables this field when the
+   * named argument is non-empty (`nonempty`) or empty (`empty`).
+   */
+  disableIf?: { field: string; value: string };
   kind?: ParameterKind;
   headerName?: string;
   apiConfig?: ApiFieldConfig;

@@ -20,6 +20,9 @@ Edit plans under `plans/` only (e.g. `BIQ.jmx`, `BIQ_1.jmx`). Leave root `BIQ.jm
 | `DROPDOWN, API, MULTI` | Multiselect |
 | `HIDE` | Hidden in UI; value still sent to JMeter |
 | `LABEL=camelCase` | Display label in UI |
+| `ENABLE_IF=field:value` | Enable only when another argument equals `value` |
+| `DISABLE_IF=field:nonempty` | Disable when another argument has a value (mutual exclusion) |
+| `DISABLE_IF=field:empty` | Disable when another argument is empty |
 
 API dropdown wiring lives in the **`API Field Variables`** Arguments block (`items=`, `display=`, `value=`, `depends=`, `header.*=`).
 
