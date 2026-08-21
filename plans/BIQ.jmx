@@ -169,22 +169,10 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">items=_embedded.resources display=metaData.searchDisplayText value=uniqueId depends=roomResourceTypeId,locationResourceUniqueId,category,categoryType header.x-cloud-customerid=field:customerId header.x-cloud-categorytypeid=field:categoryType header.x-cloud-categoryid=field:category header.x-cloud-parentid=field:locationResourceUniqueId multi=true</stringProp>
             </elementProp>
-            <elementProp name="excludedRooms" elementType="Argument">
-              <stringProp name="Argument.name">excludedRooms</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/resourcetypes/${roomResourceTypeId}/resources</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.resources display=metaData.searchDisplayText value=uniqueId depends=roomResourceTypeId,categoryType header.x-cloud-customerid=field:customerId header.x-cloud-categorytypeid=field:categoryType multi=true</stringProp>
-            </elementProp>
             <elementProp name="logisticsFormType" elementType="Argument">
               <stringProp name="Argument.name">logisticsFormType</stringProp>
               <stringProp name="Argument.value">/${contextname}/api/formtypes</stringProp>
               <stringProp name="Argument.desc">items=_embedded.formTypes display=formTypeName value=uniqueId depends=categoryType header.x-cloud-categorytypeid=field:categoryType</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="excludedRooms" elementType="Argument">
-              <stringProp name="Argument.name">excludedRooms</stringProp>
-              <stringProp name="Argument.value">/${contextname}/api/resourcetypes/${roomResourceTypeId}/resources</stringProp>
-              <stringProp name="Argument.desc">items=_embedded.resources display=metaData.searchDisplayText value=uniqueId depends=roomResourceTypeId,locationResourceUniqueId,category,categoryType header.x-cloud-customerid=field:customerId header.x-cloud-categorytypeid=field:categoryType header.x-cloud-categoryid=field:category header.x-cloud-parentid=field:locationResourceUniqueId multi=true</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>
@@ -391,25 +379,25 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
-              <stringProp name="Argument.value">2026-12-01</stringProp>
+              <stringProp name="Argument.value">2027-01-12</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
             </elementProp>
             <elementProp name="requestEndDate" elementType="Argument">
               <stringProp name="Argument.name">requestEndDate</stringProp>
-              <stringProp name="Argument.value">2026-12-01</stringProp>
+              <stringProp name="Argument.value">2027-01-12</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
             </elementProp>
             <elementProp name="requestsPerDay" elementType="Argument">
               <stringProp name="Argument.name">requestsPerDay</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=requestsPerDay. The number of requests to create per day (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.value">1,2,3,4,5</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
@@ -638,12 +626,6 @@ log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicat
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Limit room creation to specific rooms only. Empty = selects from all vacant rooms based on the room count. When specified, only the selected rooms are used. Requires a Location Resource</stringProp>
-            </elementProp>
-            <elementProp name="excludedRooms" elementType="Argument">
-              <stringProp name="Argument.name">excludedRooms</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Exclude specific rooms from creation. Ignored if Allowed Rooms is set.</stringProp>
             </elementProp>
             <elementProp name="roomBufferMinutes" elementType="Argument">
               <stringProp name="Argument.name">roomBufferMinutes</stringProp>
@@ -11308,50 +11290,61 @@ if (allowedRoomsRaw) {
 
 } else {
     // ============================================================
-    // excludedRooms FILTER (only applies when allowedRooms is not set)
+    // ZOOM ROOM FILTER (only applies when allowedRooms is not set)
+    // Rooms whose data.zoomRoomId is present in the vacant slots
+    // response are never auto-selected. Driven directly off the API
+    // response, so newly added Zoom rooms are excluded automatically
+    // with no list to maintain.
     // ============================================================
-    def excludedRoomsRaw = vars.get(&quot;excludedRooms&quot;)?.trim() ?: &quot;&quot;
     def poolIndices = (1..extractedRoomCount).collect { it }
 
-    if (excludedRoomsRaw) {
-        def excludedEntries = excludedRoomsRaw.split(&quot;,&quot;).collect { it.trim() }.findAll { it }
-        def excludedUUIDs   = excludedEntries.findAll { isUUID(it) }.collect { it.toUpperCase() }
-        def excludedNames   = excludedEntries.findAll { !isUUID(it) }.collect { it.toLowerCase() }
+    def zoomRoomUUIDs = [] as Set
+    try {
+        def vacantSlotsJson = new groovy.json.JsonSlurper().parseText(prev.getResponseDataAsString())
+        vacantSlotsJson?._embedded?.resourceTimeSlots?.each { slot -&gt;
+            slot?.resources?.each { res -&gt;
+                def zoomRoomId = res?.data?.zoomRoomId
+                if (zoomRoomId?.toString()?.trim()) {
+                    zoomRoomUUIDs.add(res?.uniqueId?.toString()?.toUpperCase())
+                }
+            }
+        }
+    } catch (Exception e) {
+        log.warn(&quot;Day ${dayIndex}: Failed to parse vacant slots response for zoomRoomId filter — ${e.message}&quot;)
+    }
 
-        log.info(&quot;Day ${dayIndex}: excludedRooms filter active — UUIDs: ${excludedUUIDs}, Names: ${excludedNames}&quot;)
+    if (zoomRoomUUIDs) {
+        log.info(&quot;Day ${dayIndex}: Zoom room filter active — excluding UUIDs: ${zoomRoomUUIDs}&quot;)
 
         poolIndices = poolIndices.findAll { i -&gt;
             def roomId   = vars.get(&quot;roomId_&quot; + i)   ?: &quot;&quot;
             def roomName = vars.get(&quot;roomName_&quot; + i) ?: &quot;&quot;
 
-            boolean matchById   = excludedUUIDs &amp;&amp; excludedUUIDs.contains(roomId.toUpperCase())
-            boolean matchByName = excludedNames &amp;&amp; excludedNames.contains(roomName.trim().toLowerCase())
-            boolean isExcluded  = matchById || matchByName
+            boolean isZoomRoom = zoomRoomUUIDs.contains(roomId.toUpperCase())
 
-            if (isExcluded) {
-                log.info(&quot;  ⛔ EXCLUDED Room [${i}]: ${roomName} (${roomId})&quot;)
+            if (isZoomRoom) {
+                log.info(&quot;  ⛔ EXCLUDED (Zoom) Room [${i}]: ${roomName} (${roomId})&quot;)
             }
-            !isExcluded
+            !isZoomRoom
         }
 
         if (poolIndices.isEmpty()) {
             def availableRoomNames = (1..extractedRoomCount).collect { i -&gt; vars.get(&quot;roomName_&quot; + i) ?: &quot;Room ${i}&quot; }.join(&quot;, &quot;)
             log.warn(&quot;========================================&quot;)
-            log.warn(&quot;SKIPPING ROOMS: excludedRooms removed all vacant rooms for Day ${dayIndex}.&quot;)
-            log.warn(&quot;excludedRooms requested: ${excludedRoomsRaw}&quot;)
+            log.warn(&quot;SKIPPING ROOMS: all vacant rooms for Day ${dayIndex} are Zoom rooms.&quot;)
             log.warn(&quot;Vacant rooms available: ${availableRoomNames}&quot;)
             log.warn(&quot;Room creation skipped — test will continue with remaining steps.&quot;)
             log.warn(&quot;========================================&quot;)
             vars.put(&quot;TotalRoomsToCreate&quot;, &quot;0&quot;)
             vars.put(&quot;shuffledRoomIndices_Day${dayIndex}&quot;, &quot;&quot;)
-            vars.put(&quot;_skipRoomReason&quot;, &quot;excludedRooms &apos;${excludedRoomsRaw}&apos; removed all vacant rooms. Available: ${availableRoomNames}&quot;)
+            vars.put(&quot;_skipRoomReason&quot;, &quot;All vacant rooms for Day ${dayIndex} are Zoom rooms (data.zoomRoomId present). Available: ${availableRoomNames}&quot;)
             return
         }
     }
 
     // ============================================================
     // ORIGINAL BEHAVIOR — rooms UDV controls count, now against the
-    // (possibly excludedRooms-filtered) pool
+    // (possibly Zoom-filtered) pool
     // ============================================================
     def requestedRooms = roomsPickedCount
     def finalCount = requestedRooms
@@ -11368,7 +11361,7 @@ if (allowedRoomsRaw) {
     Collections.shuffle(availableIndices, rand)
     vars.put(&quot;shuffledRoomIndices_Day${dayIndex}&quot;, availableIndices.join(&quot;,&quot;))
 
-    log.info(&quot;Day ${dayIndex}: No allowedRooms filter — creating ${finalCount} room(s) from ${poolIndices.size()} vacant (after excludedRooms)&quot;)
+    log.info(&quot;Day ${dayIndex}: No allowedRooms filter — creating ${finalCount} room(s) from ${poolIndices.size()} vacant (after Zoom room filter)&quot;)
 }</stringProp>
                                     <stringProp name="scriptLanguage">groovy</stringProp>
                                     <stringProp name="parameters"></stringProp>
