@@ -594,7 +594,7 @@ log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicat
             </elementProp>
             <elementProp name="secondaryOpportunities" elementType="Argument">
               <stringProp name="Argument.name">secondaryOpportunities</stringProp>
-              <stringProp name="Argument.value">1,4</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">COLS=6. Number of Secondary opportunities to create (e.g. 1,3 = 1 to 3, 1 = exactly 1). 0 or leave blank to use the multiDropDownRange values. negative = error</stringProp>
             </elementProp>
@@ -625,7 +625,7 @@ log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicat
               <stringProp name="Argument.name">allowedRooms</stringProp>
               <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Limit room creation to specific rooms only. Empty = selects from all vacant rooms based on the room count. When specified, only the selected rooms are used. Requires a Location Resource</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Limit room creation to specific rooms only. Empty = selects from all vacant rooms based on the room count, excluding any Zoom-linked rooms. When specified, only the selected rooms are used — including Zoom rooms. Requires a Location Resource</stringProp>
             </elementProp>
             <elementProp name="roomBufferMinutes" elementType="Argument">
               <stringProp name="Argument.name">roomBufferMinutes</stringProp>
