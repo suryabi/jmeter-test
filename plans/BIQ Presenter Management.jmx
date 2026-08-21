@@ -41,13 +41,13 @@
             </elementProp>
             <elementProp name="presenters" elementType="Argument">
               <stringProp name="Argument.name">presenters</stringProp>
-              <stringProp name="Argument.value">50</stringProp>
+              <stringProp name="Argument.value">1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=NoOfPresenters. REQUIRED. Min,max number of presenters to create</stringProp>
             </elementProp>
             <elementProp name="topicsPerPresenter" elementType="Argument">
               <stringProp name="Argument.name">topicsPerPresenter</stringProp>
-              <stringProp name="Argument.value">1,3</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Min,max topics to assign per presenter</stringProp>
             </elementProp>
@@ -59,19 +59,19 @@
             </elementProp>
             <elementProp name="blockFromDate" elementType="Argument">
               <stringProp name="Argument.name">blockFromDate</stringProp>
-              <stringProp name="Argument.value">2026-08-01</stringProp>
+              <stringProp name="Argument.value">2026-11-01</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE. LABEL=blockStartDate. Start date of the blocked slot range (yyyy-MM-dd)</stringProp>
             </elementProp>
             <elementProp name="blockToDate" elementType="Argument">
               <stringProp name="Argument.name">blockToDate</stringProp>
-              <stringProp name="Argument.value">2026-09-30</stringProp>
+              <stringProp name="Argument.value">2026-11-30</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE. LABEL=blockEndDate. End date of the blocked slot range (yyyy-MM-dd)</stringProp>
             </elementProp>
             <elementProp name="blockSlots" elementType="Argument">
               <stringProp name="Argument.name">blockSlots</stringProp>
-              <stringProp name="Argument.value">12</stringProp>
+              <stringProp name="Argument.value">2</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfBlockedDays. Min,max number of blocked days to create within the specified date range</stringProp>
             </elementProp>
@@ -107,7 +107,7 @@
             </elementProp>
             <elementProp name="presenterEmails" elementType="Argument">
               <stringProp name="Argument.name">presenterEmails</stringProp>
-              <stringProp name="Argument.value">brandy.chavez@briefingiq.com</stringProp>
+              <stringProp name="Argument.value"></stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DROPDOWN, API, MULTI, LABEL=existingPresenters. ENABLE_IF=isNewPresenter:false. Used only when createNewPresenter=false. If presenters are selected, blocked slots are created only for those presenters. Leave blank to use all existing presenters</stringProp>
             </elementProp>
@@ -1857,7 +1857,7 @@ log.info(&quot;Loaded ${users.size()} random users [${source}]&quot;)</stringPro
           <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Presenter Field Mappings" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Presenter Form Fields" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -1904,7 +1904,7 @@ log.info(&quot;Loaded ${users.size()} random users [${source}]&quot;)</stringPro
           <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Presenter Form Fields" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Presenter Form Template" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -2063,7 +2063,7 @@ log.info(&quot;Get Topics: loaded &quot; + count + &quot; topic(s) across all hi
           <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Topic Field Mappings" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Topic Form Fields" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -2110,7 +2110,7 @@ log.info(&quot;Get Topics: loaded &quot; + count + &quot; topic(s) across all hi
           <com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.gui.JSONFormatterGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonformatter.JSONFormatter" testname="jp@gc - JSON Format Post Processor" enabled="true"/>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Topic Form Fields" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get Topic Form Template" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -2154,6 +2154,30 @@ log.info(&quot;Get Topics: loaded &quot; + count + &quot; topic(s) across all hi
           <hashTree/>
           <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Beautify Topic Form Config PostProcessor" enabled="true">
             <stringProp name="script">props.get(&quot;fn_beautifyFormConfig&quot;)(vars, prev, log, &quot;currentTopicFormUIConfig&quot;)</stringProp>
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="Topic Parent-Only Flag Extractor" enabled="true">
+            <stringProp name="script">// Reads the Topic form&apos;s nested-enum field (isNestedEnum: true) and stores its
+// isParentOnlyRequired flag - drives whether topic selection later picks any random
+// hierarchy level (true) or always resolves to a full leaf-level topic (false/default).
+def topicIsParentOnlyRequired = false
+try {
+    def fields = props.get(&quot;fn_extractAllFields&quot;)(vars.get(&quot;currentTopicFormUIConfig&quot;))
+    def nestedField = fields.find { it.isNestedEnum == true }
+    if (nestedField != null) {
+        topicIsParentOnlyRequired = (nestedField.isParentOnlyRequired == true)
+    } else {
+        log.warn(&quot;Topic Parent-Only Flag Extractor: no isNestedEnum field found on Topic form - defaulting isParentOnlyRequired to false&quot;)
+    }
+} catch (Exception e) {
+    log.warn(&quot;Topic Parent-Only Flag Extractor: failed to read isParentOnlyRequired - defaulting to false (&quot; + e.getMessage() + &quot;)&quot;)
+}
+vars.put(&quot;topicIsParentOnlyRequired&quot;, topicIsParentOnlyRequired.toString())
+log.info(&quot;Topic form isParentOnlyRequired = &quot; + topicIsParentOnlyRequired)</stringProp>
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -2314,27 +2338,35 @@ if (totalTopics == 0) {
     vars.put(&quot;dynamicPayload&quot;, &apos;{&quot;data&quot;:{}}&apos;)
     log.warn(&quot;Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: no topics available - sending empty payload&quot;)
 } else {
-    // FIX: the flat list now contains every hierarchy level (thanks to ?hierarchy=true
-    // on Get Topics), so a plain random index over 1..totalTopics would often land on
-    // a mid-level/root node instead of a fully specified multi-level topic. Mirrors
-    // BIQ.jmx&apos;s leaf-first approach: a leaf is any topic whose id never appears as
-    // another topic&apos;s parentId - i.e. the deepest node in its branch. The single
-    // Topic field only needs that one leaf id; the API resolves the ancestor chain.
-    def allParentIds = (1..totalTopics).collect { vars.get(&quot;topicParentId_&quot; + it) ?: &quot;&quot; }.findAll { it }.toSet()
-    def leafIndices = (1..totalTopics).findAll { idx -&gt;
-        def id = vars.get(&quot;topicId_&quot; + idx)
-        id &amp;&amp; !allParentIds.contains(id)
-    }
-
     def rand = java.util.concurrent.ThreadLocalRandom.current()
     int pickIdx
-    if (leafIndices) {
-        pickIdx = leafIndices[rand.nextInt(leafIndices.size())]
-    } else {
-        // Data gap fallback: no leaves resolvable (e.g. parentId missing on every
-        // row) - fall back to picking from the full flat list rather than failing.
-        log.warn(&quot;Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: no leaf-level topic found - falling back to full list&quot;)
+
+    // isParentOnlyRequired (from the Topic form&apos;s nested-enum field, captured once by
+    // &quot;Topic Parent-Only Flag Extractor&quot;) controls how deep a topic pick needs to go:
+    //   true  -&gt; any level is a valid selection (parent-only, mid-level, or leaf) - pick
+    //           uniformly at random across the WHOLE flat list, no leaf restriction.
+    //   false -&gt; unchanged from before: always resolve to a fully specified leaf-level
+    //           topic. A leaf is any topic whose id never appears as another topic&apos;s
+    //           parentId - i.e. the deepest node in its branch. The single Topic field
+    //           only needs that one leaf id; the API resolves the ancestor chain.
+    boolean parentOnlyOk = (vars.get(&quot;topicIsParentOnlyRequired&quot;) ?: &quot;false&quot;).toBoolean()
+
+    if (parentOnlyOk) {
         pickIdx = rand.nextInt(totalTopics) + 1
+    } else {
+        def allParentIds = (1..totalTopics).collect { vars.get(&quot;topicParentId_&quot; + it) ?: &quot;&quot; }.findAll { it }.toSet()
+        def leafIndices = (1..totalTopics).findAll { idx -&gt;
+            def id = vars.get(&quot;topicId_&quot; + idx)
+            id &amp;&amp; !allParentIds.contains(id)
+        }
+        if (leafIndices) {
+            pickIdx = leafIndices[rand.nextInt(leafIndices.size())]
+        } else {
+            // Data gap fallback: no leaves resolvable (e.g. parentId missing on every
+            // row) - fall back to picking from the full flat list rather than failing.
+            log.warn(&quot;Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: no leaf-level topic found - falling back to full list&quot;)
+            pickIdx = rand.nextInt(totalTopics) + 1
+        }
     }
 
     def selectedTopicId = vars.get(&quot;topicId_&quot; + pickIdx)
@@ -2342,6 +2374,7 @@ if (totalTopics == 0) {
 
     vars.put(&quot;selectedTopicId&quot;, selectedTopicId)
     vars.put(&quot;selectedTopicName&quot;, selectedTopicName)
+    log.info(&quot;Presenter #&quot; + presenterNum + &quot;, topic &quot; + topicIterNum + &quot;/&quot; + totalDesired + &quot;: picked &apos;&quot; + selectedTopicName + &quot;&apos; (parentOnlyOk=&quot; + parentOnlyOk + &quot;)&quot;)
 
     props.get(&quot;fn_topicPayloadBuilder&quot;)(vars, selectedTopicId, log)
 }</stringProp>
