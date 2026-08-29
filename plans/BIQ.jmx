@@ -379,13 +379,13 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
-              <stringProp name="Argument.value">2027-01-12</stringProp>
+              <stringProp name="Argument.value">2026-12-14</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
             </elementProp>
             <elementProp name="requestEndDate" elementType="Argument">
               <stringProp name="Argument.name">requestEndDate</stringProp>
-              <stringProp name="Argument.value">2027-01-12</stringProp>
+              <stringProp name="Argument.value">2026-12-14</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
             </elementProp>
@@ -663,15 +663,9 @@ log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicat
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Allowed start times for topics. Enter comma-separated times in HH:mm format (e.g., 10:00,10:30). Empty = any available slot in the room</stringProp>
             </elementProp>
-            <elementProp name="presenters" elementType="Argument">
-              <stringProp name="Argument.name">presenters</stringProp>
-              <stringProp name="Argument.value">5</stringProp>
-              <stringProp name="Argument.desc">Presenters to create per request. Comma-separated values (e.g., 3,5); one value is selected randomly. 0 or empty = none</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
             <elementProp name="presentersPerTopic" elementType="Argument">
               <stringProp name="Argument.name">presentersPerTopic</stringProp>
-              <stringProp name="Argument.value">1,2,3</stringProp>
+              <stringProp name="Argument.value">2,3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">Presenters to assign per topic. Enter comma-separated values (e.g., 1,2,3); one value is selected randomly. 0 or empty = skip</stringProp>
             </elementProp>
@@ -1988,20 +1982,40 @@ def _fn_parseSecondaryOpportunities = { v -&gt;
 props.put(&quot;fn_parseSecondaryOpportunities&quot;, _fn_parseSecondaryOpportunities)
 
 
-// Keeps isActive and have at least one mime type in acceptedFormats
-def _fn_filterUploadTypesByFormat = { responseText, acceptedFormats, logRef -&gt;
+// Keeps isActive, have at least one mime type in acceptedFormats, and (if roles is present) include the logged-in user&apos;s role
+def _fn_filterUploadTypesByFormat = { responseText, acceptedFormats, logRef, varsRef -&gt;
     def json = new groovy.json.JsonSlurper().parseText(responseText)
     def uploadTypes = json._embedded?.moduleUploadTypes ?: []
 
+    // Logged-in user&apos;s role, captured by &quot;Role PostProcessor&quot; from /api/currentuser.
+    // Representation (uniqueId code vs numeric id vs name) isn&apos;t guaranteed, so match defensively against all three.
+    def userRoleId   = (varsRef?.get(&quot;roleId&quot;) ?: &quot;&quot;).toString().trim()
+    def userRoleName = (varsRef?.get(&quot;roleName&quot;) ?: &quot;&quot;).toString().trim()
+
     def filteredTypes = uploadTypes.findAll { type -&gt;
         def isActive = type.isActive ?: false
-        def mimeTypes = type.uploadType?.uploadMimeTypes ?: []
+        def mimeTypes = type.uploadMimeTypes ?: []
         def matched = mimeTypes.findAll { acceptedFormats.contains((it.fileFormat ?: &quot;&quot;).toLowerCase()) }
-        isActive &amp;&amp; matched.size() &gt; 0
+
+        // Role check: only applies when this upload type actually declares a roles list.
+        // No roles list on the type = no restriction = kept.
+        def roles = type.roles ?: []
+        def roleAllowed = true
+        if (roles.size() &gt; 0) {
+            roleAllowed = roles.any { r -&gt;
+                (userRoleId &amp;&amp; (r.uniqueId?.toString() == userRoleId || r.id?.toString() == userRoleId)) ||
+                (userRoleName &amp;&amp; r.name?.toString()?.equalsIgnoreCase(userRoleName))
+            }
+            if (!roleAllowed &amp;&amp; logRef != null) {
+                logRef.info(&quot;[fn_filterUploadTypesByFormat] Skipping upload type &apos;${type.uploadType?.uploadType}&apos; - user role (id=${userRoleId}, name=${userRoleName}) not in roles: ${roles.collect { it.uniqueId }}&quot;)
+            }
+        }
+
+        isActive &amp;&amp; matched.size() &gt; 0 &amp;&amp; roleAllowed
     }
 
     if (logRef != null) {
-        logRef.info(&quot;[fn_filterUploadTypesByFormat] ${filteredTypes.size()} of ${uploadTypes.size()} upload types matched accepted formats&quot;)
+        logRef.info(&quot;[fn_filterUploadTypesByFormat] ${filteredTypes.size()} of ${uploadTypes.size()} upload types matched accepted formats + role&quot;)
     }
     return filteredTypes
 }
@@ -2024,7 +2038,7 @@ def _fn_storeDocTypeVars = { filteredTypes, acceptedFormats, varsRef, logRef -&g
         varsRef.put(&quot;documentTypeCount&quot;, filteredTypes.size().toString())
         filteredTypes.eachWithIndex { type, idx -&gt;
             def typeNum = idx + 1
-            def mimeTypes = type.uploadType?.uploadMimeTypes ?: []
+            def mimeTypes = type.uploadMimeTypes ?: []
             def matched = mimeTypes.findAll { acceptedFormats.contains((it.fileFormat ?: &quot;&quot;).toLowerCase()) }
             def chosen = matched.size() &gt; 0 ? matched[rand.nextInt(matched.size())] : null
             def formatOptions = matched.collect { &quot;${(it.fileFormat ?: &apos;&apos;).toLowerCase()}:${it.mimeType ?: &apos;application/pdf&apos;}&quot; }.join(&quot;|&quot;)
@@ -2051,7 +2065,7 @@ props.put(&quot;fn_storeDocTypeVars&quot;, _fn_storeDocTypeVars)
 def _fn_documentTypeExtractor = { prevRef, varsRef, logRef -&gt;
     def acceptedFormats = [&quot;.pdf&quot;, &quot;.docx&quot;, &quot;.doc&quot;, &quot;.pptx&quot;, &quot;.ppt&quot;, &quot;.xlsx&quot;, &quot;.xls&quot;, &quot;.jpg&quot;, &quot;.jpeg&quot;]
     try {
-        def filteredTypes = props.get(&quot;fn_filterUploadTypesByFormat&quot;)(prevRef.getResponseDataAsString(), acceptedFormats, logRef)
+        def filteredTypes = props.get(&quot;fn_filterUploadTypesByFormat&quot;)(prevRef.getResponseDataAsString(), acceptedFormats, logRef, varsRef)
         props.get(&quot;fn_storeDocTypeVars&quot;)(filteredTypes, acceptedFormats, varsRef, logRef)
     } catch (Exception e) {
         logRef.error(&quot;Document Type Extractor error: ${e.message}&quot;)
@@ -9093,7 +9107,7 @@ log.info(&quot;----- Terminated: Dynamic Master PostProcessor -----&quot;)</stri
                         <stringProp name="HTTPSampler.port"></stringProp>
                         <stringProp name="HTTPSampler.protocol"></stringProp>
                         <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                        <stringProp name="HTTPSampler.path">/${contextname}/api/modules/${moduleId}/uploadtypes</stringProp>
+                        <stringProp name="HTTPSampler.path">/${contextname}/api/modules/${moduleId}/eventuploadtypes</stringProp>
                         <stringProp name="HTTPSampler.method">GET</stringProp>
                         <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
                         <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -9129,6 +9143,10 @@ log.info(&quot;----- Terminated: Dynamic Master PostProcessor -----&quot;)</stri
                             <elementProp name="" elementType="Header">
                               <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
                               <stringProp name="Header.value">${baseTimezone}</stringProp>
+                            </elementProp>
+                            <elementProp name="x-cloud-eventid" elementType="Header">
+                              <stringProp name="Header.name">x-cloud-eventid</stringProp>
+                              <stringProp name="Header.value">${requestId}</stringProp>
                             </elementProp>
                           </collectionProp>
                         </HeaderManager>
@@ -17692,7 +17710,7 @@ if (alreadyShown == &quot;true&quot;) {
                                           <stringProp name="HTTPSampler.port"></stringProp>
                                           <stringProp name="HTTPSampler.protocol"></stringProp>
                                           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-                                          <stringProp name="HTTPSampler.path">/${contextname}/api/modules/${currentActivityModuleId}/uploadtypes</stringProp>
+                                          <stringProp name="HTTPSampler.path">/${contextname}/api/modules/${currentActivityModuleId}/eventuploadtypes</stringProp>
                                           <stringProp name="HTTPSampler.method">GET</stringProp>
                                           <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
                                           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -17728,6 +17746,10 @@ if (alreadyShown == &quot;true&quot;) {
                                               <elementProp name="" elementType="Header">
                                                 <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
                                                 <stringProp name="Header.value">${baseTimezone}</stringProp>
+                                              </elementProp>
+                                              <elementProp name="x-cloud-eventid" elementType="Header">
+                                                <stringProp name="Header.name">x-cloud-eventid</stringProp>
+                                                <stringProp name="Header.value">${requestId}</stringProp>
                                               </elementProp>
                                             </collectionProp>
                                           </HeaderManager>
