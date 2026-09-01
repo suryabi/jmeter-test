@@ -3078,8 +3078,8 @@ def _fn_visitSummaryPreProcessor = { varsRef, logRef -&gt;
 
     // ============ OPPORTUNITY DATA ============
     varsRef.put(&quot;oppRevenue&quot;, String.valueOf(random5()))
-    varsRef.put(&quot;primaryOppId&quot;, String.valueOf(random5()))
-    varsRef.put(&quot;secondaryOppId&quot;, String.valueOf(random5()))
+    varsRef.put(&quot;primaryOpportunity&quot;, String.valueOf(random5()))
+    varsRef.put(&quot;secondaryOpportunity&quot;, String.valueOf(random5()))
 
     // ============ CUSTOMER VISIT OBJECTIVES ============
     String[] visitObjectives = [
