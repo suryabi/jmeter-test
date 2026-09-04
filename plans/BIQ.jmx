@@ -3214,39 +3214,51 @@ def _fn_attendeePreProcessor = { varsRef, logRef -&gt;
 
     def totalUsers = (varsRef.get(&quot;randomUserCount&quot;) ?: &quot;50&quot;).toInteger()
 
-    // ============ userIndex for picking attendee name ============
-    def userIndex = (varsRef.get(&quot;randomUserIndex&quot;) ?: &quot;1&quot;).toInteger()
-    if (userIndex &gt; totalUsers) {
-        userIndex = ((userIndex - 1) % totalUsers) + 1
+    // ============ Pick TWO distinct users: one for internal attendee, one for external ============
+    // FIX: previously both internal and external read the same randomUserIndex, so they always
+    // resolved to the identical person — same name, same email, same everything. Now each gets
+    // its own distinct index.
+    def baseUserIndex = (varsRef.get(&quot;randomUserIndex&quot;) ?: &quot;1&quot;).toInteger()
+    if (baseUserIndex &gt; totalUsers) {
+        baseUserIndex = ((baseUserIndex - 1) % totalUsers) + 1
     }
+    def internalUserIndex = baseUserIndex
+    def externalUserIndex = (baseUserIndex % totalUsers) + 1  // guaranteed different from internalUserIndex when totalUsers &gt; 1
 
     def rand = java.util.concurrent.ThreadLocalRandom.current()
 
     // ============ Company ============
     varsRef.put(&quot;company&quot;, varsRef.get(&quot;customerName&quot;))
 
-    // ============ Attendee Information ============
-    def attendeeFirstName = varsRef.get(&quot;randomUser_${userIndex}_firstName&quot;) ?: &quot;John&quot;
-    def attendeeLastName  = varsRef.get(&quot;randomUser_${userIndex}_lastName&quot;)  ?: &quot;Doe&quot;
-    def rawGender         = varsRef.get(&quot;randomUser_${userIndex}_gender&quot;)    ?: &quot;male&quot;
+    // ============ Attendee Information (internal vs external — distinct people) ============
+    def internalAttendeeFirstName = varsRef.get(&quot;randomUser_${internalUserIndex}_firstName&quot;) ?: &quot;John&quot;
+    def internalAttendeeLastName  = varsRef.get(&quot;randomUser_${internalUserIndex}_lastName&quot;)  ?: &quot;Doe&quot;
+    def internalRawGender         = varsRef.get(&quot;randomUser_${internalUserIndex}_gender&quot;)    ?: &quot;male&quot;
 
-    // ============ Map gender to proper salutation prefix ============
-    def attendeePrefix
-    switch (rawGender.toLowerCase().trim()) {
-        case &quot;female&quot;:
-            attendeePrefix = [&quot;Ms&quot;, &quot;Mrs&quot;][rand.nextInt(2)]
-            break
-        default:
-            attendeePrefix = &quot;Mr&quot;
-            break
+    def externalAttendeeFirstName = varsRef.get(&quot;randomUser_${externalUserIndex}_firstName&quot;) ?: &quot;Alex&quot;
+    def externalAttendeeLastName  = varsRef.get(&quot;randomUser_${externalUserIndex}_lastName&quot;)  ?: &quot;Smith&quot;
+    def externalRawGender         = varsRef.get(&quot;randomUser_${externalUserIndex}_gender&quot;)    ?: &quot;male&quot;
+
+    // ============ Map gender to proper salutation prefix (per attendee) ============
+    def genderToPrefix = { String rawGender -&gt;
+        switch (rawGender.toLowerCase().trim()) {
+            case &quot;female&quot;:
+                return [&quot;Ms&quot;, &quot;Mrs&quot;][rand.nextInt(2)]
+            default:
+                return &quot;Mr&quot;
+        }
     }
+    def internalAttendeePrefix = genderToPrefix(internalRawGender)
+    def externalAttendeePrefix = genderToPrefix(externalRawGender)
 
     // ============ Email - using shared function ============
     def emailDomain = props.get(&quot;fn_extractEmailDomain&quot;)(varsRef)
-    varsRef.put(&quot;email&quot;, attendeeFirstName.toLowerCase() + &quot;.&quot; + attendeeLastName.toLowerCase() + &quot;@&quot; + emailDomain)
+    varsRef.put(&quot;internalAttendeeEmail&quot;, internalAttendeeFirstName.toLowerCase() + &quot;.&quot; + internalAttendeeLastName.toLowerCase() + &quot;@&quot; + emailDomain)
+    varsRef.put(&quot;externalAttendeeEmail&quot;, externalAttendeeFirstName.toLowerCase() + &quot;.&quot; + externalAttendeeLastName.toLowerCase() + &quot;@&quot; + emailDomain)
 
-    // ============ Business Title ============
-    varsRef.put(&quot;businessTitle&quot;, props.get(&quot;fn_getRandomBusinessTitle&quot;)())
+    // ============ Business Title (independently randomized per attendee) ============
+    varsRef.put(&quot;internalAttendeeBusinessTitle&quot;, props.get(&quot;fn_getRandomBusinessTitle&quot;)())
+    varsRef.put(&quot;externalAttendeeBusinessTitle&quot;, props.get(&quot;fn_getRandomBusinessTitle&quot;)())
 
     // ============ Gift Type ============
     String[] giftTypes = [
@@ -3268,17 +3280,25 @@ def _fn_attendeePreProcessor = { varsRef, logRef -&gt;
     varsRef.put(&quot;attendeeNumberField2&quot;, String.valueOf(randomNumber1to5()))
     varsRef.put(&quot;attendeeNumberField3&quot;, String.valueOf(randomNumber1to5()))
 
-    varsRef.put(&quot;firstName&quot;, attendeeFirstName)
-    varsRef.put(&quot;lastName&quot;,  attendeeLastName)
-    varsRef.put(&quot;prefix&quot;,    attendeePrefix)
+    // ============ Generic fallback fields (kept for any field still aliased to the old
+    // generic names) — defaults to the internal attendee&apos;s values ============
+    varsRef.put(&quot;internalAttendeePrefix&quot;, internalAttendeePrefix)
+    varsRef.put(&quot;externalAttendeePrefix&quot;, externalAttendeePrefix)
+    varsRef.put(&quot;internalAttendeeFirstName&quot;, internalAttendeeFirstName)
+    varsRef.put(&quot;internalAttendeeLastName&quot;,  internalAttendeeLastName)
+    varsRef.put(&quot;externalAttendeeFirstName&quot;, externalAttendeeFirstName)
+    varsRef.put(&quot;externalAttendeeLastName&quot;,  externalAttendeeLastName)
 
     // ============ Increment randomUserIndex for next iteration ============
-    def nextIndex = userIndex + 1
+    // FIX: advance past BOTH indices consumed this entry (internal + external) so the next
+    // attendee entry in the loop doesn&apos;t immediately re-collide with either of them.
+    def nextIndex = Math.max(internalUserIndex, externalUserIndex) + 1
     varsRef.put(&quot;randomUserIndex&quot;, nextIndex.toString())
 
     logRef.info(&quot;========== Attendee PreProcessor ==========&quot;)
-    logRef.info(&quot;userIndex:      &quot; + userIndex + &quot; / &quot; + totalUsers)
-    logRef.info(&quot;nextUserIndex:  &quot; + nextIndex)
+    logRef.info(&quot;internalUserIndex: &quot; + internalUserIndex + &quot; / &quot; + totalUsers + &quot;  (&quot; + internalAttendeeFirstName + &quot; &quot; + internalAttendeeLastName + &quot;)&quot;)
+    logRef.info(&quot;externalUserIndex: &quot; + externalUserIndex + &quot; / &quot; + totalUsers + &quot;  (&quot; + externalAttendeeFirstName + &quot; &quot; + externalAttendeeLastName + &quot;)&quot;)
+    logRef.info(&quot;nextUserIndex:     &quot; + nextIndex)
     logRef.info(&quot;===========================================&quot;)
 }
 props.put(&quot;fn_attendeePreProcessor&quot;, _fn_attendeePreProcessor)
