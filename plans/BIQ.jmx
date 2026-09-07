@@ -816,7 +816,7 @@ log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicat
           <stringProp name="script">SampleResult.setIgnore()
 
 // Fake company names. Used to populate customer/account name fields with realistic values.
-props.put(&quot;fn_allCustomers&quot;, [
+props.put(&quot;data_allCustomers&quot;, [
     &quot;Airbus&quot;, &quot;American Airlines&quot;, &quot;Boeing&quot;, &quot;British Airways&quot;, &quot;Cathay Pacific&quot;, &quot;Delta Air Lines&quot;, &quot;Emirates&quot;, &quot;Etihad Airways&quot;,
     &quot;IndiGo&quot;, &quot;Japan Airlines&quot;, &quot;Lufthansa&quot;, &quot;Qantas Airways&quot;, &quot;Singapore Airlines&quot;, &quot;Southwest Airlines&quot;, &quot;Turkish Airlines&quot;,
     &quot;United Airlines&quot;, &quot;Korean Air&quot;, &quot;Air Canada&quot;, &quot;Air France&quot;, &quot;Alaska Airlines&quot;, &quot;JetBlue&quot;, &quot;Vistara&quot;, &quot;SpiceJet&quot;, &quot;Air India&quot;,
@@ -922,7 +922,7 @@ props.put(&quot;fn_generateRandomNumber&quot;, _fn_generateRandomNumber)
 
 
 // Used to fill empty TEXT-type form fields with realistic placeholder values.
-props.put(&quot;fn_defaultTextFields&quot;, [
+props.put(&quot;data_defaultTextFields&quot;, [
     &quot;Innovation Workshop&quot;, &quot;Executive Briefing&quot;, &quot;Product Roadmap Discussion&quot;, 
     &quot;Solution Architecture Review&quot;, &quot;Strategic Planning Session&quot;, &quot;Requirements Gathering&quot;, 
     &quot;Revenue Growth Strategy&quot;, &quot;Workforce Planning Session&quot;, &quot;Cloud Migration Strategy&quot;,
@@ -935,7 +935,7 @@ props.put(&quot;fn_defaultTextFields&quot;, [
 
 
 // Used to fill empty TEXTAREA-type form fields with realistic placeholder values.
-props.put(&quot;fn_defaultTextAreas&quot;, [
+props.put(&quot;data_defaultTextAreas&quot;, [
     &quot;Provide overview of enterprise solutions and demonstrate alignment with strategic goals&quot;,
     &quot;Explore partnership opportunities and discuss how combined expertise can drive innovation&quot;,
     &quot;Technical deep dive covering architecture design, security considerations, and integration patterns&quot;,
@@ -989,7 +989,7 @@ props.put(&quot;fn_parseModuleTypeTokens&quot;, _fn_parseModuleTypeTokens)
 
 // Checks whether the current module&apos;s type ID or name matches any token in a configured UDV list (case-insensitive).
 // Generic helper underlying all the fn_matchesXType functions below.
-def _fn_moduleTypeMatches = { varsRef, udvKey, currentTypeId, currentTypeName = null -&gt;
+def _fn_matchesModuleType = { varsRef, udvKey, currentTypeId, currentTypeName = null -&gt;
     def configured = props.get(&quot;fn_parseModuleTypeTokens&quot;)(varsRef.get(udvKey) ?: &quot;&quot;)
     if (!configured) return false
     def typeId = (currentTypeId ?: &quot;&quot;).trim()
@@ -998,73 +998,73 @@ def _fn_moduleTypeMatches = { varsRef, udvKey, currentTypeId, currentTypeName = 
         token.equalsIgnoreCase(typeId) || (typeName &amp;&amp; token.equalsIgnoreCase(typeName))
     }
 }
-props.put(&quot;fn_moduleTypeMatches&quot;, _fn_moduleTypeMatches)
+props.put(&quot;fn_matchesModuleType&quot;, _fn_matchesModuleType)
 
 
 // Returns true if the current module is a Journey-type module, by checking its ID/name against the journeyModuleType UDV.
-// Thin wrapper around fn_moduleTypeMatches.
+// Thin wrapper around fn_matchesModuleType.
 def _fn_matchesJourneyType = { varsRef -&gt;
-    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;journeyModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
+    props.get(&quot;fn_matchesModuleType&quot;)(varsRef, &quot;journeyModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
 }
 props.put(&quot;fn_matchesJourneyType&quot;, _fn_matchesJourneyType)
 
 
 // Returns true if the current module is a Logistics-type module, by checking its ID/name against the logisticsModuleType UDV.
-// Thin wrapper around fn_moduleTypeMatches.
+// Thin wrapper around fn_matchesModuleType.
 def _fn_matchesLogisticsType = { varsRef -&gt;
-    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;logisticsModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
+    props.get(&quot;fn_matchesModuleType&quot;)(varsRef, &quot;logisticsModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
 }
 props.put(&quot;fn_matchesLogisticsType&quot;, _fn_matchesLogisticsType)
 
 
 // Returns true if the current FORM (not module) is the new field-only Logistics form, by checking
 // its type ID/name against the logisticsFormType UDV (value: LOGISTICS_FORM, the form type&apos;s uniqueId).
-// Reuses the same generic fn_moduleTypeMatches helper since it already compares by ID or by Name.
+// Reuses the same generic fn_matchesModuleType helper since it already compares by ID or by Name.
 def _fn_matchesLogisticsFormType = { varsRef -&gt;
-    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;logisticsFormType&quot;, varsRef.get(&quot;currentFormTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentFormTypeName&quot;) ?: &quot;&quot;)
+    props.get(&quot;fn_matchesModuleType&quot;)(varsRef, &quot;logisticsFormType&quot;, varsRef.get(&quot;currentFormTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentFormTypeName&quot;) ?: &quot;&quot;)
 }
 props.put(&quot;fn_matchesLogisticsFormType&quot;, _fn_matchesLogisticsFormType)
 
 
 // Returns true if the current module is an Agenda-type module, by checking its ID/name against the agendaModuleType UDV.
-// Thin wrapper around fn_moduleTypeMatches.
+// Thin wrapper around fn_matchesModuleType.
 def _fn_matchesAgendaType = { varsRef -&gt;
-    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;agendaModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
+    props.get(&quot;fn_matchesModuleType&quot;)(varsRef, &quot;agendaModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
 }
 props.put(&quot;fn_matchesAgendaType&quot;, _fn_matchesAgendaType)
 
 // Returns true if the current module is a Virtual-Connection-type module, by checking its ID/name against the virtualConnectionModuleType UDV.
-// Thin wrapper around fn_moduleTypeMatches.
+// Thin wrapper around fn_matchesModuleType.
 def _fn_matchesVirtualConnectionType = { varsRef -&gt;
-    props.get(&quot;fn_moduleTypeMatches&quot;)(varsRef, &quot;virtualConnectionModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
+    props.get(&quot;fn_matchesModuleType&quot;)(varsRef, &quot;virtualConnectionModuleType&quot;, varsRef.get(&quot;currentModuleTypeId&quot;) ?: &quot;&quot;, varsRef.get(&quot;currentModuleTypeName&quot;) ?: &quot;&quot;)
 }
 props.put(&quot;fn_matchesVirtualConnectionType&quot;, _fn_matchesVirtualConnectionType)
 
 
 // Used to fill fake job titles
-props.put(&quot;fn_businessTitles&quot;, [
+props.put(&quot;data_businessTitles&quot;, [
     &quot;Event Manager&quot;, &quot;Senior Event Manager&quot;, &quot;Event Coordinator&quot;, &quot;Project Manager&quot;, &quot;Operations Manager&quot;, &quot;Marketing Manager&quot;, 
     &quot;Director of Events&quot;, &quot;Business Analyst&quot;,&quot;Account Executive&quot;, &quot;Sales Representative&quot;, &quot;Financial Analyst&quot;, 
     &quot;Product Manager&quot;, &quot;Logistics Coordinator&quot;
 ] as String[])
 
 
-// Picks one random title from fn_businessTitles
+// Picks one random title from data_businessTitles
 def _fn_getRandomBusinessTitle = {
-    def titles = props.get(&quot;fn_businessTitles&quot;)
+    def titles = props.get(&quot;data_businessTitles&quot;)
     return titles[java.util.concurrent.ThreadLocalRandom.current().nextInt(titles.length)]
 }
 props.put(&quot;fn_getRandomBusinessTitle&quot;, _fn_getRandomBusinessTitle)
 
 
 // Random number 1-5, default filler for NUMBER/CURRENCY fields
-def _fn_randomNumber1to5 = { -&gt; java.util.concurrent.ThreadLocalRandom.current().nextInt(1, 6) }
-props.put(&quot;fn_randomNumber1to5&quot;, _fn_randomNumber1to5)
+def _fn_randomIntSmallCount = { -&gt; java.util.concurrent.ThreadLocalRandom.current().nextInt(1, 6) }
+props.put(&quot;fn_randomIntSmallCount&quot;, _fn_randomIntSmallCount)
 
 
 // Reads MIN/MAX validators off a NUMBER/CURRENCY field (e.g. &quot;MIN:0&quot;,&quot;MAX:7&quot;) and returns
 // a random value within that exact range. Falls back to 1-5 if no validators are present,
-// so it is a drop-in replacement for fn_randomNumber1to5 everywhere a field object is available.
+// so it is a drop-in replacement for fn_randomIntSmallCount everywhere a field object is available.
 def _fn_numberFieldValue = { field -&gt;
     def min = 1
     def max = 5
@@ -1681,18 +1681,18 @@ props.put(&quot;fn_pickLookupValue&quot;, _fn_pickLookupValue)
 
 
 // Generates a 4-digit random number (1000–9999) — used for short ID or reference fields.
-def _fn_random4 = { java.util.concurrent.ThreadLocalRandom.current().nextInt(1000, 10000) }
-props.put(&quot;fn_random4&quot;, _fn_random4)
+def _fn_randomInt4Digit = { java.util.concurrent.ThreadLocalRandom.current().nextInt(1000, 10000) }
+props.put(&quot;fn_randomInt4Digit&quot;, _fn_randomInt4Digit)
 
 
 // Generates a 5-digit random number (10000–99999) — used for medium-length ID or numeric fields.
-def _fn_random5 = { java.util.concurrent.ThreadLocalRandom.current().nextInt(10000, 100000) }
-props.put(&quot;fn_random5&quot;, _fn_random5)
+def _fn_randomInt5Digit = { java.util.concurrent.ThreadLocalRandom.current().nextInt(10000, 100000) }
+props.put(&quot;fn_randomInt5Digit&quot;, _fn_randomInt5Digit)
 
 
 // Generates a 6-digit random number (100000–999999) — used for longer ID or code fields.
-def _fn_random6 = { java.util.concurrent.ThreadLocalRandom.current().nextInt(100000, 1000000) }
-props.put(&quot;fn_random6&quot;, _fn_random6)
+def _fn_randomInt6Digit = { java.util.concurrent.ThreadLocalRandom.current().nextInt(100000, 1000000) }
+props.put(&quot;fn_randomInt6Digit&quot;, _fn_randomInt6Digit)
 
 
 // Generates a realistic 10-digit phone number starting with 7, 8, or 9.
@@ -1734,9 +1734,9 @@ def _fn_extractEmailDomain = { varsRef -&gt;
 props.put(&quot;fn_extractEmailDomain&quot;, _fn_extractEmailDomain)
 
 
-// Returns the full flat list of all customer names from fn_allCustomers.
+// Returns the full flat list of all customer names from data_allCustomers.
 def _fn_getCustomers = { varsRef -&gt;
-    return props.get(&quot;fn_allCustomers&quot;)
+    return props.get(&quot;data_allCustomers&quot;)
 }
 props.put(&quot;fn_getCustomers&quot;, _fn_getCustomers)
 
@@ -2255,6 +2255,11 @@ def _fn_setCurrentFormVariables = { varsRef -&gt;
     varsRef.put(&quot;entryCount&quot;, entryCount.toString())
     varsRef.put(&quot;entryIndex&quot;, &quot;0&quot;)
     varsRef.put(&quot;totalEntryCount&quot;, entryCount.toString())
+    // FIX: preserve the desired entry count under its own name — downstream (Get Form Data /
+    // fn_setIsPrimaryAndFormDataId) overwrites totalEntryCount with the count of EXISTING
+    // records, which previously made the desired count unrecoverable once any record
+    // pre-existed (e.g. an internal attendee auto-created by the Visit Information API).
+    varsRef.put(&quot;desiredEntryCount&quot;, entryCount.toString())
     varsRef.put(&quot;currentEntryIndex&quot;, &quot;0&quot;)
 }
 props.put(&quot;fn_setCurrentFormVariables&quot;, _fn_setCurrentFormVariables)
@@ -2393,8 +2398,11 @@ def _fn_setIsPrimaryAndFormDataId = { varsRef, logRef -&gt;
     }
 
     // Set Counter Variables for Sampler Name Display - Format: (1/3), (2/3), (3/3)
+    // FIX: this used to overwrite totalEntryCount (the DESIRED count) with recordCount (the
+    // EXISTING count), which silently discarded the desired count once any record pre-existed.
+    // Renamed to existingEntryCount — used only for the Update loop&apos;s own display label.
     varsRef.put(&quot;currentEntryIndex&quot;, String.valueOf(currentIndex))
-    varsRef.put(&quot;totalEntryCount&quot;,   String.valueOf(recordCount))
+    varsRef.put(&quot;existingEntryCount&quot;, String.valueOf(recordCount))
 
     // Set isPrimary Flag - first record (index 1) = PRIMARY, rest are not
     boolean isPrimary = (currentIndex == 1)
@@ -2438,6 +2446,18 @@ def _fn_formPostProcessor = { varsRef, prevRef, logRef -&gt;
 
     // Store count for conditional logic (0 = CREATE, &gt;0 = UPDATE)
     varsRef.put(&quot;formCount&quot;, formDataCount.toString())
+
+    // FIX: how many MORE records still need to be created to reach the desired total,
+    // regardless of how many already exist. Covers the case where a record was already
+    // created as a side effect elsewhere (e.g. an internal attendee auto-created by the
+    // Visit Information API) — those pre-existing records get updated (see UPDATE branch
+    // below), and this makes up the rest via the CREATE loop instead of the desired count
+    // being silently dropped. Falls back to 1 if desiredEntryCount was never set (single-entry
+    // forms), so behavior for non-multi-entry forms is unchanged.
+    def desiredEntryCount = (varsRef.get(&quot;desiredEntryCount&quot;) ?: &quot;1&quot;).toInteger()
+    def remainingCreateCount = Math.max(desiredEntryCount - formDataCount, 0)
+    varsRef.put(&quot;remainingCreateCount&quot;, remainingCreateCount.toString())
+    logRef.info(&quot;desiredEntryCount=${desiredEntryCount}, existing formDataCount=${formDataCount}, remainingCreateCount=${remainingCreateCount}&quot;)
 
     if (formDataCount &gt; 0) {
         // Clear Previous Multi-Entry Variables
@@ -2767,7 +2787,7 @@ def _fn_virtualConnection = { varsRef, logRef -&gt;
     def rand = java.util.concurrent.ThreadLocalRandom.current()
 
     // 10-digit random number generator
-    def random10 = { -&gt; java.util.concurrent.ThreadLocalRandom.current().nextLong(1000000000L, 10000000000L) }
+    def randomInt10Digit = { -&gt; java.util.concurrent.ThreadLocalRandom.current().nextLong(1000000000L, 10000000000L) }
 
     // ============ Point Of Contact ============
     varsRef.put(&quot;poc&quot;, varsRef.get(&quot;cloudUser&quot;))
@@ -2791,9 +2811,9 @@ def _fn_virtualConnection = { varsRef, logRef -&gt;
     varsRef.put(&quot;webinarPlatform&quot;, platforms[rand.nextInt(platforms.length)] + &quot; Webinar&quot;)
 
     // ============ Meeting Details ============
-    varsRef.put(&quot;meetingId&quot;, String.valueOf(random10()))
+    varsRef.put(&quot;meetingId&quot;, String.valueOf(randomInt10Digit()))
     varsRef.put(&quot;link&quot;, &quot;https://zoom.us/j/&quot; + varsRef.get(&quot;meetingId&quot;))
-    varsRef.put(&quot;password&quot;, String.valueOf(random10()))
+    varsRef.put(&quot;password&quot;, String.valueOf(randomInt10Digit()))
 
     // ============ Technical Requirements ============
     String[] technicalRequests = [
@@ -2847,9 +2867,9 @@ def _fn_virtualConnection = { varsRef, logRef -&gt;
     // ============ Breakout Rooms &amp; Attendees Count (numberField1, numberField2) ============
     // Only set when isVirtualMeeting = Yes (dependent fields)
     if (isVirtualMeeting == &quot;Yes&quot;) {
-        // Use common fn_randomNumber1to5 for consistent 1-5 range
-        def breakoutRooms = props.get(&quot;fn_randomNumber1to5&quot;)()
-        def attendeesCount = props.get(&quot;fn_randomNumber1to5&quot;)()
+        // Use common fn_randomIntSmallCount for consistent 1-5 range
+        def breakoutRooms = props.get(&quot;fn_randomIntSmallCount&quot;)()
+        def attendeesCount = props.get(&quot;fn_randomIntSmallCount&quot;)()
         varsRef.put(&quot;breakoutRooms&quot;, String.valueOf(breakoutRooms))
         varsRef.put(&quot;attendeesCount&quot;, String.valueOf(attendeesCount))
         logRef.info(&quot;isVirtualMeeting: Yes — breakoutRooms: &quot; + breakoutRooms + &quot;, attendeesCount: &quot; + attendeesCount)
@@ -2880,7 +2900,7 @@ def _fn_visitInfoPreProcessor = { varsRef, logRef -&gt;
     def rand = java.util.concurrent.ThreadLocalRandom.current()
 
     // ============ Random Number Generators - using shared functions ============
-    def random5 = props.get(&quot;fn_random5&quot;)()
+    def randomInt5Digit = props.get(&quot;fn_randomInt5Digit&quot;)()
 
     // Helper: Generate phone - using shared function
     def generatePhone = { props.get(&quot;fn_generatePhone&quot;)() }
@@ -2899,7 +2919,7 @@ def _fn_visitInfoPreProcessor = { varsRef, logRef -&gt;
     varsRef.put(&quot;lastDateMetWithES&quot;, varsRef.get(&quot;lastDateMetWithES&quot;))
 
     // ============ Cost Center ============
-    varsRef.put(&quot;costCenter&quot;, String.valueOf(random5))
+    varsRef.put(&quot;costCenter&quot;, String.valueOf(randomInt5Digit))
 
     // ============ Special Request ============
     String[] specialRequests = [
@@ -3008,15 +3028,15 @@ def _fn_opportunityPreProcessor = { varsRef, logRef -&gt;
     def currentEntryIndex = (varsRef.get(&quot;currentEntryIndex&quot;) ?: &quot;1&quot;).toInteger()
 
     // ============ Random Number Generators (FRESH per entry) - using shared functions ============
-    def random4 = props.get(&quot;fn_random4&quot;)()
-    def random5 = props.get(&quot;fn_random5&quot;)()
-    def random6 = props.get(&quot;fn_random6&quot;)()
+    def randomInt4Digit = props.get(&quot;fn_randomInt4Digit&quot;)()
+    def randomInt5Digit = props.get(&quot;fn_randomInt5Digit&quot;)()
+    def randomInt6Digit = props.get(&quot;fn_randomInt6Digit&quot;)()
 
     // ============ Revenue Fields (unique per entry) ============
-    varsRef.put(&quot;opportunityId&quot;, String.valueOf(random4))
-    varsRef.put(&quot;initialOpportunityRevenue&quot;, String.valueOf(props.get(&quot;fn_random4&quot;)()))
-    varsRef.put(&quot;opportunityRevenue&quot;, String.valueOf(props.get(&quot;fn_random5&quot;)()))
-    varsRef.put(&quot;closedOpportunityRevenue&quot;, String.valueOf(props.get(&quot;fn_random6&quot;)()))
+    varsRef.put(&quot;opportunityId&quot;, String.valueOf(randomInt4Digit))
+    varsRef.put(&quot;initialOpportunityRevenue&quot;, String.valueOf(props.get(&quot;fn_randomInt4Digit&quot;)()))
+    varsRef.put(&quot;opportunityRevenue&quot;, String.valueOf(props.get(&quot;fn_randomInt5Digit&quot;)()))
+    varsRef.put(&quot;closedOpportunityRevenue&quot;, String.valueOf(props.get(&quot;fn_randomInt6Digit&quot;)()))
 
     // ============ Date Fields ============
     def startDateStr = varsRef.get(&quot;startDate&quot;) ?: &quot;&quot;
@@ -3073,13 +3093,13 @@ def _fn_visitSummaryPreProcessor = { varsRef, logRef -&gt;
     def rand = java.util.concurrent.ThreadLocalRandom.current()
 
     // ============ RANDOM NUMBER GENERATOR - using shared function ============
-    def random5 = { -&gt; props.get(&quot;fn_random5&quot;)() }
-    def randomNumber1to5 = { -&gt; props.get(&quot;fn_randomNumber1to5&quot;)() }
+    def randomInt5Digit = { -&gt; props.get(&quot;fn_randomInt5Digit&quot;)() }
+    def randomIntSmallCount = { -&gt; props.get(&quot;fn_randomIntSmallCount&quot;)() }
 
     // ============ OPPORTUNITY DATA ============
-    varsRef.put(&quot;oppRevenue&quot;, String.valueOf(random5()))
-    varsRef.put(&quot;primaryOpportunity&quot;, String.valueOf(random5()))
-    varsRef.put(&quot;secondaryOpportunity&quot;, String.valueOf(random5()))
+    varsRef.put(&quot;oppRevenue&quot;, String.valueOf(randomInt5Digit()))
+    varsRef.put(&quot;primaryOpportunity&quot;, String.valueOf(randomInt5Digit()))
+    varsRef.put(&quot;secondaryOpportunity&quot;, String.valueOf(randomInt5Digit()))
 
     // ============ CUSTOMER VISIT OBJECTIVES ============
     String[] visitObjectives = [
@@ -3163,7 +3183,7 @@ def _fn_visitSummaryPreProcessor = { varsRef, logRef -&gt;
     varsRef.put(&quot;anySensitiveIssues&quot;, sensitiveIssues[rand.nextInt(sensitiveIssues.length)])
 
     // ============ CLOSED REVENUE ============
-    varsRef.put(&quot;closedRevenue&quot;, String.valueOf(random5()))
+    varsRef.put(&quot;closedRevenue&quot;, String.valueOf(randomInt5Digit()))
 
     // ============ BUSINESS CASE ============
     String[] businessCases = [
@@ -3198,7 +3218,7 @@ def _fn_visitSummaryPreProcessor = { varsRef, logRef -&gt;
     varsRef.put(&quot;summary&quot;, summaries[rand.nextInt(summaries.length)])
 
     // ============ NUMBER FIELDS (1-5 range) ============
-    varsRef.put(&quot;visitSummaryNumberField1&quot;, String.valueOf(randomNumber1to5()))
+    varsRef.put(&quot;visitSummaryNumberField1&quot;, String.valueOf(randomIntSmallCount()))
 
     logRef.info(&quot;----- Terminated: Visit Summary Form PostProcessor -----&quot;)
 }
@@ -3275,10 +3295,10 @@ def _fn_attendeePreProcessor = { varsRef, logRef -&gt;
     varsRef.put(&quot;translator&quot;,    rand.nextBoolean().toString())
 
     // ============ NUMBER Fields (1-5 range) — using shared function ============
-    def randomNumber1to5 = { -&gt; props.get(&quot;fn_randomNumber1to5&quot;)() }
-    varsRef.put(&quot;attendeeNumberField1&quot;, String.valueOf(randomNumber1to5()))
-    varsRef.put(&quot;attendeeNumberField2&quot;, String.valueOf(randomNumber1to5()))
-    varsRef.put(&quot;attendeeNumberField3&quot;, String.valueOf(randomNumber1to5()))
+    def randomIntSmallCount = { -&gt; props.get(&quot;fn_randomIntSmallCount&quot;)() }
+    varsRef.put(&quot;attendeeNumberField1&quot;, String.valueOf(randomIntSmallCount()))
+    varsRef.put(&quot;attendeeNumberField2&quot;, String.valueOf(randomIntSmallCount()))
+    varsRef.put(&quot;attendeeNumberField3&quot;, String.valueOf(randomIntSmallCount()))
 
     // ============ Generic fallback fields (kept for any field still aliased to the old
     // generic names) — defaults to the internal attendee&apos;s values ============
@@ -3305,7 +3325,7 @@ props.put(&quot;fn_attendeePreProcessor&quot;, _fn_attendeePreProcessor)
 
 // Reads the activity day regex match count and stores TotalActivityDays + ActivityDayCount=1 to drive the day-level ForEach loop.
 def _fn_activityDayCounterExtractor = { varsRef, logRef -&gt;
-    def totalDays = varsRef.get(&quot;activityid_matchNr&quot;)?.toInteger() ?: 0
+    def totalDays = varsRef.get(&quot;activityDayId_matchNr&quot;)?.toInteger() ?: 0
 
     // Store Total Days for Day Loop
     varsRef.put(&quot;TotalActivityDays&quot;, totalDays.toString())
@@ -3441,10 +3461,10 @@ def allFields = props.get(&quot;fn_extractAllFields&quot;)(formUIConfigStr)
 def formData = [:]
 
 // Default text values for auto-generation
-def defaultTexts = props.get(&quot;fn_defaultTextFields&quot;)
+def defaultTexts = props.get(&quot;data_defaultTextFields&quot;)
 
 // Default textarea values for auto-generation
-def textareaValues = props.get(&quot;fn_defaultTextAreas&quot;)
+def textareaValues = props.get(&quot;data_defaultTextAreas&quot;)
 
 // STEP 4.5: Build Dependent Controls Map
 def _depResult = props.get(&quot;fn_buildDependentControlsMap&quot;)(allFields)
@@ -3742,7 +3762,7 @@ orderedFields.each { field -&gt;
                         def oppCsv = varsRef.get(&quot;opportunity&quot;)
                         if (oppCsv) value = getIndexedValue(oppCsv)
                     }
-                    if (!value) value = String.valueOf(props.get(&quot;fn_random4&quot;)())
+                    if (!value) value = String.valueOf(props.get(&quot;fn_randomInt4Digit&quot;)())
                 } else if (isNameField) {
                     value = varsRef.get(&quot;meetingName&quot;) ?: defaultTexts[rand.nextInt(defaultTexts.length)]
                 } else if (isDescField) {
@@ -7040,7 +7060,7 @@ if (totalRequestCount == 0) {
                 <stringProp name="CounterConfig.start">1</stringProp>
                 <stringProp name="CounterConfig.end"></stringProp>
                 <stringProp name="CounterConfig.incr">1</stringProp>
-                <stringProp name="CounterConfig.name">RequestCount</stringProp>
+                <stringProp name="CounterConfig.name">requestCount</stringProp>
                 <stringProp name="CounterConfig.format"></stringProp>
                 <boolProp name="CounterConfig.per_user">true</boolProp>
               </CounterConfig>
@@ -7068,12 +7088,12 @@ if (totalRequestCount == 0) {
                   <stringProp name="script">import java.time.format.TextStyle
 import java.util.Locale
 
-def RequestCount = vars.get(&quot;RequestCount&quot;)
+def requestCount = vars.get(&quot;requestCount&quot;)
 def isFirstUser = vars.get(&quot;isFirstUser&quot;) ?: &quot;true&quot;
 def requestsPerDay = (vars.get(&quot;requestsPerDay&quot;) ?: &quot;1&quot;).toInteger()
 def totalValidDays = (vars.get(&quot;totalValidDays&quot;) ?: &quot;1&quot;).toInteger()
 def totalRequestCount = vars.get(&quot;totalRequestCount&quot;) ?: &quot;1&quot;
-def rc = RequestCount.toInteger()
+def rc = requestCount.toInteger()
 
 // Calculate day index and request-in-day
 int dayIndex = ((rc - 1) / requestsPerDay).intValue() + 1
@@ -7090,10 +7110,10 @@ try {
 }
 
 // Set readable sampler label for View Results Tree
-prev.setSampleLabel(&quot;✦─── Request (&quot; + RequestCount + &quot;/&quot; + totalRequestCount + &quot;) | &quot; + dateForDay + &quot; (&quot; + dayName + &quot;) | Per Day (&quot; + requestInDay + &quot;/&quot; + requestsPerDay + &quot;) ───✦&quot;)
+prev.setSampleLabel(&quot;✦─── Request (&quot; + requestCount + &quot;/&quot; + totalRequestCount + &quot;) | &quot; + dateForDay + &quot; (&quot; + dayName + &quot;) | Per Day (&quot; + requestInDay + &quot;/&quot; + requestsPerDay + &quot;) ───✦&quot;)
 
 log.info(&quot;═══════════════════════════════════════════════════&quot;)
-log.info(&quot;Request &quot; + RequestCount + &quot;/&quot; + totalRequestCount + &quot; Creation Started&quot;)
+log.info(&quot;Request &quot; + requestCount + &quot;/&quot; + totalRequestCount + &quot; Creation Started&quot;)
 log.info(&quot;Day: &quot; + dayIndex + &quot;/&quot; + totalValidDays + &quot; (&quot; + dateForDay + &quot; - &quot; + dayName + &quot;)&quot;)
 log.info(&quot;Request for this day: &quot; + requestInDay + &quot;/&quot; + requestsPerDay)
 log.info(&quot;Is First User: &quot; + isFirstUser)
@@ -7169,7 +7189,7 @@ DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd&q
 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(&quot;HH:mm&quot;)
 
 // ===================== READ VARIABLES =====================
-int requestCount = (vars.get(&quot;RequestCount&quot;) ?: &quot;1&quot;).toInteger()
+int requestCount = (vars.get(&quot;requestCount&quot;) ?: &quot;1&quot;).toInteger()
 int requestsPerDay = (vars.get(&quot;requestsPerDay&quot;) ?: &quot;1&quot;).toInteger()
 int totalValidDays = (vars.get(&quot;totalValidDays&quot;) ?: &quot;1&quot;).toInteger()
 def locationName = vars.get(&quot;locationResourceName&quot;) ?: vars.get(&quot;locationResourceId&quot;)
@@ -8035,7 +8055,7 @@ log.info(&quot;----- Terminated: Timezone PostProcessor -----&quot;)</stringProp
                       <stringProp name="script">def rand = java.util.concurrent.ThreadLocalRandom.current()
 
 // Helper Function: Generate 4-digit random number (1000-9999) - using shared function
-def random4 = { -&gt; props.get(&quot;fn_random4&quot;)() }
+def randomInt4Digit = { -&gt; props.get(&quot;fn_randomInt4Digit&quot;)() }
 
 // Multi-select configuration from User Defined Variables
 def minSelection = props.get(&quot;fn_parseMultiDropDownRange&quot;)(vars, null).min
@@ -8082,12 +8102,12 @@ if (oppMax &gt; 0) {
     int maxAttempts = opportunityCount * 10
     int attempts = 0
     while (opportunityIds.size() &lt; opportunityCount &amp;&amp; attempts &lt; maxAttempts) {
-        opportunityIds.add(String.valueOf(random4()))
+        opportunityIds.add(String.valueOf(randomInt4Digit()))
         attempts++
     }
     log.info(&quot;Secondary Opportunity IDs (count=${opportunityIds.size()}, min=${oppMin}, max=${oppMax}, source=${oppSource}): &quot; + opportunityIds.join(&quot;, &quot;))
 } else {
-    opportunityIds.add(String.valueOf(random4()))
+    opportunityIds.add(String.valueOf(randomInt4Digit()))
     log.info(&quot;Secondary Opportunity ID (oppMax=0, single fallback): &quot; + opportunityIds[0])
 }
 
@@ -8096,7 +8116,7 @@ vars.put(&quot;secondaryOpportunity&quot;, opportunityIds.join(&quot;,&quot;))
 // Primary Opportunity - unique, not in secondary list
 def primaryOpportunityId
 do {
-    primaryOpportunityId = String.valueOf(random4())
+    primaryOpportunityId = String.valueOf(randomInt4Digit())
 } while (opportunityIds.contains(primaryOpportunityId))
 
 vars.put(&quot;primaryOpportunity&quot;, primaryOpportunityId)
@@ -9559,9 +9579,9 @@ sampler.getArguments().clear()
 def dataMap = new LinkedHashMap()
 
 // ============ Default text values (same as Journey) ============
-def defaultTexts = props.get(&quot;fn_defaultTextFields&quot;)
+def defaultTexts = props.get(&quot;data_defaultTextFields&quot;)
 
-def textareaValues = props.get(&quot;fn_defaultTextAreas&quot;)
+def textareaValues = props.get(&quot;data_defaultTextAreas&quot;)
 
 // Load shared function: generateRandomNumber
 def generateRandomNumber = { int min, int max -&gt; props.get(&quot;fn_generateRandomNumber&quot;)(min, max) }
@@ -9674,7 +9694,7 @@ docOrderedFields.each { field -&gt;
 
         // ========== NUMBER / CURRENCY ==========
         } else if (fieldType == &quot;NUMBER&quot; || fieldType == &quot;CURRENCY&quot;) {
-            value = props.get(&quot;fn_randomNumber1to5&quot;)().toString()
+            value = props.get(&quot;fn_randomIntSmallCount&quot;)().toString()
 
         // ========== CLOUD_DATE ==========
         } else if (fieldType == &quot;CLOUD_DATE&quot;) {
@@ -10044,14 +10064,14 @@ if (existingFormDataStr &amp;&amp; existingFormDataStr.trim() != &quot;{}&quot; 
                         <hashTree/>
                       </hashTree>
                       <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If (Form Empty - CREATE)" enabled="true">
-                        <stringProp name="IfController.condition">${__groovy(vars.get(&quot;formDataId&quot;) == null || vars.get(&quot;formDataId&quot;).trim() == &quot;&quot;)}</stringProp>
+                        <stringProp name="IfController.condition">${__groovy(vars.get(&quot;remainingCreateCount&quot;) != null &amp;&amp; vars.get(&quot;remainingCreateCount&quot;).toInteger() &gt; 0)}</stringProp>
                         <boolProp name="IfController.evaluateAll">false</boolProp>
                         <boolProp name="IfController.useExpression">true</boolProp>
                       </IfController>
                       <hashTree>
-                        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="◉ Entry Loop (${totalEntryCount} entries)" enabled="true">
+                        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="◉ Entry Loop (${remainingCreateCount} entries)" enabled="true">
                           <boolProp name="LoopController.continue_forever">true</boolProp>
-                          <stringProp name="LoopController.loops">${totalEntryCount}</stringProp>
+                          <stringProp name="LoopController.loops">${remainingCreateCount}</stringProp>
                         </LoopController>
                         <hashTree>
                           <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Opportunity PreProcessor" enabled="true">
@@ -10731,7 +10751,7 @@ vars.put(&quot;currentEntryIndex&quot;, currentEntryIndex.toString())</stringPro
                         </HeaderManager>
                         <hashTree/>
                         <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Activity Id Extractor" enabled="true">
-                          <stringProp name="JSONPostProcessor.referenceNames">activityid</stringProp>
+                          <stringProp name="JSONPostProcessor.referenceNames">activityDayId</stringProp>
                           <stringProp name="JSONPostProcessor.jsonPathExprs">$._embedded.eventDates[*].eventDateId</stringProp>
                           <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
                         </JSONPostProcessor>
@@ -11016,7 +11036,7 @@ log.info(&quot;End Time: ${endTime}&quot;)</stringProp>
 def dayIndex = vars.get(&quot;ActivityDayCount&quot;) ?: &quot;1&quot;
 def totalDays = vars.get(&quot;RequestTotalActivityDays&quot;) ?: &quot;1&quot;
 
-vars.put(&quot;activityid&quot;, vars.get(&quot;activityid_&quot; + dayIndex) ?: &quot;&quot;)
+vars.put(&quot;activityDayId&quot;, vars.get(&quot;activityDayId_&quot; + dayIndex) ?: &quot;&quot;)
 vars.put(&quot;activityDate&quot;, vars.get(&quot;activityDate_&quot; + dayIndex) ?: &quot;&quot;)
 vars.put(&quot;activityStartTime&quot;, vars.get(&quot;activityStartTime_&quot; + dayIndex) ?: &quot;&quot;)
 vars.put(&quot;activityEndTime&quot;, vars.get(&quot;activityEndTime_&quot; + dayIndex) ?: &quot;&quot;)
@@ -11812,7 +11832,7 @@ if (newRanges) {
     &quot;resource&quot;: {&#xd;
         &quot;uniqueId&quot;: &quot;${roomId}&quot;&#xd;
     },&#xd;
-    &quot;activityDayId&quot;: &quot;${activityid}&quot;,&#xd;
+    &quot;activityDayId&quot;: &quot;${activityDayId}&quot;,&#xd;
     &quot;requestDate&quot;: {&#xd;
         &quot;isoDate&quot;: &quot;${activityDate}&quot;&#xd;
     },&#xd;
@@ -12024,10 +12044,10 @@ def allFields = props.get(&quot;fn_extractAllFields&quot;)(formUIConfigStr)
 def formData = [:]
 
 // Default text values for auto-generation
-def defaultTexts = props.get(&quot;fn_defaultTextFields&quot;)
+def defaultTexts = props.get(&quot;data_defaultTextFields&quot;)
 
 // Default textarea values for auto-generation
-def textareaValues = props.get(&quot;fn_defaultTextAreas&quot;)
+def textareaValues = props.get(&quot;data_defaultTextAreas&quot;)
 // STEP 4.5: Build Dependent Controls Map
 def _depResult = props.get(&quot;fn_buildDependentControlsMap&quot;)(allFields)
 def dependentControlsMap = _depResult.map
@@ -12525,14 +12545,14 @@ if (trackedRooms == null) {
 def roomId = vars.get(&quot;roomId&quot;) ?: &quot;&quot;
 def activityDayResourceId = vars.get(&quot;activityDayResourceId&quot;) ?: &quot;&quot;
 def currentRoomName = vars.get(&quot;currentRoomName&quot;) ?: &quot;&quot;
-def activityid = vars.get(&quot;activityid&quot;) ?: &quot;&quot;
+def activityDayId = vars.get(&quot;activityDayId&quot;) ?: &quot;&quot;
 
 if (roomId &amp;&amp; activityDayResourceId) {
     def entry = [:]
     entry.put(&quot;roomId&quot;, roomId)
     entry.put(&quot;activityDayResourceId&quot;, activityDayResourceId)
     entry.put(&quot;roomName&quot;, currentRoomName)
-    entry.put(&quot;activityid&quot;, activityid)
+    entry.put(&quot;activityDayId&quot;, activityDayId)
     trackedRooms.add(entry)
     log.info(&quot;[Track Room] Queued ${currentRoomName} for batch zoom check (tracked so far: ${trackedRooms.size()})&quot;)
 } else {
@@ -12656,7 +12676,7 @@ try {
 
     for (def room : trackedRooms) {
         def currentRoomId = room.roomId ?: &quot;&quot;
-        def currentDayId  = room.activityid ?: &quot;&quot;
+        def currentDayId  = room.activityDayId ?: &quot;&quot;
         if (!currentRoomId || !currentDayId) continue
 
         def matchedResource = null
@@ -12839,8 +12859,8 @@ if (!formUIConfigStr) {
     def allFields = props.get(&quot;fn_extractAllFields&quot;)(formUIConfigStr)
 
     def rand = java.util.concurrent.ThreadLocalRandom.current()
-    def textareaValues = props.get(&quot;fn_defaultTextAreas&quot;)
-    def defaultTexts = props.get(&quot;fn_defaultTextFields&quot;)
+    def textareaValues = props.get(&quot;data_defaultTextAreas&quot;)
+    def defaultTexts = props.get(&quot;data_defaultTextFields&quot;)
 
     def _depResult = props.get(&quot;fn_buildDependentControlsMap&quot;)(allFields)
     def dependentControlsMap = _depResult.map
@@ -15815,7 +15835,7 @@ if (vars.get(_vacantCacheKey)) {
                                         <collectionProp name="Arguments.arguments">
                                           <elementProp name="activityid" elementType="HTTPArgument">
                                             <boolProp name="HTTPArgument.always_encode">true</boolProp>
-                                            <stringProp name="Argument.value">${__V(activityid_${ActivityDayCount})}</stringProp>
+                                            <stringProp name="Argument.value">${__V(activityDayId_${ActivityDayCount})}</stringProp>
                                             <stringProp name="Argument.metadata">=</stringProp>
                                             <boolProp name="HTTPArgument.use_equals">true</boolProp>
                                             <stringProp name="Argument.name">activityid</stringProp>
@@ -18171,9 +18191,9 @@ sampler.getArguments().clear()
 
 def dataMap = new LinkedHashMap()
 
-def defaultTexts = props.get(&quot;fn_defaultTextFields&quot;)
+def defaultTexts = props.get(&quot;data_defaultTextFields&quot;)
 
-def textareaValues = props.get(&quot;fn_defaultTextAreas&quot;)
+def textareaValues = props.get(&quot;data_defaultTextAreas&quot;)
 
 def generateRandomNumber = { int min, int max -&gt; props.get(&quot;fn_generateRandomNumber&quot;)(min, max) }
 
@@ -18264,7 +18284,7 @@ allFields.each { field -&gt;
             value = textareaValues[rand.nextInt(textareaValues.length)]
 
         } else if (fieldType == &quot;NUMBER&quot; || fieldType == &quot;CURRENCY&quot;) {
-            value = props.get(&quot;fn_randomNumber1to5&quot;)().toString()
+            value = props.get(&quot;fn_randomIntSmallCount&quot;)().toString()
 
         } else if (fieldType == &quot;CLOUD_DATE&quot;) {
             value = generateFutureDate()
