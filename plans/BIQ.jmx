@@ -11197,7 +11197,7 @@ log.info(&quot;Processing Room ${roomIndex}/${totalRooms}&quot;)</stringProp>
                                   <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
                                 </HTTPSamplerProxy>
                                 <hashTree>
-                                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="false">
                                     <collectionProp name="HeaderManager.headers">
                                       <elementProp name="" elementType="Header">
                                         <stringProp name="Header.name">x-cloud-customerid</stringProp>
@@ -11230,6 +11230,43 @@ log.info(&quot;Processing Room ${roomIndex}/${totalRooms}&quot;)</stringProp>
                                       <elementProp name="" elementType="Header">
                                         <stringProp name="Header.name">x-cloud-activityday-resource</stringProp>
                                         <stringProp name="Header.value">${activityDayResourceId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">X_cloud_user</stringProp>
+                                        <stringProp name="Header.value">${currentUser}</stringProp>
+                                      </elementProp>
+                                    </collectionProp>
+                                  </HeaderManager>
+                                  <hashTree/>
+                                  <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+                                    <collectionProp name="HeaderManager.headers">
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-customerid</stringProp>
+                                        <stringProp name="Header.value">${customerId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-categorytypeid</stringProp>
+                                        <stringProp name="Header.value">${categoryTypeId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-categoryid</stringProp>
+                                        <stringProp name="Header.value">${categoryId}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">X-Cloud-Requested-Timezone</stringProp>
+                                        <stringProp name="Header.value">${baseTimezone}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">X-Cloud-Client-Timezone</stringProp>
+                                        <stringProp name="Header.value">${clientTimeZone}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">X-Cloud-Context-Timezone</stringProp>
+                                        <stringProp name="Header.value">${baseTimezone}</stringProp>
+                                      </elementProp>
+                                      <elementProp name="" elementType="Header">
+                                        <stringProp name="Header.name">x-cloud-eventid</stringProp>
+                                        <stringProp name="Header.value">${requestId}</stringProp>
                                       </elementProp>
                                       <elementProp name="" elementType="Header">
                                         <stringProp name="Header.name">X_cloud_user</stringProp>
@@ -11451,7 +11488,12 @@ def extractedRoomCount = vars.get(&quot;roomId_matchNr&quot;)?.toInteger() ?: 0
 
 // Get room type from lookup values - NO hardcoded values
 def rand = java.util.concurrent.ThreadLocalRandom.current()
-def roomTypeCount = vars.get(&quot;roomType_count&quot;)?.toInteger() ?: 0
+// CHANGED: ROOM_TYPE is a category-scoped lookup on this form (lookupContext: &quot;category&quot;),
+// so it&apos;s cached as category_roomType_*, not the bare tenant-legacy roomType_*.
+// Check category first, fall back to tenant in case another customer&apos;s form configures
+// ROOM_TYPE at the tenant level instead.
+def roomTypePrefix = (vars.get(&quot;category_roomType_count&quot;)?.toInteger() ?: 0) &gt; 0 ? &quot;category_roomType&quot; : &quot;roomType&quot;  // CHANGED
+def roomTypeCount = vars.get(&quot;${roomTypePrefix}_count&quot;)?.toInteger() ?: 0  // CHANGED
 def roomType = &quot;&quot;
 
 // Skip room creation if no ROOM_TYPE lookup values found
@@ -11465,7 +11507,7 @@ if (roomTypeCount &gt; 0) {
     if (roomIndex == 1) {
         // First room: Must be Main Room (find from lookup)
         for (int i = 1; i &lt;= roomTypeCount; i++) {
-            def lookupValue = vars.get(&quot;roomType_&quot; + i)
+            def lookupValue = vars.get(&quot;${roomTypePrefix}_&quot; + i)  // CHANGED
             if (lookupValue?.toLowerCase()?.contains(&quot;main&quot;)) {
                 roomType = lookupValue
                 break
@@ -11473,13 +11515,13 @@ if (roomTypeCount &gt; 0) {
         }
         // If no Main Room found in lookup, use first available
         if (!roomType) {
-            roomType = vars.get(&quot;roomType_1&quot;) ?: &quot;&quot;
+            roomType = vars.get(&quot;${roomTypePrefix}_1&quot;) ?: &quot;&quot;  // CHANGED
         }
     } else {
         // Other rooms: Pick randomly from non-Main Room types
         def otherTypes = []
         for (int i = 1; i &lt;= roomTypeCount; i++) {
-            def lookupValue = vars.get(&quot;roomType_&quot; + i)
+            def lookupValue = vars.get(&quot;${roomTypePrefix}_&quot; + i)  // CHANGED
             if (lookupValue &amp;&amp; !lookupValue.toLowerCase().contains(&quot;main&quot;)) {
                 otherTypes.add(lookupValue)
             }
@@ -11489,7 +11531,7 @@ if (roomTypeCount &gt; 0) {
         } else {
             // If only Main Room exists in lookup, pick randomly from all
             def randomIdx = rand.nextInt(roomTypeCount) + 1
-            roomType = vars.get(&quot;roomType_&quot; + randomIdx) ?: &quot;&quot;
+            roomType = vars.get(&quot;${roomTypePrefix}_&quot; + randomIdx) ?: &quot;&quot;  // CHANGED
         }
     }
 }
