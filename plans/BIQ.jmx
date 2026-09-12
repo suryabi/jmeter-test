@@ -375,7 +375,7 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
           </collectionProp>
         </Arguments>
         <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="false">
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
@@ -398,6 +398,77 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
               <stringProp name="Argument.value">1,2,3,4,5</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
+            </elementProp>
+            <elementProp name="requestStartTimes" elementType="Argument">
+              <stringProp name="Argument.name">requestStartTimes</stringProp>
+              <stringProp name="Argument.value"></stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=requestDayStartTime. Request start time (HH:mm, e.g., 07:00,08:00). One value is selected randomly and validated against Location Hours. Leave empty to auto-pick a random time that fits within Location Hours.</stringProp>
+            </elementProp>
+            <elementProp name="requestDurations" elementType="Argument">
+              <stringProp name="Argument.name">requestDurations</stringProp>
+              <stringProp name="Argument.value">420, 480, 540, 600</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">REQUIRED, LABEL=requestDayDuration. Request duration in minutes (e.g., 420,480). One value is selected randomly. Minimum: 30 </stringProp>
+            </elementProp>
+            <elementProp name="categoryType" elementType="Argument">
+              <stringProp name="Argument.name">categoryType</stringProp>
+              <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, HIDE. Select the category type to use</stringProp>
+            </elementProp>
+            <elementProp name="parentCategory" elementType="Argument">
+              <stringProp name="Argument.name">parentCategory</stringProp>
+              <stringProp name="Argument.value">72DCAF42-C7C0-4006-8F31-7952185E5D61</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=location. Select the location where requests will be created</stringProp>
+            </elementProp>
+            <elementProp name="category" elementType="Argument">
+              <stringProp name="Argument.name">category</stringProp>
+              <stringProp name="Argument.value">D06189A1-69AF-4D17-AC5B-480F7589D427</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=requestType. Select the request type for the requests to be created</stringProp>
+            </elementProp>
+            <elementProp name="targetActions" elementType="Argument">
+              <stringProp name="Argument.name">targetActions</stringProp>
+              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Actions to perform after SUBMIT. Processing stops after the first selected action is performed. Empty = all available actions are allowed</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="excludedActions" elementType="Argument">
+              <stringProp name="Argument.name">excludedActions</stringProp>
+              <stringProp name="Argument.value">RESCHEDULE, DUPLICATE, SAVE, REQUEST_TRANSFER, DOWNLOAD_AGENDA_PDF, DOWNLOAD_AGENDA_DOC, SEND_PROPOSED_AGENDA, SEND_FINAL_AGENDA, SEND_EVITE</stringProp>
+              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE. Actions to always exclude from selection, even when targetActions is empty</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="requestStartDate" elementType="Argument">
+              <stringProp name="Argument.name">requestStartDate</stringProp>
+              <stringProp name="Argument.value">2026-12-08</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
+            </elementProp>
+            <elementProp name="requestEndDate" elementType="Argument">
+              <stringProp name="Argument.name">requestEndDate</stringProp>
+              <stringProp name="Argument.value">2026-12-08</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
+            </elementProp>
+            <elementProp name="requestsPerDay" elementType="Argument">
+              <stringProp name="Argument.name">requestsPerDay</stringProp>
+              <stringProp name="Argument.value">1</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+              <stringProp name="Argument.desc">LABEL=requestsPerDay. The number of requests to create per day (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
+            </elementProp>
+            <elementProp name="requestDays" elementType="Argument">
+              <stringProp name="Argument.name">requestDays</stringProp>
+              <stringProp name="Argument.value">1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
@@ -552,7 +623,7 @@ log.info(&quot;Duplicate customer check window: &quot; + vars.get(&quot;duplicat
             </elementProp>
             <elementProp name="form2Range" elementType="Argument">
               <stringProp name="Argument.name">form2Range</stringProp>
-              <stringProp name="Argument.value">2,3</stringProp>
+              <stringProp name="Argument.value">3</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">COLS=6, LABEL=form_2_range. Entry count range for Form 2 (e.g. 2,5 = random 2 to 5, 3 = exactly 3). 0 or empty = skip when form2 matches</stringProp>
             </elementProp>
@@ -3508,9 +3579,19 @@ def shouldShowDependentField = { String depFieldName, Map formDataSoFar -&gt;
 // every entry in the ForEach loop, so entry 2+ silently inherited entry 1&apos;s snapshot (e.g. its
 // Opportunity ID) instead of their own — falling back to it here only for single-entry forms
 // that never wrote an entry-scoped snapshot.
-def existingFormDataStr = props.get(&quot;existingFormData_snapshot_&quot; + (varsRef.get(&quot;requestId&quot;) ?: &quot;unknown&quot;) + &quot;_&quot; + (varsRef.get(&quot;currentFormId&quot;) ?: varsRef.get(&quot;formId&quot;) ?: &quot;unknown&quot;) + &quot;_&quot; + (varsRef.get(&quot;formDataId&quot;) ?: &quot;none&quot;))
-if (!existingFormDataStr) {
-    existingFormDataStr = props.get(&quot;existingFormData_snapshot_&quot; + (varsRef.get(&quot;requestId&quot;) ?: &quot;unknown&quot;) + &quot;_&quot; + (varsRef.get(&quot;currentFormId&quot;) ?: varsRef.get(&quot;formId&quot;) ?: &quot;unknown&quot;))
+// FIX: only consult props-level snapshots when formDataId identifies a real, existing
+// record. A brand-new Create-loop entry has formDataId cleared to &quot;&quot; (see &quot;Clear
+// existingFormData Before Create&quot;), and must NEVER fall back to the per-form snapshot
+// (keyed by requestId+formId only) — that snapshot holds whichever record was last
+// read/updated (e.g. the host attendee seeded from Visit Info), not this new entry.
+// Without this guard, every Create entry silently inherited that other record&apos;s data.
+def _currentFormDataIdForSnapshot = varsRef.get(&quot;formDataId&quot;)
+def existingFormDataStr = null
+if (_currentFormDataIdForSnapshot) {
+    existingFormDataStr = props.get(&quot;existingFormData_snapshot_&quot; + (varsRef.get(&quot;requestId&quot;) ?: &quot;unknown&quot;) + &quot;_&quot; + (varsRef.get(&quot;currentFormId&quot;) ?: varsRef.get(&quot;formId&quot;) ?: &quot;unknown&quot;) + &quot;_&quot; + _currentFormDataIdForSnapshot)
+    if (!existingFormDataStr) {
+        existingFormDataStr = props.get(&quot;existingFormData_snapshot_&quot; + (varsRef.get(&quot;requestId&quot;) ?: &quot;unknown&quot;) + &quot;_&quot; + (varsRef.get(&quot;currentFormId&quot;) ?: varsRef.get(&quot;formId&quot;) ?: &quot;unknown&quot;))
+    }
 }
 if (!existingFormDataStr) {
     existingFormDataStr = varsRef.get(&quot;existingFormData&quot;)
@@ -7357,13 +7438,42 @@ if (!isWorkingDay) {
             break
         }
     }
+
+    // FALLBACK: none of the configured requestDurations fit this day&apos;s Location Hours
+    // window (e.g. all durations are 420+ min but a weekend location is only open 6hrs).
+    // Instead of skipping the request outright, fall back to a random WHOLE-HOUR duration
+    // (1hr, 2hr, 3hr, ...) that DOES fit within the available window, snapped to :00/:30
+    // same as the normal path above.
+    if (chosenStart == null) {
+        int availableMins = closeMin - openMin
+        int maxWholeHours = (int) (availableMins / 60)
+        if (maxWholeHours &gt;= 1) {
+            def fallbackDurations = (1..maxWholeHours).collect { it * 60 }
+            Collections.shuffle(fallbackDurations)
+            for (d in fallbackDurations) {
+                int latestStartMin = closeMin - d
+                if (latestStartMin &lt; openMin) continue
+                def candidates = alignedSlots(openTime, LocalTime.of((int) (latestStartMin / 60), (int) (latestStartMin % 60)))
+                    .findAll { !overlapsHoliday(toMinuteOfDay(it), toMinuteOfDay(it) + d) }
+                if (!candidates.isEmpty()) {
+                    chosenStart = candidates[rand.nextInt(candidates.size())]
+                    chosenDuration = d
+                    log.warn(&quot;${selectedDate} (${selectedDate.dayOfWeek}): none of the configured requestDurations &quot; +
+                        &quot;(${durations.join(&apos;,&apos;)} min) fit Location Hours ${openTime}-${closeTime} for ${locationName} &quot; +
+                        &quot;— falling back to a random ${d}min (${(int)(d/60)}hr) duration instead of skipping.&quot;)
+                    break
+                }
+            }
+        }
+    }
+
     if (chosenStart == null) {
         skipIsHoliday = !holidayWindows.isEmpty()
         if (skipIsHoliday) {
             def holidayNameStr = vars.get(&quot;holidayName_&quot; + selectedDate.format(dateFormatter))
             skipReason = &quot;${selectedDate.dayOfWeek} (${selectedDate}) is a public holiday${holidayNameStr ? &apos; (&apos; + holidayNameStr + &apos;)&apos; : &apos;&apos;} for ${locationName}.&quot;
         } else {
-            skipReason = &quot;no :00/:30-aligned start time for the configured requestDurations (${durations.join(&apos;,&apos;)} min) fits within Location Hours &quot; +
+            skipReason = &quot;no :00/:30-aligned start time for the configured requestDurations (${durations.join(&apos;,&apos;)} min), nor any whole-hour fallback duration, fits within Location Hours &quot; +
                 &quot;${openTime}-${closeTime} for ${locationName} on ${selectedDate.dayOfWeek} (${selectedDate}).&quot;
         }
     }
@@ -10069,6 +10179,27 @@ if (existingFormDataStr &amp;&amp; existingFormDataStr.trim() != &quot;{}&quot; 
                         <boolProp name="IfController.useExpression">true</boolProp>
                       </IfController>
                       <hashTree>
+                        <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Clear existingFormData Before Create" enabled="true">
+                          <stringProp name="scriptLanguage">groovy</stringProp>
+                          <stringProp name="parameters"></stringProp>
+                          <stringProp name="filename"></stringProp>
+                          <stringProp name="cacheKey">true</stringProp>
+                          <stringProp name="script">// FIX: this branch only runs when MORE entries are needed than already exist
+// (remainingCreateCount &gt; 0), so every entry created here is brand new — it must
+// NOT inherit existingFormData from whichever record the preceding Update ForEach
+// loop last processed. Without this reset, fn_dynamicPayloadBuilder silently reused
+// the last existing record&apos;s field values (e.g. its attendee identity) for these
+// new Create payloads too, causing them to fail with duplicate/invalid data.
+vars.put(&quot;existingFormData&quot;, &quot;{}&quot;)
+// FIX: also clear formDataId. The preceding Update ForEach loop leaves formDataId set to
+// whichever existing record it last processed (e.g. the host attendee from Visit Info).
+// fn_dynamicPayloadBuilder keys its props-level existingFormData snapshot lookup off
+// formDataId, so leaving it populated here made every brand-new Create entry match a
+// stale snapshot key and silently inherit that other record&apos;s field values.
+vars.put(&quot;formDataId&quot;, &quot;&quot;)
+log.info(&quot;Cleared existingFormData before starting Create loop for ${vars.get(&apos;remainingCreateCount&apos;)} new entr${vars.get(&apos;remainingCreateCount&apos;) == &apos;1&apos; ? &apos;y&apos; : &apos;ies&apos;}&quot;)</stringProp>
+                        </JSR223PreProcessor>
+                        <hashTree/>
                         <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="◉ Entry Loop (${remainingCreateCount} entries)" enabled="true">
                           <boolProp name="LoopController.continue_forever">true</boolProp>
                           <stringProp name="LoopController.loops">${remainingCreateCount}</stringProp>
