@@ -375,7 +375,7 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
           </collectionProp>
         </Arguments>
         <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="false">
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
           <collectionProp name="Arguments.arguments">
             <elementProp name="requestStartDate" elementType="Argument">
               <stringProp name="Argument.name">requestStartDate</stringProp>
@@ -398,77 +398,6 @@ log.info(&quot;Daily population target date set to: &quot; + targetDate)</string
             <elementProp name="requestDays" elementType="Argument">
               <stringProp name="Argument.name">requestDays</stringProp>
               <stringProp name="Argument.value">1,2,3,4,5</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
-            </elementProp>
-            <elementProp name="requestStartTimes" elementType="Argument">
-              <stringProp name="Argument.name">requestStartTimes</stringProp>
-              <stringProp name="Argument.value"></stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">LABEL=requestDayStartTime. Request start time (HH:mm, e.g., 07:00,08:00). One value is selected randomly and validated against Location Hours. Leave empty to auto-pick a random time that fits within Location Hours.</stringProp>
-            </elementProp>
-            <elementProp name="requestDurations" elementType="Argument">
-              <stringProp name="Argument.name">requestDurations</stringProp>
-              <stringProp name="Argument.value">420, 480, 540, 600</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">REQUIRED, LABEL=requestDayDuration. Request duration in minutes (e.g., 420,480). One value is selected randomly. Minimum: 30 </stringProp>
-            </elementProp>
-            <elementProp name="categoryType" elementType="Argument">
-              <stringProp name="Argument.name">categoryType</stringProp>
-              <stringProp name="Argument.value">CATEGORY_TYPE_BRIEFINGS</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, HIDE. Select the category type to use</stringProp>
-            </elementProp>
-            <elementProp name="parentCategory" elementType="Argument">
-              <stringProp name="Argument.name">parentCategory</stringProp>
-              <stringProp name="Argument.value">72DCAF42-C7C0-4006-8F31-7952185E5D61</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=location. Select the location where requests will be created</stringProp>
-            </elementProp>
-            <elementProp name="category" elementType="Argument">
-              <stringProp name="Argument.name">category</stringProp>
-              <stringProp name="Argument.value">D06189A1-69AF-4D17-AC5B-480F7589D427</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, REQUIRED, LABEL=requestType. Select the request type for the requests to be created</stringProp>
-            </elementProp>
-            <elementProp name="targetActions" elementType="Argument">
-              <stringProp name="Argument.name">targetActions</stringProp>
-              <stringProp name="Argument.value">CONFIRM, HOLD, WAITLIST</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI. Actions to perform after SUBMIT. Processing stops after the first selected action is performed. Empty = all available actions are allowed</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-            <elementProp name="excludedActions" elementType="Argument">
-              <stringProp name="Argument.name">excludedActions</stringProp>
-              <stringProp name="Argument.value">RESCHEDULE, DUPLICATE, SAVE, REQUEST_TRANSFER, DOWNLOAD_AGENDA_PDF, DOWNLOAD_AGENDA_DOC, SEND_PROPOSED_AGENDA, SEND_FINAL_AGENDA, SEND_EVITE</stringProp>
-              <stringProp name="Argument.desc">DROPDOWN, API, MULTI, HIDE. Actions to always exclude from selection, even when targetActions is empty</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-            </elementProp>
-          </collectionProp>
-        </Arguments>
-        <hashTree/>
-        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Request Variables" enabled="true">
-          <collectionProp name="Arguments.arguments">
-            <elementProp name="requestStartDate" elementType="Argument">
-              <stringProp name="Argument.name">requestStartDate</stringProp>
-              <stringProp name="Argument.value">2026-12-08</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowStart. Select the start date for request creation</stringProp>
-            </elementProp>
-            <elementProp name="requestEndDate" elementType="Argument">
-              <stringProp name="Argument.name">requestEndDate</stringProp>
-              <stringProp name="Argument.value">2026-12-08</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">DATE, REQUIRED, LABEL=creationWindowEnd. Select the end date for request creation. Must be on or after the start date</stringProp>
-            </elementProp>
-            <elementProp name="requestsPerDay" elementType="Argument">
-              <stringProp name="Argument.name">requestsPerDay</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
-              <stringProp name="Argument.metadata">=</stringProp>
-              <stringProp name="Argument.desc">LABEL=requestsPerDay. The number of requests to create per day (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
-            </elementProp>
-            <elementProp name="requestDays" elementType="Argument">
-              <stringProp name="Argument.name">requestDays</stringProp>
-              <stringProp name="Argument.value">1</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
               <stringProp name="Argument.desc">LABEL=noOfDaysInRequest. The number of days a request should span (e.g., 1,2,3). One value is selected randomly. Empty = defaults to 1</stringProp>
             </elementProp>
